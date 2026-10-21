@@ -1,6 +1,6 @@
 import { useWorkspace, useRpc, type PluginWorkspacePanelProps } from "@getpaseo/plugin/client";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent } from "react";
 import { Text, TextInput } from "react-native";
 import { Icon } from "@getpaseo/plugin/client/react-native";
 import type { z } from "zod";
@@ -52,6 +52,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   currentHost.current = host.id;
   currentWorkspace.current = workspaceId;
   const zone = useRef<HTMLDivElement>(null);
+  const lastClickedRow = useRef<number | null>(null);
+  const visibleRows = useRef<number[]>([]);
   const openRpc = useRpc(openPreview);
   const closeRpc = useRpc(closePreview);
   const statusRpc = useRpc(sessionStatus);
@@ -93,6 +95,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       nextPosition.current = next.rows.length ? next.rows.length - 1 : undefined;
       moreRows.current = next.rows.length === next.limit;
       queryDirty.current = refresh && !!(sort || search);
+      visibleRows.current = [];
       setTableKey((key) => key + 1);
       if (!refresh) {
         setTable({ hidden: [], widths: {}, selected: [] });
@@ -137,6 +140,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   }
 
   function resetRows() {
+    visibleRows.current = [];
     setRows([]);
     setTotalRows(null);
     setPageBusy(false);
@@ -241,6 +245,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setPreview(null);
     setStatus(null);
     setRows([]);
+    visibleRows.current = [];
     nextPosition.current = undefined;
     moreRows.current = false;
     pageInFlight.current = false;
@@ -267,6 +272,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
   useEffect(() => {
+    lastClickedRow.current = null;
     setTable((current) => current.selected.length ? { ...current, selected: [] } : current);
   }, [tableKey]);
   useEffect(() => {
@@ -286,10 +292,32 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   }
 
   function copySelected() {
+    if (!table.selected.length) return;
     const visible = preview?.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) ?? [];
     const tsv = (value: string) => /[\t\r\n"]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
     const value = [...table.selected].sort((a, b) => a - b).map((index) => visible.map((column) => tsv(rows[index]?.[column] ?? "")).join("\t")).join("\n");
     void copy(value, `Copied ${table.selected.length} ${table.selected.length === 1 ? "row" : "rows"}`);
+  }
+
+  function selectRows(selected: number[]) {
+    if (selected.length > 10_000) { setToast({ message: "Can't select more than 10,000 rows" }); return false; }
+    setTable((current) => ({ ...current, selected }));
+    return true;
+  }
+
+  function selectRow(index: number, event: MouseEvent) {
+    const mac = /Mac/i.test(navigator.platform || navigator.userAgent || "");
+    const anchor = lastClickedRow.current ?? index;
+    if (event.shiftKey && Math.abs(index - anchor) >= 10_000) {
+      setToast({ message: "Can't select more than 10,000 rows" });
+      return;
+    }
+    const selected = event.shiftKey
+      ? Array.from({ length: Math.abs(index - anchor) + 1 }, (_, offset) => Math.min(index, anchor) + offset)
+      : (mac ? event.metaKey : event.ctrlKey)
+        ? table.selected.includes(index) ? table.selected.filter((row) => row !== index) : [...table.selected, index]
+        : [index];
+    if (selectRows(selected)) lastClickedRow.current = index;
   }
 
   const foreground = theme.colors.foreground;
@@ -324,7 +352,27 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const sortTitle = sort?.mode === "auto" ? `Auto${sortMode ? ` — ${sortMode === "numeric" ? "Numeric" : "Text"} detected` : " — detection pending"}` : "Sort mode";
 
   return (
-    <div ref={zone} tabIndex={0} aria-label="CSV viewer" style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0,
+    <div ref={zone} tabIndex={0} aria-label="CSV viewer"
+      onPointerDownCapture={(event) => {
+        const target = event.target;
+        if (target instanceof HTMLElement && !target.isContentEditable && !target.closest("input, textarea, select, button, a, [role=textbox]")) {
+          zone.current?.focus({ preventScroll: true });
+        }
+      }}
+      onKeyDownCapture={(event) => {
+        const root = zone.current;
+        const target = event.target;
+        if (!root || !(target instanceof HTMLElement) || !root.contains(target) || !root.contains(document.activeElement) ||
+          target.isContentEditable || target.closest("input, textarea, select, [role=textbox]") || event.defaultPrevented ||
+          event.nativeEvent.isComposing || event.repeat || event.altKey || event.shiftKey) return;
+        if (modifier === "⌘" ? !event.metaKey || event.ctrlKey : !event.ctrlKey || event.metaKey) return;
+        const key = event.key.toLowerCase();
+        if (key !== "a" && key !== "c") return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (key === "a") selectRows(visibleRows.current); else copySelected();
+      }}
+      style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0,
       position: "relative", overflow: "hidden", color: foreground, backgroundColor: colors.surface0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderBottom: `1px solid ${colors.border}` }}>
         <span title={preview?.fileName} style={{ maxWidth: "35%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{preview?.fileName ?? ""}</span>
@@ -369,7 +417,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           {search && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
           {!search && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={tableKey} columns={preview.columns} rows={rows} sort={sort} sortBusy={pageBusy || !ready}
-            onEndReached={() => void navigate(true)}
+            onEndReached={() => void navigate(true)} onSelectRow={selectRow}
+            onVisibleRowsChange={(indices) => { visibleRows.current = indices; }}
             presentation={table} onPresentation={setTable} onCopy={(value, label) => void copy(value, label)}
             onSort={(column, direction) => changeSort({ column, direction, mode: sort?.column === column ? sort.mode : "auto" })}
             theme={{ foreground, muted, border: colors.border }} />
@@ -386,7 +435,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           setPageBusy(false); setQueryPending(false);
           if (session.current) void closeRpc({ sessionId: session.current });
           session.current = null; selectedSource.current = null; setPath("");
-          setPreview(null); setStatus(null); setRows([]); setMessage("Preparation cancelled");
+          setPreview(null); setStatus(null); resetRows(); setMessage("Preparation cancelled");
         }}>Cancel</button>}
       </div>
       {toast && <div role="status" aria-label="Toast" style={{ position: "absolute", bottom: 38, right: 12, maxWidth: "85%", padding: "8px 12px",

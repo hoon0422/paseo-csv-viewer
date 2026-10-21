@@ -17,7 +17,7 @@ function ControlledTable(props: Omit<ComponentProps<typeof TableView>, "presenta
   return <TableView {...props} presentation={presentation} onPresentation={onPresentation} onCopy={(value) => { void navigator.clipboard.writeText(value); }} />;
 }
 
-test("the table copies raw cells and exposes selection and column presentation", async () => {
+test("the table copies raw cells and exposes column presentation", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-table-"));
   const copied: string[] = [];
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async (value: string) => { copied.push(value); } } } });
@@ -45,10 +45,6 @@ test("the table copies raw cells and exposes selection and column presentation",
     assert.equal(copied.at(-1), "");
     await press("Hide hidden");
     assert.equal(tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 2, hidden, value: secret" }).length, 0);
-    await press("Select row 2");
-    await press("Select row 1");
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Select row 1" }).props.accessibilityState.checked, true);
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Select row 2" }).props.accessibilityState.checked, true);
     await press("Copy cell row 2, id, value: 001");
     assert.equal(copied.at(-1), "001");
     await act(async () => { tree.unmount(); });
