@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
-import { mkdtemp, writeFile, rm, stat, readFile } from "node:fs/promises";
+import { mkdtemp, writeFile, rm, stat, readFile, mkdir, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PaseoApi } from "@getpaseo/client";
@@ -121,6 +121,76 @@ test("prepares a file-backed session and pages beyond the preview in source orde
     assert.deepEqual((await sessions.page(opened.sessionId, 100, 50)).rows.at(-1), ["122", "122", "tail-122"]);
     assert.equal((await sessions.page(opened.sessionId, 123, 50)).rows.length, 0);
   } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("scrolls beyond the preview during preparation without interrupting the load", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-preparing-pages-"));
+  const sessions = createSessions();
+  try {
+    const file = join(dir, "large.csv");
+    await writeFile(file, "id,payload\n" + Array.from({ length: 100 }, (_, i) => `${i},keep\n`).join("") + "001,keep\n".repeat(4_999_900));
+    for (const hasHeader of [true, false]) {
+      const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file }, hasHeader });
+      assert.equal(sessions.status(opened.sessionId).phase, "preparing");
+      await assert.rejects(sessions.page(opened.sessionId, 0, 50, { sort: { column: 0, direction: "asc", mode: "text" } }), /sort.*preparation/i);
+      assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { search: "keep", requestId: 1 }), /filter.*preparation/i);
+      assert.deepEqual(sessions.beginPage(opened.sessionId, 50, 50, { requestId: 1 }), { state: "pending" });
+      let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
+      for (let i = 0; i < 200; i++) {
+        result = sessions.pollPage(opened.sessionId, 1);
+        if (result.state === "ready") break;
+        await new Promise((resolve) => setTimeout(resolve, 5));
+      }
+      assert.equal(result.state, "ready");
+      if (result.state === "ready") {
+        assert.deepEqual(result.page.rows, Array.from({ length: 50 }, (_, i) => [String(i + (hasHeader ? 50 : 49)), "keep"]));
+        assert.equal(result.page.totalRows, null);
+      }
+      const progress = sessions.status(opened.sessionId);
+      assert.equal(progress.phase, "preparing");
+      assert.equal(typeof progress.percent, "number");
+      assert.equal(progress.percent! >= 0 && progress.percent! <= 100, true);
+      const status = await settled(sessions, opened.sessionId);
+      assert.equal(status.phase, "complete", status.message);
+      assert.equal(status.rowCount, 5_000_000 + (hasHeader ? 0 : 1));
+      assert.deepEqual((await sessions.page(opened.sessionId, 0, 1, { requestId: 1 })).rows, [hasHeader ? ["0", "keep"] : ["id", "payload"]]);
+    }
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("superseding direct CSV pages leaves preparation running and cancellation removes storage", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-preparing-cancel-"));
+  const sessions = createSessions();
+  const previousTmp = process.env.TMPDIR;
+  try {
+    const storage = join(dir, "storage");
+    await mkdir(storage);
+    process.env.TMPDIR = storage;
+    const file = join(dir, "large.csv");
+    await writeFile(file, "id,payload\n" + "001,keep\n".repeat(5_000_000));
+    const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
+    const stale = sessions.page(opened.sessionId, 1_000_000, 50, { requestId: 1 });
+    const rejected = assert.rejects(stale, /superseded|interrupt/i);
+    const next = sessions.page(opened.sessionId, 100, 50, { requestId: 2 });
+    await rejected;
+    assert.deepEqual((await next).rows, Array(50).fill(["001", "keep"]));
+    assert.equal(sessions.status(opened.sessionId).phase, "preparing");
+    const cancelled = sessions.page(opened.sessionId, 2_000_000, 50, { requestId: 3 });
+    const cancelledRejected = assert.rejects(cancelled, /superseded|interrupt|cancelled|closed/i);
+    assert.equal(sessions.close(opened.sessionId), true);
+    await cancelledRejected;
+    await sessions.dispose();
+    assert.deepEqual(await readdir(storage), []);
+    assert.equal((await stat(file)).size, opened.sourceBytes);
+  } finally {
+    if (previousTmp === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = previousTmp;
     await sessions.dispose();
     await rm(dir, { recursive: true, force: true });
   }
@@ -395,45 +465,59 @@ test("a quoted multiline first record still defines column positions", async () 
   }
 });
 
-test("blank and quoted-empty first records remain headers or data by position", async () => {
+test("skips leading and single-column blank lines but keeps quoted empty values", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-blank-first-"));
+  const sessions = createSessions();
   try {
     const file = join(dir, "blank.csv");
-    const sessions = createSessions();
-    const input = { panelId: "91236ce6-6023-4ed6-85aa-747474ed528c", workspaceId: "workspace", source: { kind: "local" as const, path: file } };
-    for (const body of ["\nvalue\n", '""\nvalue\n']) {
+    const input = { panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local" as const, path: file } };
+    for (const [body, columns, rows] of [
+      ["\n\nlabel\n\nvalue\n", ["label"], [["value"]]],
+      ['""\n\nvalue\n', [""], [["value"]]],
+      ['label\n\n""\nvalue\n', ["label"], [[""], ["value"]]],
+      ["\n\na,b\n\n1,ok\n", ["a", "b"], [["1", "ok"]]],
+    ] as const) {
       await writeFile(file, body);
-      const headed = await sessions.open(input);
-      assert.deepEqual(headed.columns, [""]);
-      assert.deepEqual(headed.rows, [["value"]]);
-      const headerless = await sessions.open({ ...input, hasHeader: false });
-      assert.deepEqual(headerless.columns, ["Column 1"]);
-      assert.deepEqual(headerless.rows, [[""], ["value"]]);
+      for (const hasHeader of [true, false]) {
+        const opened = await sessions.open({ ...input, hasHeader });
+        const expected = hasHeader ? rows : [columns, ...rows];
+        assert.deepEqual(opened.columns, hasHeader ? columns : columns.map((_, i) => `Column ${i + 1}`));
+        assert.deepEqual(opened.rows, expected);
+        const status = await settled(sessions, opened.sessionId);
+        assert.equal(status.phase, "complete", status.message);
+        assert.equal(status.rowCount, expected.length);
+        assert.deepEqual((await sessions.page(opened.sessionId, 0, 50)).rows, expected);
+      }
     }
-    await writeFile(file, "label\n\nvalue\n");
-    assert.deepEqual((await sessions.open(input)).rows, [[""], ["value"]]);
-    await sessions.dispose();
+    await writeFile(file, "\r\n\r\n");
+    const empty = await sessions.open(input);
+    assert.deepEqual(empty.columns, []);
+    assert.deepEqual(empty.rows, []);
+    assert.equal(sessions.status(empty.sessionId).rowCount, 0);
   } finally {
+    await sessions.dispose();
     await rm(dir, { recursive: true, force: true });
   }
 });
 
-test("a blank physical record in a two-column file cannot disappear", async () => {
+test("skips blank lines before and after the preview while preserving quoted newlines", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-blank-width-"));
+  const sessions = createSessions();
   try {
     const file = join(dir, "blank-width.csv");
-    const sessions = createSessions();
-    const input = { panelId: "70dcfc29-8659-4a46-86dc-a5691eed8f27", workspaceId: "workspace", source: { kind: "local" as const, path: file } };
-    await writeFile(file, "a,b\n1,ok\n\n2,ok\n");
-    assert.match((await settled(sessions, (await sessions.open(input)).sessionId)).message, /Line: 3 .*empty record has 1 column/);
-    await writeFile(file, "a,b\n" + "1,ok\n".repeat(60) + "\n2,ok\n");
-    assert.match((await settled(sessions, (await sessions.open(input)).sessionId)).message, /Line: 62 .*empty record has 1 column/);
-    await writeFile(file, "a,b\r\n1,ok\r\n\r\n2,ok\r\n");
-    assert.match((await settled(sessions, (await sessions.open(input)).sessionId)).message, /Line: 3 .*empty record has 1 column/);
-    await writeFile(file, 'a,b\n1,"before\n\nafter"\n2,ok\n');
-    assert.deepEqual((await sessions.open(input)).rows, [["1", "before\n\nafter"], ["2", "ok"]]);
-    await sessions.dispose();
+    const input = { panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local" as const, path: file } };
+    for (const newline of ["\n", "\r\n"]) {
+      await writeFile(file, ["a,b", "1,ok", "", ...Array(60).fill("2,ok"), "", '3,"before' + newline + newline + 'after"', ""].join(newline));
+      const opened = await sessions.open(input);
+      assert.deepEqual(opened.columns, ["a", "b"]);
+      assert.deepEqual(opened.rows[1], ["2", "ok"]);
+      const status = await settled(sessions, opened.sessionId);
+      assert.equal(status.phase, "complete", status.message);
+      assert.equal(status.rowCount, 62);
+      assert.deepEqual((await sessions.page(opened.sessionId, 61, 50)).rows, [["3", `before${newline}${newline}after`]]);
+    }
   } finally {
+    await sessions.dispose();
     await rm(dir, { recursive: true, force: true });
   }
 });
