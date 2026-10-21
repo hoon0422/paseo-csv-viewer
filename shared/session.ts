@@ -45,7 +45,7 @@ const pageInput = z.object({ sessionId: z.string().uuid(), offset: z.number().in
     afterPosition: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER - 1).optional(),
     search: z.string().max(2048).optional(), requestId: z.number().int().nonnegative().optional(),
     sort: z.object({ column: z.number().int().nonnegative(), direction: z.enum(["asc", "desc"]), mode: z.enum(["auto", "numeric", "text"]) }).optional() });
-const pageOutput = z.object({ offset: z.number(), nextPosition: z.number().int().nonnegative().nullable(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative(), sortMode: z.enum(["numeric", "text"]).optional() });
+const pageOutput = z.object({ offset: z.number(), nextPosition: z.number().int().nonnegative().nullable(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative().nullable(), sortMode: z.enum(["numeric", "text"]).optional() });
 
 export const pageRows = defineRpc({ name: "viewer.page", input: pageInput, output: pageOutput });
 
