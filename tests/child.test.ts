@@ -292,3 +292,24 @@ test("the child logs IPC send failures", async () => {
     assert.match(stderr, /IPC send failed.*channel is closed/s);
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
+
+test("preparation status errors are trimmed for the panel and logged in full", async (t) => {
+  const detail = "preparation detail ".repeat(300);
+  const logs: string[] = [];
+  t.mock.method(console, "error", (...values: unknown[]) => logs.push(values.map(String).join(" ")));
+  const sessionId = crypto.randomUUID();
+  const sessions = createSessionProxy((file, _args, options) => spawn(file, ["-e", `
+    process.send({ready:true}); process.on('message', m => {
+      if(m.method === 'open') process.send({id:m.id,value:{sessionId:${JSON.stringify(sessionId)},fileName:"source.csv",sourceBytes:0,columns:[],rows:[],status:"preview",limit:50}});
+      else if(m.method === 'status') process.send({id:m.id,value:{phase:'error',message:${JSON.stringify("  Error: Preparation failed. " + detail + "  ")},bytesScanned:0,sourceBytes:0,percent:null,rowCount:null,sourceChanged:false}});
+      else if(m.method === 'dispose') { process.send({id:m.id}); process.disconnect(); }
+    });`], options));
+  try {
+    await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: "/unused.csv" } });
+    const status = await sessions.status(sessionId);
+    assert.ok(status.message.length <= 500);
+    assert.equal(status.message, status.message.trim());
+    assert.match(status.message, /^Preparation failed/);
+    assert.ok(logs.some((line) => line.includes(detail)));
+  } finally { await sessions.dispose(); }
+});

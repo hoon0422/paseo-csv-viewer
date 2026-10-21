@@ -213,7 +213,12 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
     },
     open, close,
     status: async (id: string): Promise<ReturnType<Sessions["status"]>> => {
-      try { return await forSession("status", [id]); }
+      try {
+        const status = await forSession("status", [id]);
+        if (status.phase !== "error") return status;
+        console.error("CSV Viewer preparation failed:", status.message);
+        return { ...status, message: panelMessage(status.message) };
+      }
       catch (cause) {
         const panel = sessions.get(id);
         if (!panel?.error) throw cause;
