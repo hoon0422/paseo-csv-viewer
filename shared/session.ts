@@ -8,7 +8,7 @@ export const source = z.discriminatedUnion("kind", [
 
 export const openPreview = defineRpc({
   name: "viewer.open",
-  input: z.object({ panelId: z.string().uuid(), workspaceId: z.string().min(1), source, hasHeader: z.boolean().optional() }),
+  input: z.object({ panelId: z.string().uuid(), workspaceId: z.string().min(1), source, hasHeader: z.boolean().optional(), turn: z.number().int().nonnegative().optional() }),
   output: z.object({
     sessionId: z.string().uuid(),
     fileName: z.string(),
@@ -22,8 +22,27 @@ export const openPreview = defineRpc({
 
 export const closePreview = defineRpc({
   name: "viewer.close",
-  input: z.object({ sessionId: z.string().uuid() }),
+  input: z.object({ sessionId: z.string().uuid().optional(), panelId: z.string().uuid().optional(), turn: z.number().int().nonnegative().optional() }),
   output: z.object({ closed: z.boolean() }),
+});
+
+export const sessionStatus = defineRpc({
+  name: "viewer.status",
+  input: z.object({ sessionId: z.string().uuid() }),
+  output: z.object({
+    phase: z.enum(["preview", "scanning", "preparing", "complete", "error", "cancelled"]),
+    message: z.string(),
+    bytesScanned: z.number().nonnegative(),
+    sourceBytes: z.number().nonnegative(),
+    percent: z.number().min(0).max(100).nullable(),
+    rowCount: z.number().nonnegative().nullable(),
+  }),
+});
+
+export const pageRows = defineRpc({
+  name: "viewer.page",
+  input: z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(50) }),
+  output: z.object({ offset: z.number(), rows: z.array(z.array(z.string())) }),
 });
 
 export const workspaceFileDrag = z.object({

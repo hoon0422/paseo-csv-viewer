@@ -6,6 +6,15 @@ import { join } from "node:path";
 import type { PaseoApi } from "@getpaseo/client";
 import { createSessions } from "../server/session";
 
+async function settled(sessions: ReturnType<typeof createSessions>, sessionId: string) {
+  for (let i = 0; i < 200; i++) {
+    const status = sessions.status(sessionId);
+    if (status.phase === "complete" || status.phase === "error") return status;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error("Session did not settle");
+}
+
 test("opens a real CSV as a bounded read-only viewer session and replaces it", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-"));
   const panelId = "b10416ae-b0d3-4aab-a49c-b77ccdcfd998";
@@ -91,6 +100,106 @@ test("preview response stays at 50 data rows", async () => {
     assert.deepEqual(result.rows.at(-1), ["49"]);
     await sessions.dispose();
   } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("prepares a file-backed session and pages beyond the preview in source order", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-pages-"));
+  const sessions = createSessions();
+  try {
+    const file = join(dir, "pages.csv");
+    await writeFile(file, "id,id,\n" + Array.from({ length: 123 }, (_, i) => `${String(i).padStart(3, "0")},${i},tail-${i}\n`).join(""));
+    const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
+    assert.deepEqual(opened.columns, ["id", "id", ""]);
+    assert.deepEqual(opened.rows[0], ["000", "0", "tail-0"]);
+    assert.equal(opened.rows.length, 50);
+    const status = await settled(sessions, opened.sessionId);
+    assert.equal(status.phase, "complete", status.message);
+    assert.equal(status.rowCount, 123);
+    assert.deepEqual((await sessions.page(opened.sessionId, 49, 50)).rows[0], ["049", "49", "tail-49"]);
+    assert.deepEqual((await sessions.page(opened.sessionId, 100, 50)).rows.at(-1), ["122", "122", "tail-122"]);
+    assert.equal((await sessions.page(opened.sessionId, 123, 50)).rows.length, 0);
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("closing a pending open and cancelling preparation cannot revive that panel", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-cancel-"));
+  const sessions = createSessions();
+  const panelId = crypto.randomUUID();
+  try {
+    const file = join(dir, "large.csv");
+    await writeFile(file, "id,payload\n" + "001,keep\n".repeat(100_000));
+    const pending = sessions.open({ panelId, workspaceId: "workspace", source: { kind: "local", path: file } });
+    assert.equal(sessions.close(undefined, panelId), true);
+    await assert.rejects(pending, /cancelled/i);
+    const opened = await sessions.open({ panelId, workspaceId: "workspace", source: { kind: "local", path: file } });
+    assert.equal(opened.rows.length, 50);
+    assert.equal(sessions.close(opened.sessionId), true);
+    assert.throws(() => sessions.status(opened.sessionId), /closed/);
+    await assert.rejects(sessions.page(opened.sessionId, 50, 50), /not ready/);
+    assert.equal((await readFile(file, "utf8")).startsWith("id,payload\n001,keep\n"), true);
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("a delayed open or close cannot supersede a newer panel request", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-order-"));
+  const sessions = createSessions();
+  const panelId = crypto.randomUUID();
+  try {
+    const file = join(dir, "ordered.csv");
+    await writeFile(file, "id\n001\n");
+    const base = { panelId, workspaceId: "workspace", source: { kind: "local" as const, path: file } };
+    assert.equal(sessions.close(undefined, panelId, 2), false);
+    await assert.rejects(sessions.open({ ...base, turn: 1 }), /newer file or closed panel/);
+    const opened = await sessions.open({ ...base, turn: 3 });
+    assert.equal(sessions.close(undefined, panelId, 2), false);
+    assert.deepEqual(opened.rows, [["001"]]);
+    assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("a source removed after preview ends in an actionable error, never complete", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-lost-source-"));
+  const sessions = createSessions();
+  try {
+    const file = join(dir, "lost.csv");
+    await writeFile(file, "id,payload\n" + "001,keep\n".repeat(2_000_000));
+    const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
+    await rm(file);
+    const status = await settled(sessions, opened.sessionId);
+    assert.equal(status.phase, "error");
+    assert.match(status.message, /source file|read|accessible/i);
+    await assert.rejects(sessions.page(opened.sessionId, 50, 50), /not ready/);
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("unavailable temporary storage reports how to recover", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-no-temp-"));
+  const sessions = createSessions();
+  const previous = process.env.TMPDIR;
+  try {
+    const file = join(dir, "data.csv");
+    await writeFile(file, "id,value\n001,keep\n");
+    process.env.TMPDIR = join(dir, "missing-temp-directory");
+    await assert.rejects(sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } }), /Temporary storage failed.*free disk space and permissions/i);
+    assert.equal(await readFile(file, "utf8"), "id,value\n001,keep\n");
+  } finally {
+    if (previous === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = previous;
+    await sessions.dispose();
     await rm(dir, { recursive: true, force: true });
   }
 });
@@ -195,11 +304,11 @@ test("a blank physical record in a two-column file cannot disappear", async () =
     const sessions = createSessions();
     const input = { panelId: "70dcfc29-8659-4a46-86dc-a5691eed8f27", workspaceId: "workspace", source: { kind: "local" as const, path: file } };
     await writeFile(file, "a,b\n1,ok\n\n2,ok\n");
-    await assert.rejects(sessions.open(input), /(?:[Ll]ine|[Bb]yte|[Rr]ecord).*(?:3|9)/);
+    assert.match((await settled(sessions, (await sessions.open(input)).sessionId)).message, /Line: 3 .*empty record has 1 column/);
     await writeFile(file, "a,b\n" + "1,ok\n".repeat(60) + "\n2,ok\n");
-    await assert.rejects(sessions.open(input), /Line: 62 .*empty record has 1 column/);
+    assert.match((await settled(sessions, (await sessions.open(input)).sessionId)).message, /Line: 62 .*empty record has 1 column/);
     await writeFile(file, "a,b\r\n1,ok\r\n\r\n2,ok\r\n");
-    await assert.rejects(sessions.open(input), /Line: 3 .*empty record has 1 column/);
+    assert.match((await settled(sessions, (await sessions.open(input)).sessionId)).message, /Line: 3 .*empty record has 1 column/);
     await writeFile(file, 'a,b\n1,"before\n\nafter"\n2,ok\n');
     assert.deepEqual((await sessions.open(input)).rows, [["1", "before\n\nafter"], ["2", "ok"]]);
     await sessions.dispose();
@@ -219,7 +328,10 @@ test("rejects malformed quoting, width and UTF-8 with locations, including after
     await writeFile(file, "a,b\n1,ok\n2\n");
     await assert.rejects(sessions.open(input), /Line: 3[\s\S]*Expected Number of Columns: 2 Found: 1/);
     await writeFile(file, "a,b\n" + Array.from({ length: 5000 }, (_, i) => `${i},ok\n`).join("") + "bad\n");
-    await assert.rejects(sessions.open(input), /Line: 5002[\s\S]*Expected Number of Columns: 2 Found: 1/);
+    const late = await sessions.open(input);
+    const status = await settled(sessions, late.sessionId);
+    assert.equal(status.phase, "error");
+    assert.match(status.message, /Line: 5002[\s\S]*Expected Number of Columns: 2 Found: 1/);
     await writeFile(file, Buffer.from([0x61, 0x2c, 0x62, 0x0a, 0x31, 0x2c, 0xc3, 0x28, 0x0a]));
     await assert.rejects(sessions.open(input), /Line: 2[\s\S]*Invalid unicode/i);
     await sessions.dispose();
