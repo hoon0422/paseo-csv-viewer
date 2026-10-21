@@ -1,0 +1,15 @@
+{
+  "checkedRevision": "35b28aa0e7d574bba5a97ca67b828a3f3d27c3f4",
+  "integrationTip": "10f25c1f95531480921a5c12761cda0aa3636ad3",
+  "merge": "Already up to date",
+  "integrationIsAncestor": true,
+  "productAndTestFilesUnchangedSincePackagedRevision": "b18637295bc1f490df261ded617c0b1988daae27",
+  "command": "env -u PASEO_HOME ./scripts/bootstrap.sh check",
+  "exit": 0,
+  "typecheck": "passed",
+  "tests": {
+    "passed": 101,
+    "failed": 0,
+    "skipped": 0
+  }
+}

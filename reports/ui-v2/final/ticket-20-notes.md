@@ -15,3 +15,5 @@ Remaining native UI checks completed: tooltips/full-cell hover, local picker, wh
 Evidence: reports/ui-v2/README.md final criterion table and provenance; final/ contains package, logs, screenshots, raw probes, native report and verification assertions. Earlier artifacts and reports preserved; original reviews not repeated per instruction. Proposed #10 comment: /tmp/csv-viewer-v2/notes/ticket-20-issue10-comment.md (not posted). macOS acceptance must use the final package above; no macOS run.
 
 App returned to small ui-v2.csv, large session disposed normally, owned monitors stopped. Final health: no owned 5 GB benchmark, MemAvailable 2,624,636 kB, disk available 4,225,859,584 bytes. Desktop/daemon and fixtures retained. Progress CLI unavailable; stage attempts logged, T10 not marked done (coordinator owns).
+
+After evidence commit 35b28aa, merging integration/ui-v2 again was already up to date at 10f25c1. The required check passed again: typecheck + 101/101 tests, no failures/skips. Product and test files are unchanged from packaged source b186372. Post-merge logs and merge-check.json are committed under reports/ui-v2/final/.
