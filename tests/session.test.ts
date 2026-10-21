@@ -196,13 +196,13 @@ test("searches all prepared columns beyond preview as literal Unicode text and c
     assert.equal(opened.rows.length, 50);
     assert.equal((await settled(sessions, opened.sessionId)).rowCount, 125);
     const found = await sessions.page(opened.sessionId, 0, 1, { search: "CAFÉ [x]%_", requestId: 1 });
-    assert.deepEqual(found, { offset: 0, rows: [["90", "plain", "café [X]%_"]], totalRows: 2 });
+    assert.deepEqual(found, { offset: 0, nextPosition: 90, rows: [["90", "plain", "café [X]%_"]], totalRows: 2 });
     assert.deepEqual((await sessions.page(opened.sessionId, 1, 50, { search: "CAFÉ [x]%_", requestId: 1 })).rows,
       [["120", "plain", "CAFÉ [x]%_"]]);
     assert.deepEqual((await sessions.page(opened.sessionId, 0, 50, { search: "O'Reilly; -- %_", requestId: 2 })).rows,
       [["110", "plain", "O'Reilly; -- %_"]]);
     assert.deepEqual(await sessions.page(opened.sessionId, 0, 50, { search: "^café.*$", requestId: 3 }),
-      { offset: 0, rows: [], totalRows: 0 });
+      { offset: 0, nextPosition: null, rows: [], totalRows: 0 });
     const cleared = await sessions.page(opened.sessionId, 0, 50, { search: "", requestId: 4 });
     assert.equal(cleared.totalRows, 125);
     assert.deepEqual(cleared.rows[0], ["0", "plain", "ordinary"]);
