@@ -1,0 +1,374 @@
+[
+  {
+    "name": "Any column filter covers visible columns while a rule can name a hidden column",
+    "status": "passed"
+  },
+  {
+    "name": "Any column negated text operators require no visible cell to match",
+    "status": "passed"
+  },
+  {
+    "name": "Any column is empty only when all visible cells are empty, and is not empty when any has content",
+    "status": "passed"
+  },
+  {
+    "name": "Any column positive text, regex and numeric operators match at least one visible cell",
+    "status": "passed"
+  },
+  {
+    "name": "text filter operators combine rules, ignore incomplete rules and honor case sensitivity",
+    "status": "passed"
+  },
+  {
+    "name": "numeric filter operators compare DOUBLE values using the sort numeric grammar",
+    "status": "passed"
+  },
+  {
+    "name": "regex filters use case mode and report invalid patterns without failing the session",
+    "status": "passed"
+  },
+  {
+    "name": "filter values are literal parameters and malformed rule inputs are rejected at both RPCs",
+    "status": "passed"
+  },
+  {
+    "name": "filtered cursor pages follow the full sort, keep counts and rebuild for changed rules or sort",
+    "status": "passed"
+  },
+  {
+    "name": "a new filter cancels a running build and the cancelled filter can be retried",
+    "status": "passed"
+  },
+  {
+    "name": "filter rules wait for Apply, and rule checkboxes reapply immediately",
+    "status": "passed"
+  },
+  {
+    "name": "filter rule inputs keep their identity when edited and when a preceding rule is removed",
+    "status": "passed"
+  },
+  {
+    "name": "filter rules combine numeric ranges, empty cells, match mode and case sensitivity",
+    "status": "passed"
+  },
+  {
+    "name": "Any column follows visibility while named hidden-column rules keep applying",
+    "status": "passed"
+  },
+  {
+    "name": "panel-local Filter shortcuts focus the value, Enter applies, and Escape closes and clears",
+    "status": "passed"
+  },
+  {
+    "name": "a regex error stays readable and a corrected filter recovers",
+    "status": "passed"
+  },
+  {
+    "name": "preparation disables sort and filter controls; Escape still clears the retained filter",
+    "status": "passed"
+  },
+  {
+    "name": "row clicks replace, toggle and extend Selection in displayed order without checkboxes",
+    "status": "passed"
+  },
+  {
+    "name": "panel shortcuts select partly visible rows and copy only while focused outside inputs during Preparation",
+    "status": "passed"
+  },
+  {
+    "name": "Selection accepts 10,000 rows and rejects an over-limit range, toggle or select-all unchanged",
+    "status": "passed"
+  },
+  {
+    "name": "source changes clear the Selection anchor and the previous viewport",
+    "status": "passed"
+  },
+  {
+    "name": "cancelling Preparation clears Selection and cannot select rows from the removed source",
+    "status": "passed"
+  },
+  {
+    "name": "scrolling appends 200 rows once, preserves selection and stops at the end",
+    "status": "passed"
+  },
+  {
+    "name": "sorting and filtering status ends after the first page and stays Ready while appending",
+    "status": "passed"
+  },
+  {
+    "name": "cancelling an unfiltered sort restores source order and supersedes its page",
+    "status": "passed"
+  },
+  {
+    "name": "cancelling a running sort preserves the applied filter and ignores the superseded sort page",
+    "status": "passed"
+  },
+  {
+    "name": "cancelling a running filter preserves the applied sort and ignores the superseded filter page",
+    "status": "passed"
+  },
+  {
+    "name": "filtered cursor pages append across gaps and sort or filter changes collapse expanded rows",
+    "status": "passed"
+  },
+  {
+    "name": "a pending append cannot mix into a new sort or filter",
+    "status": "passed"
+  },
+  {
+    "name": "scrolling during preparation continues from the same rows when ready",
+    "status": "passed"
+  },
+  {
+    "name": "preview scrolling does not wait for the first preparation status response",
+    "status": "passed"
+  },
+  {
+    "name": "filtered sorting and visible-column copy use the displayed order; clear keeps sorting",
+    "status": "passed"
+  },
+  {
+    "name": "replacement clears an old page load and header switch applies to the next drop",
+    "status": "passed"
+  },
+  {
+    "name": "two pending OS drops keep action order when locality checks resolve out of order",
+    "status": "passed"
+  },
+  {
+    "name": "an OS drop resolving after panel unload cannot open a session",
+    "status": "passed"
+  },
+  {
+    "name": "cross-host and malformed Paseo Files drops explain rejection without opening a source",
+    "status": "passed"
+  },
+  {
+    "name": "panel shows a source change notice and Refresh loads the selected file",
+    "status": "passed"
+  },
+  {
+    "name": "a newer selection wins over a pending Refresh",
+    "status": "passed"
+  },
+  {
+    "name": "filter shows pending, hidden-column matches and no results; stale filter cannot replace cleared rows",
+    "status": "passed"
+  },
+  {
+    "name": "the path bar opens on Enter, restores edits and keeps the current table after an error",
+    "status": "passed"
+  },
+  {
+    "name": "the shell owns compact controls, counts, sort mode, hidden columns and short-lived copy toasts",
+    "status": "passed"
+  },
+  {
+    "name": "whole-panel file drops show an overlay without flickering over children or accepting text drags",
+    "status": "passed"
+  },
+  {
+    "name": "Refresh preserves sort, filter, hidden columns and widths; header and source changes reset them",
+    "status": "passed"
+  },
+  {
+    "name": "shell copies raw selected visible cells as TSV, and reports clipboard errors",
+    "status": "passed"
+  },
+  {
+    "name": "the path bar keeps an outside source absolute and working after a rejected path",
+    "status": "passed"
+  },
+  {
+    "name": "Clear sort from a column menu keeps the applied filter and resets selection and expansion",
+    "status": "passed"
+  },
+  {
+    "name": "choosing another column sort supersedes one still being prepared",
+    "status": "passed"
+  },
+  {
+    "name": "opens a real CSV as a bounded read-only viewer session and replaces it",
+    "status": "passed"
+  },
+  {
+    "name": "empty CSV has an honest empty preview",
+    "status": "passed"
+  },
+  {
+    "name": "workspace selection stays inside its workspace and rejects other file kinds",
+    "status": "passed"
+  },
+  {
+    "name": "preview response stays at 50 data rows",
+    "status": "passed"
+  },
+  {
+    "name": "prepares a file-backed session and pages beyond the preview in source order",
+    "status": "passed"
+  },
+  {
+    "name": "scrolls beyond the preview during preparation without interrupting the load",
+    "status": "passed"
+  },
+  {
+    "name": "superseding direct CSV pages leaves preparation running and cancellation removes storage",
+    "status": "passed"
+  },
+  {
+    "name": "a filtered page starts promptly and can be polled through completion",
+    "status": "passed"
+  },
+  {
+    "name": "rejected stale and duplicate starts leave the active filtered page pollable",
+    "status": "passed"
+  },
+  {
+    "name": "filters all visible prepared columns beyond preview as literal Unicode text and clears to source order",
+    "status": "passed"
+  },
+  {
+    "name": "new filter, source replacement and cancellation supersede an in-flight filter",
+    "status": "passed"
+  },
+  {
+    "name": "closing a pending open and cancelling preparation cannot revive that panel",
+    "status": "passed"
+  },
+  {
+    "name": "a delayed open or close cannot supersede a newer panel request",
+    "status": "passed"
+  },
+  {
+    "name": "a source removed after preview ends in an actionable error, never complete",
+    "status": "passed"
+  },
+  {
+    "name": "unavailable temporary storage reports how to recover",
+    "status": "passed"
+  },
+  {
+    "name": "preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes",
+    "status": "passed"
+  },
+  {
+    "name": "keeps duplicate and blank headers by position and handles header-only TSV",
+    "status": "passed"
+  },
+  {
+    "name": "opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF",
+    "status": "passed"
+  },
+  {
+    "name": "a quoted multiline first record still defines column positions",
+    "status": "passed"
+  },
+  {
+    "name": "skips leading and single-column blank lines but keeps quoted empty values",
+    "status": "passed"
+  },
+  {
+    "name": "skips blank lines before and after the preview while preserving quoted newlines",
+    "status": "passed"
+  },
+  {
+    "name": "rejects malformed quoting, width and UTF-8 with locations, including after 50 rows",
+    "status": "passed"
+  },
+  {
+    "name": "automatic numeric sort covers the whole file and keeps equal values in source order",
+    "status": "passed"
+  },
+  {
+    "name": "consecutive 200-row pages append after a known sort position with stable ties",
+    "status": "passed"
+  },
+  {
+    "name": "closing a sorted session removes its temporary storage and leaves the source untouched",
+    "status": "passed"
+  },
+  {
+    "name": "numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact",
+    "status": "passed"
+  },
+  {
+    "name": "late nonnumeric text forces auto text order; manual numeric keeps all rows",
+    "status": "passed"
+  },
+  {
+    "name": "numeric DOUBLE comparison keeps rounded ties in file order and preserves original text",
+    "status": "passed"
+  },
+  {
+    "name": "DOUBLE overflow and underflow stay numeric, special spellings stay text, and blanks keep file order",
+    "status": "passed"
+  },
+  {
+    "name": "filter and sort share a filtered page count while auto inference still sees late text",
+    "status": "passed"
+  },
+  {
+    "name": "new sort requests cancel a build, and clearing sort restores file order",
+    "status": "passed"
+  },
+  {
+    "name": "sorted filter keeps the completed snapshot stale until Refresh creates a new session",
+    "status": "passed"
+  },
+  {
+    "name": "external edits leave a completed snapshot stale until an explicit new session",
+    "status": "passed"
+  },
+  {
+    "name": "append, truncation, atomic replacement, deletion, and loss of access mark only their own snapshot stale",
+    "status": "passed"
+  },
+  {
+    "name": "an edit during preparation invalidates the preview instead of completing mixed rows",
+    "status": "passed"
+  },
+  {
+    "name": "a source replacement during filtering returns only the completed snapshot",
+    "status": "passed"
+  },
+  {
+    "name": "superseded opens and closes release session storage without reviving an old view",
+    "status": "passed"
+  },
+  {
+    "name": "a cell copies its raw value only on double-click or keyboard activation",
+    "status": "passed"
+  },
+  {
+    "name": "the table copies raw cells and exposes column presentation",
+    "status": "passed"
+  },
+  {
+    "name": "long column names keep visible controls compact and full accessible labels",
+    "status": "passed"
+  },
+  {
+    "name": "the table windows loaded rows and independently expands multiline values at the row edge",
+    "status": "passed"
+  },
+  {
+    "name": "column edges drag with a 40 px minimum, keep manual widths above 600 and release capture",
+    "status": "passed"
+  },
+  {
+    "name": "double-click fit measures loaded cells outside the render window, multiline values and the header",
+    "status": "passed"
+  },
+  {
+    "name": "headers expose a labelled menu with sort, clear, hide, checks and keyboard dismissal",
+    "status": "passed"
+  },
+  {
+    "name": "the column menu stays inside a compact panel, moves focus and dismisses cleanly",
+    "status": "passed"
+  },
+  {
+    "name": "preparation disables sort menu actions while hide, resize and cell copy stay available",
+    "status": "passed"
+  }
+]
