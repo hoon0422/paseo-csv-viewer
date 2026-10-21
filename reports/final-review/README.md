@@ -2,6 +2,8 @@
 
 Branch `fix/final-review` started from integration `a9efd0f5b0eda155c9ff26a443fe509025968e21`. The reviewed product source is commit `13390f27c44a9deb7e0944239f0518f8e29d68cf` (`Refs #10`). A merge of the latest `integration/csv-viewer` was already up to date. The independent [Standards](original-standards.md) and [Spec](original-spec.md) reports are copied verbatim and remain separate.
 
+The independent Astra [Standards recheck](recheck-standards.md) and [Spec recheck](recheck-spec.md) resolve both review axes with no new concrete finding. Reviewers inspected the recorded evidence; neither reran tests, the app, or Space operations.
+
 ## Standards axis
 
 - **P2, cell accessibility:** `client/table.tsx` now includes each original nonempty cell value in the button's accessible label and says `empty cell` for a blank. Copy still writes the raw string. `tests/table.test.tsx` checks distinct, multiline Unicode, and empty labels plus raw copy; `tests/panel.test.tsx` updates every affected selector. The focused [table red test](final-review-table-red.log) failed before the fix. In the official Paseo 0.12.0 desktop, [rendered DOM labels](final-review-dom-labels-exact.png) included `Copy cell row 1, id, value: 000`, `Copy cell row 1, value, value: ordinary`, and `Copy cell row 1, note, empty cell`. [Focused control inspection](final-review-focused-cell-dom.png) returned `Copy cell row 1, note, empty cell | button` from the packaged panel's `document.activeElement` and role. React Native Web's installed `createDOMProps` maps `accessibilityLabel` to `aria-label`.
@@ -24,4 +26,4 @@ The [retained 5 GB fixture hash](final-review-retained-5gb.sha256) remains `f61c
 
 ## Remaining acceptance
 
-Linux code, package, and desktop checks above are complete. Isolated macOS and Windows runtime acceptance remains blocked and untested; #10 and parent #1 stay open. No integration merge, push, issue closure, publication, host application change, or host package/test execution was performed.
+Linux code, package, and desktop checks above are complete. Isolated macOS and Windows runtime acceptance remains pending; Windows acceptance is proceeding on a free local VM, and cached Mac VM feasibility is being checked. #10 and parent #1 stay open. No merge into integration, push, issue closure, publication, host application change, or host package/test execution was performed.
