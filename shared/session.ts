@@ -43,7 +43,7 @@ export const sessionStatus = defineRpc({
 const pageInput = z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(50),
     search: z.string().max(2048).optional(), requestId: z.number().int().nonnegative().optional(),
     sort: z.object({ column: z.number().int().nonnegative(), direction: z.enum(["asc", "desc"]), mode: z.enum(["auto", "numeric", "text"]) }).optional() });
-const pageOutput = z.object({ offset: z.number(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative(), sortMode: z.enum(["numeric", "text"]).optional() });
+const pageOutput = z.object({ offset: z.number(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative().nullable(), sortMode: z.enum(["numeric", "text"]).optional() });
 
 export const pageRows = defineRpc({ name: "viewer.page", input: pageInput, output: pageOutput });
 
