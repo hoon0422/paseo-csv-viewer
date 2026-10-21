@@ -182,7 +182,10 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     if (!append) setQueryPending(true);
     try {
       await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: 200,
-        afterPosition: append ? nextPosition.current : undefined, search: nextSearch, requestId: query, sort: nextSort ?? undefined });
+        afterPosition: append ? nextPosition.current : undefined,
+        filter: nextSearch ? { rules: [{ enabled: true, column: "any", operator: "contains", value: nextSearch }],
+          match: "all", caseSensitive: false, visibleColumns: preview.columns.map((_, index) => index) } : undefined,
+        requestId: query, sort: nextSort ?? undefined });
       let page: z.output<typeof pageRows.output>;
       for (;;) {
         if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;

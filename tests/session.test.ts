@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PaseoApi } from "@getpaseo/client";
 import { createSessions } from "../server/session";
+import { anyColumnFilter } from "./filter-input";
 
 async function settled(sessions: ReturnType<typeof createSessions>, sessionId: string) {
   for (let i = 0; i < 200; i++) {
@@ -136,7 +137,7 @@ test("scrolls beyond the preview during preparation without interrupting the loa
       const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file }, hasHeader });
       assert.equal(sessions.status(opened.sessionId).phase, "preparing");
       await assert.rejects(sessions.page(opened.sessionId, 0, 50, { sort: { column: 0, direction: "asc", mode: "text" } }), /sort.*preparation/i);
-      assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { search: "keep", requestId: 1 }), /filter.*preparation/i);
+      assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("keep", [0, 1]), requestId: 1 }), /filter.*preparation/i);
       assert.deepEqual(sessions.beginPage(opened.sessionId, 50, 50, { requestId: 1 }), { state: "pending" });
       let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
       for (let i = 0; i < 200; i++) {
@@ -209,7 +210,7 @@ test("a page query starts promptly and can be polled through completion", async 
     await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     await settled(sessions, opened.sessionId);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { search: "needle", requestId: 1 }), { state: "pending" });
+    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 1 }), { state: "pending" });
     let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
     for (let i = 0; i < 100; i++) {
       result = sessions.pollPage(opened.sessionId, 1);
@@ -234,7 +235,7 @@ test("rejected stale and duplicate starts leave the active query pollable", asyn
     await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     await settled(sessions, opened.sessionId);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { search: "needle", requestId: 2 }), { state: "pending" });
+    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 }), { state: "pending" });
     assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { requestId: 1 }), /superseded/i);
     assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { requestId: 2 }), /already loading/i);
     let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
@@ -245,7 +246,7 @@ test("rejected stale and duplicate starts leave the active query pollable", asyn
     }
     assert.equal(result.state, "ready");
     if (result.state === "ready") assert.deepEqual(result.page.rows, [["9999", "needle"]]);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 1, 50, { search: "needle", requestId: 2 }), { state: "pending" });
+    assert.deepEqual(sessions.beginPage(opened.sessionId, 1, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 }), { state: "pending" });
     for (let i = 0; i < 100; i++) {
       result = sessions.pollPage(opened.sessionId, 2);
       if (result.state === "ready") break;
@@ -259,7 +260,7 @@ test("rejected stale and duplicate starts leave the active query pollable", asyn
   }
 });
 
-test("searches all prepared columns beyond preview as literal Unicode text and clears to source order", async () => {
+test("filters all visible prepared columns beyond preview as literal Unicode text and clears to source order", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-search-"));
   const sessions = createSessions();
   try {
@@ -270,15 +271,15 @@ test("searches all prepared columns beyond preview as literal Unicode text and c
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     assert.equal(opened.rows.length, 50);
     assert.equal((await settled(sessions, opened.sessionId)).rowCount, 125);
-    const found = await sessions.page(opened.sessionId, 0, 1, { search: "CAFÉ [x]%_", requestId: 1 });
+    const found = await sessions.page(opened.sessionId, 0, 1, { filter: anyColumnFilter("CAFÉ [x]%_", [0, 1, 2]), requestId: 1 });
     assert.deepEqual(found, { offset: 0, nextPosition: 90, rows: [["90", "plain", "café [X]%_"]], totalRows: 2 });
-    assert.deepEqual((await sessions.page(opened.sessionId, 1, 50, { search: "CAFÉ [x]%_", requestId: 1 })).rows,
+    assert.deepEqual((await sessions.page(opened.sessionId, 1, 50, { filter: anyColumnFilter("CAFÉ [x]%_", [0, 1, 2]), requestId: 1 })).rows,
       [["120", "plain", "CAFÉ [x]%_"]]);
-    assert.deepEqual((await sessions.page(opened.sessionId, 0, 50, { search: "O'Reilly; -- %_", requestId: 2 })).rows,
+    assert.deepEqual((await sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("O'Reilly; -- %_", [0, 1, 2]), requestId: 2 })).rows,
       [["110", "plain", "O'Reilly; -- %_"]]);
-    assert.deepEqual(await sessions.page(opened.sessionId, 0, 50, { search: "^café.*$", requestId: 3 }),
+    assert.deepEqual(await sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("^café.*$", [0, 1, 2]), requestId: 3 }),
       { offset: 0, nextPosition: null, rows: [], totalRows: 0 });
-    const cleared = await sessions.page(opened.sessionId, 0, 50, { search: "", requestId: 4 });
+    const cleared = await sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("", [0, 1, 2]), requestId: 4 });
     assert.equal(cleared.totalRows, 125);
     assert.deepEqual(cleared.rows[0], ["0", "plain", "ordinary"]);
     assert.deepEqual(await readFile(file, "utf8"), source);
@@ -288,7 +289,7 @@ test("searches all prepared columns beyond preview as literal Unicode text and c
   }
 });
 
-test("new query, file replacement and cancellation supersede in-flight search", async () => {
+test("new query, file replacement and cancellation supersede an in-flight filter", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-search-order-"));
   const sessions = createSessions();
   const panelId = crypto.randomUUID();
@@ -300,19 +301,19 @@ test("new query, file replacement and cancellation supersede in-flight search", 
     const input = (path: string) => ({ panelId, workspaceId: "workspace", source: { kind: "local" as const, path } });
     const opened = await sessions.open(input(first));
     await settled(sessions, opened.sessionId);
-    const stale = sessions.page(opened.sessionId, 0, 50, { search: "missing", requestId: 1 });
+    const stale = sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("missing", [0, 1]), requestId: 1 });
     const staleRejected = assert.rejects(stale, /superseded|interrupt/i);
-    const cleared = sessions.page(opened.sessionId, 0, 50, { search: "", requestId: 2 });
+    const cleared = sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("", [0, 1]), requestId: 2 });
     await staleRejected;
     assert.equal((await cleared).totalRows, 5_000);
-    await assert.rejects(sessions.page(opened.sessionId, 0, 50, { search: "missing", requestId: 1 }), /superseded/);
-    const replacedSearch = sessions.page(opened.sessionId, 0, 50, { search: "ordinary", requestId: 3 });
+    await assert.rejects(sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("missing", [0, 1]), requestId: 1 }), /superseded/);
+    const replacedSearch = sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("ordinary", [0, 1]), requestId: 3 });
     const replacedRejected = assert.rejects(replacedSearch, /superseded|interrupt|cancelled|closed/i);
     const replaced = await sessions.open(input(second));
     await replacedRejected;
     await settled(sessions, replaced.sessionId);
-    assert.deepEqual((await sessions.page(replaced.sessionId, 0, 50, { search: "NEEDLE", requestId: 1 })).rows, [["new", "needle"]]);
-    const cancelledSearch = sessions.page(replaced.sessionId, 0, 50, { search: "needle", requestId: 2 });
+    assert.deepEqual((await sessions.page(replaced.sessionId, 0, 50, { filter: anyColumnFilter("NEEDLE", [0, 1]), requestId: 1 })).rows, [["new", "needle"]]);
+    const cancelledSearch = sessions.page(replaced.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 });
     const cancelledRejected = assert.rejects(cancelledSearch, /superseded|interrupt|cancelled|closed/i);
     assert.equal(sessions.close(replaced.sessionId), true);
     await cancelledRejected;

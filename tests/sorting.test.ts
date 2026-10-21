@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promis
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createSessions } from "../server/session";
+import { anyColumnFilter } from "./filter-input";
 import { pageRows } from "../shared/session";
 
 async function fixture(body: string, check: (session: ReturnType<typeof createSessions>, id: string, path: string, panelId: string) => Promise<void>) {
@@ -138,7 +139,7 @@ test("DOUBLE overflow and underflow stay numeric, special spellings stay text, a
   });
 });
 
-test("search and sort share a filtered page count while auto inference still sees late text", async () => {
+test("filter and sort share a filtered page count while auto inference still sees late text", async () => {
   const lines = Array.from({ length: 55 }, (_, i) => `${i},${i === 54 ? "N/A" : "0"},miss`);
   lines[1] = "1,10,hit";
   lines[2] = "2,2,hit";
@@ -146,14 +147,14 @@ test("search and sort share a filtered page count while auto inference still see
   lines[52] = "52,100,hit";
   await fixture("id,value,tag\n" + lines.join("\n") + "\n", async (s, id) => {
     const sort = { column: 1, direction: "asc" as const, mode: "auto" as const };
-    const first = await s.page(id, 0, 2, { search: "hit", requestId: 1, sort });
-    const second = await s.page(id, 2, 2, { search: "hit", requestId: 1, sort, afterPosition: first.nextPosition! });
+    const first = await s.page(id, 0, 2, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 1, sort });
+    const second = await s.page(id, 2, 2, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 1, sort, afterPosition: first.nextPosition! });
     assert.equal(first.totalRows, 4);
     assert.equal(first.sortMode, "text");
     assert.deepEqual(first.rows.map((row) => row[0]), ["1", "52"]);
     assert.deepEqual(second.rows.map((row) => row[0]), ["2", "51"]);
     assert.ok(first.nextPosition! > first.rows.length);
-    const numeric = await s.page(id, 0, 4, { search: "hit", requestId: 2, sort: { ...sort, mode: "numeric" } });
+    const numeric = await s.page(id, 0, 4, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 2, sort: { ...sort, mode: "numeric" } });
     assert.deepEqual(numeric.rows.map((row) => row[0]), ["2", "51", "1", "52"]);
     assert.equal(numeric.totalRows, 4);
   });
@@ -177,21 +178,21 @@ test("new sort requests cancel a build, and clearing sort restores file order", 
   });
 });
 
-test("sorted search keeps the completed snapshot stale until Refresh creates a new session", async () => {
+test("sorted filter keeps the completed snapshot stale until Refresh creates a new session", async () => {
   await fixture("id,value,tag\n1,10,hit\n2,2,hit\n3,N/A,miss\n", async (s, id, path, panelId) => {
     const sort = { column: 1, direction: "asc" as const, mode: "auto" as const };
-    const old = await s.page(id, 0, 50, { search: "hit", requestId: 1, sort });
+    const old = await s.page(id, 0, 50, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 1, sort });
     assert.deepEqual(old.rows.map((row) => row[0]), ["1", "2"]);
     assert.equal(old.sortMode, "text");
     await writeFile(path, "id,value,tag\n1,10,hit\n2,2,hit\n3,1,miss\n4,100,hit\n");
     assert.equal(s.status(id).sourceChanged, true);
-    const stale = await s.page(id, 0, 50, { search: "hit", requestId: 2, sort });
+    const stale = await s.page(id, 0, 50, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 2, sort });
     assert.deepEqual(stale.rows, old.rows);
     assert.equal(stale.totalRows, 2);
     const refreshed = await s.open({ panelId, workspaceId: "workspace", source: { kind: "local", path }, turn: 1 });
     for (let i = 0; i < 200 && s.status(refreshed.sessionId).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
     assert.equal(s.status(refreshed.sessionId).sourceChanged, false);
-    const current = await s.page(refreshed.sessionId, 0, 50, { search: "hit", requestId: 1, sort });
+    const current = await s.page(refreshed.sessionId, 0, 50, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 1, sort });
     assert.deepEqual(current.rows.map((row) => row[0]), ["2", "1", "4"]);
     assert.equal(current.totalRows, 3);
     assert.equal(current.sortMode, "numeric");

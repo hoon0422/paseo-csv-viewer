@@ -6,6 +6,11 @@ export type Sort = { column: number; direction: "asc" | "desc"; mode: "auto" | "
 const whitespace = "' \t\r\n'";
 const number = "'[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?'";
 
+export function numericValue(cell: string) {
+  const value = `trim(${cell}, ${whitespace})`;
+  return `CASE WHEN regexp_full_match(${value}, ${number}) THEN TRY_CAST(${value} AS DOUBLE) END`;
+}
+
 export async function buildSortOrder(connection: DuckDBConnection, width: number, sort: Sort, checkCurrent: () => void) {
   if (!Number.isSafeInteger(sort.column) || sort.column < 0 || sort.column >= width) throw new Error("Invalid sort column");
   if (sort.direction !== "asc" && sort.direction !== "desc") throw new Error("Invalid sort direction");
@@ -27,7 +32,7 @@ export async function buildSortOrder(connection: DuckDBConnection, width: number
     const value = `trim(${cell}, ${whitespace})`;
     const valid = `regexp_full_match(${value}, ${number})`;
     order = `CASE WHEN ${value} = '' THEN 2 WHEN ${valid} THEN 0 ELSE 1 END,
-        CASE WHEN ${valid} THEN TRY_CAST(${value} AS DOUBLE) END ${direction},
+        ${numericValue(cell)} ${direction},
         CASE WHEN NOT ${valid} AND ${value} <> '' THEN ${cell} END ${direction}, rowid`;
   }
   const result = await connection.run(`CREATE TABLE sort_order AS

@@ -51,7 +51,7 @@ async function panelTest(run: (app: {
   holdSearch: (next: Promise<void>) => void;
   holdSort: (next: Promise<void>) => void;
   holdStatus: (next: Promise<void>) => void;
-  pageCalls: () => { search?: string; sort?: unknown }[];
+  pageCalls: () => { filter?: unknown; sort?: unknown }[];
   clipboard: () => string;
   press: (label: string) => Promise<void>; wait: (condition: () => boolean) => Promise<void>;
 }) => Promise<void>) {
@@ -64,7 +64,7 @@ async function panelTest(run: (app: {
   let searchGate = Promise.resolve();
   let sortGate = Promise.resolve();
   let statusGate = Promise.resolve();
-  const pageCalls: { search?: string; sort?: unknown }[] = [];
+  const pageCalls: { filter?: unknown; sort?: unknown }[] = [];
   let clipboard = "";
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async (text: string) => { clipboard = text; } } } });
   let opens = 0;
@@ -76,7 +76,7 @@ async function panelTest(run: (app: {
     if (name === "viewer.open") { opens++; return sessions.open(input, { workspaces: { ref: () => ({ refresh: async () => ({ id: "workspace", workspaceDirectory: directory }) }) } } as any); }
     if (name === "viewer.close") return { closed: sessions.close(input.sessionId, input.panelId, input.turn) };
     if (name === "viewer.status") { await statusGate; return sessions.status(input.sessionId); }
-    if (name === "viewer.query" && input.action === "start") { pageCalls.push(input); await pageGate; if (input.search) await searchGate; if (input.sort) await sortGate; return sessions.beginPage(input.sessionId, input.offset, input.limit, input); }
+    if (name === "viewer.query" && input.action === "start") { pageCalls.push(input); await pageGate; if (input.filter) await searchGate; if (input.sort) await sortGate; return sessions.beginPage(input.sessionId, input.offset, input.limit, input); }
     if (name === "viewer.query" && input.action === "poll") return sessions.pollPage(input.sessionId, input.requestId);
     throw new Error(`Unexpected RPC: ${name}`);
   };

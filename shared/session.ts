@@ -40,10 +40,21 @@ export const sessionStatus = defineRpc({
   }),
 });
 
+export const filter = z.object({
+  rules: z.array(z.object({
+    enabled: z.boolean(), column: z.union([z.number().int().nonnegative(), z.literal("any")]),
+    operator: z.enum(["contains", "does not contain", "=", "≠", "begins with", "ends with", "is empty", "is not empty", "matches regex", ">", "<", "≥", "≤", "between"]),
+    value: z.string().optional(), value2: z.string().optional(),
+  }).strict()),
+  match: z.enum(["all", "any"]), caseSensitive: z.boolean(),
+  visibleColumns: z.array(z.number().int().nonnegative()),
+}).strict();
+export type Filter = z.output<typeof filter>;
+
 // afterPosition resumes after the last returned row in the current sort (or file order).
 const pageInput = z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(200),
     afterPosition: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER - 1).optional(),
-    search: z.string().max(2048).optional(), requestId: z.number().int().nonnegative().optional(),
+    filter: filter.optional(), requestId: z.number().int().nonnegative().optional(),
     sort: z.object({ column: z.number().int().nonnegative(), direction: z.enum(["asc", "desc"]), mode: z.enum(["auto", "numeric", "text"]) }).optional() });
 const pageOutput = z.object({ offset: z.number(), nextPosition: z.number().int().nonnegative().nullable(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative().nullable(), sortMode: z.enum(["numeric", "text"]).optional() });
 
