@@ -2,6 +2,6 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "..",
-    "paths": { "react-native": ["node_modules/react-native-web"] }
+    "paths": { "react-native": ["node_modules/react-native-web"], "@getpaseo/plugin/client/react-native": ["tests/sdk-react-native.tsx"] }
   }
 }

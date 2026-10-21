@@ -34,14 +34,26 @@ export async function localSource(file: File, hostId: string): Promise<Source> {
 
 export function listenForDrops(
   node: unknown, hostId: string, workspaceId: string,
-  open: (source: Source | Promise<Source>) => void, error: (message: string) => void,
+  open: (source: Source | Promise<Source>) => void, error: (message: string) => void, hover?: (active: boolean) => void,
 ) {
-  if (!(node instanceof HTMLElement)) return () => {};
+  if (typeof HTMLElement === "undefined" || !(node instanceof HTMLElement)) return () => {};
+  let depth = 0;
+  const accepts = (event: DragEvent) => Array.from(event.dataTransfer?.types ?? []).some((type) => type === MIME || type === "Files");
+  const reset = () => { depth = 0; hover?.(false); };
+  const enter = (event: DragEvent) => {
+    if (!accepts(event)) return;
+    depth++;
+    over(event);
+  };
+  const leave = () => { if (--depth <= 0) reset(); };
   const over = (event: DragEvent) => {
+    if (!accepts(event)) return;
+    hover?.(true);
     event.preventDefault();
     if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
   };
   const drop = (event: DragEvent) => {
+    reset();
     event.preventDefault();
     event.stopPropagation();
     const data = event.dataTransfer;
@@ -63,11 +75,16 @@ export function listenForDrops(
     if (!file) return error("Drop a CSV or TSV file from Paseo Files or your file manager");
     open(localSource(file, hostId));
   };
-  node.addEventListener("dragenter", over);
+  node.addEventListener("dragenter", enter);
+  node.addEventListener("dragleave", leave);
+  node.addEventListener("dragend", reset);
   node.addEventListener("dragover", over);
   node.addEventListener("drop", drop);
   return () => {
-    node.removeEventListener("dragenter", over);
+    reset();
+    node.removeEventListener("dragenter", enter);
+    node.removeEventListener("dragleave", leave);
+    node.removeEventListener("dragend", reset);
     node.removeEventListener("dragover", over);
     node.removeEventListener("drop", drop);
   };
