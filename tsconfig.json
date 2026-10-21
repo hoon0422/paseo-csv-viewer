@@ -12,5 +12,5 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["index.*", "client/**/*.ts", "client/**/*.tsx", "server/**/*.ts", "shared/**/*.ts", "tests/**/*.ts"]
+  "include": ["index.*", "client/**/*.ts", "client/**/*.tsx", "server/**/*.ts", "shared/**/*.ts", "tests/**/*.ts", "tests/**/*.tsx"]
 }
