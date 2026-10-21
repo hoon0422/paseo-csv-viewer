@@ -5,13 +5,18 @@ type Props = {
   columns: string[];
   rows: string[][];
   theme: { foreground: string; muted: string; border: string };
+  sort?: { column: number; direction: "asc" | "desc"; mode: "auto" | "numeric" | "text" } | null;
+  sortMode?: "numeric" | "text";
+  sortBusy?: boolean;
+  onSort?: (column: number, direction: "asc" | "desc") => void;
+  onSortMode?: (mode: "auto" | "numeric" | "text") => void;
 };
 
 const DEFAULT_WIDTH = 160;
 const MIN_WIDTH = 80;
 const MAX_WIDTH = 480;
 
-export function TableView({ columns, rows, theme }: Props) {
+export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSort, onSortMode }: Props) {
   const [hidden, setHidden] = useState<number[]>([]);
   const [widths, setWidths] = useState<Record<number, number>>({});
   const [selected, setSelected] = useState<number[]>([]);
@@ -48,6 +53,11 @@ export function TableView({ columns, rows, theme }: Props) {
         void copy(value, "Rows");
       }, selected.length === 0)}
       {hidden.map((index) => <View key={index}>{control(`Reveal ${columns[index] || `Column ${index + 1}`}`, () => setHidden(hidden.filter((value) => value !== index)))}</View>)}
+      {sort && onSortMode && <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
+        <Text style={{ color: theme.muted }}>Sort {columns[sort.column] || `Column ${sort.column + 1}`} {sort.direction === "asc" ? "ascending" : "descending"} · mode:</Text>
+        {(["auto", "numeric", "text"] as const).map((mode) => <View key={mode}>{control(`${mode === sort.mode ? "✓ " : ""}${mode[0].toUpperCase() + mode.slice(1)}`, () => onSortMode(mode), sortBusy)}</View>)}
+        <Text style={{ color: theme.muted }}>{sort.mode === "auto" && sortMode ? `Detected ${sortMode}. ` : ""}Blank values last; forced numeric puts other text after numbers. Equal values keep source order.</Text>
+      </View>}
       <Text accessibilityLiveRegion="polite" style={{ color: theme.muted }}>{message || `${selected.length} rows selected`}</Text>
     </View>
     <ScrollView horizontal style={{ flex: 1 }} contentContainerStyle={{ minWidth: "100%" }}>
@@ -56,10 +66,13 @@ export function TableView({ columns, rows, theme }: Props) {
           <Text style={{ width: 70, padding: 6, color: theme.foreground, fontWeight: "700" }}>Select</Text>
           {visible.map((index) => <View key={index} style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 4, gap: 3 }}>
             <Text accessibilityRole="header" style={{ color: theme.foreground, fontWeight: "700" }}>{columns[index] || `Column ${index + 1}`}</Text>
+            {sort?.column === index && <Text style={{ color: theme.muted }}>{sort.direction === "asc" ? "Ascending ↑" : "Descending ↓"}</Text>}
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3 }}>
               {control(`Narrow ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.max(MIN_WIDTH, (widths[index] ?? DEFAULT_WIDTH) - 40) }), (widths[index] ?? DEFAULT_WIDTH) <= MIN_WIDTH)}
               {control(`Widen ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.min(MAX_WIDTH, (widths[index] ?? DEFAULT_WIDTH) + 40) }), (widths[index] ?? DEFAULT_WIDTH) >= MAX_WIDTH)}
               {control(`Hide ${columns[index] || `Column ${index + 1}`}`, () => setHidden([...hidden, index]))}
+              {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} ascending`, () => onSort(index, "asc"), sortBusy)}
+              {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} descending`, () => onSort(index, "desc"), sortBusy)}
             </View>
           </View>)}
         </View>

@@ -10,6 +10,7 @@ import { TableView } from "./table";
 type Source = z.output<typeof source>;
 type Preview = z.output<typeof openPreview.output>;
 type Status = z.output<typeof sessionStatus.output>;
+type Sort = NonNullable<z.output<typeof pageRows.input>["sort"]>;
 
 export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspacePanelProps) {
   const [path, setPath] = useState("");
@@ -18,6 +19,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [rows, setRows] = useState<string[][]>([]);
   const [offset, setOffset] = useState(0);
   const [pageBusy, setPageBusy] = useState(false);
+  const [sort, setSort] = useState<Sort | null>(null);
+  const [sortMode, setSortMode] = useState<"numeric" | "text" | undefined>();
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [hasHeader, setHasHeader] = useState(true);
@@ -57,6 +60,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setStatus(null);
     setRows([]);
     setOffset(0);
+    setSort(null);
+    setSortMode(undefined);
     try {
       const next = await mutation.mutateAsync({ panelId: panelId.current, workspaceId, source: file, hasHeader: header, turn });
       if (!mounted.current || turn !== generation.current || currentHost.current !== host.id) {
@@ -82,16 +87,18 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     });
   }
 
-  async function navigate(nextOffset: number) {
+  async function navigate(nextOffset: number, nextSort = sort) {
     if (!preview || status?.phase !== "complete") return;
     const turn = generation.current;
     const request = ++pageRequest.current;
     setPageBusy(true);
+    if (nextSort !== sort) { setRows([]); setOffset(0); setSortMode(undefined); }
     try {
-      const page = await pageRpc({ sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit });
+      const page = await pageRpc({ sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, sort: nextSort ?? undefined });
       if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;
       setRows(page.rows);
       setOffset(page.offset);
+      setSortMode(page.sortMode);
     } catch (cause) {
       if (mounted.current && turn === generation.current && request === pageRequest.current) setMessage(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -124,6 +131,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setStatus(null);
     setRows([]);
     setOffset(0);
+    setSort(null);
+    setSortMode(undefined);
     setBusy(false);
     setPageBusy(false);
     setMessage("");
@@ -185,9 +194,12 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           <Pressable accessibilityRole="button" accessibilityLabel="Next rows" disabled={pageBusy || offset + rows.length >= status.rowCount}
             onPress={() => void navigate(offset + preview.limit)}><Text style={{ color: foreground }}>Next</Text></Pressable>
         </View>}
+        {pageBusy && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>{sort ? "Sorting all rows…" : "Loading rows…"}</Text>}
         {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
-          {rows.length === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
-          <TableView key={preview.sessionId} columns={preview.columns} rows={rows}
+          {rows.length === 0 && !pageBusy && <Text style={{ color: muted }}>No data rows in this file.</Text>}
+          <TableView key={preview.sessionId} columns={preview.columns} rows={rows} sort={sort} sortMode={sortMode} sortBusy={pageBusy || status?.phase !== "complete"}
+            onSort={(column, direction) => { const next = { column, direction, mode: sort?.column === column ? sort.mode : "auto" } as Sort; setSort(next); void navigate(0, next); }}
+            onSortMode={(mode) => { if (!sort) return; const next = { ...sort, mode }; setSort(next); void navigate(0, next); }}
             theme={{ foreground, muted, border: theme.colors.border }} /></>}
       </>}
     </View>

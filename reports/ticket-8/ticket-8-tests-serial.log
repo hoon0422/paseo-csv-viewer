@@ -1,0 +1,34 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ replacement clears an old page load and header switch applies to the next drop (23844.436501ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ two pending OS drops keep action order when locality checks resolve out of order (1124.889786ms)
+✔ opens a real CSV as a bounded read-only viewer session and replaces it (1911.192206ms)
+✔ empty CSV has an honest empty preview (67.603245ms)
+✔ workspace selection stays inside its workspace and rejects other file kinds (483.434892ms)
+✔ preview response stays at 50 data rows (345.340351ms)
+✔ prepares a file-backed session and pages beyond the preview in source order (618.61737ms)
+✔ closing a pending open and cancelling preparation cannot revive that panel (280.85816ms)
+✔ a delayed open or close cannot supersede a newer panel request (307.139643ms)
+✔ a source removed after preview ends in an actionable error, never complete (4150.859054ms)
+✔ unavailable temporary storage reports how to recover (50.455922ms)
+✔ preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes (500.245142ms)
+✔ keeps duplicate and blank headers by position and handles header-only TSV (597.552916ms)
+✔ opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF (252.123603ms)
+✔ a quoted multiline first record still defines column positions (172.445148ms)
+✔ blank and quoted-empty first records remain headers or data by position (1004.410324ms)
+✔ a blank physical record in a two-column file cannot disappear (1435.371154ms)
+✔ rejects malformed quoting, width and UTF-8 with locations, including after 50 rows (822.55897ms)
+✔ automatic numeric sort covers the whole file and keeps equal values in source order (2304.066783ms)
+✔ numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact (386.216993ms)
+✔ late nonnumeric text forces auto text order; manual numeric keeps all rows (775.587036ms)
+✔ numeric grammar and exact comparison preserve wide and high-precision original text (331.613997ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the viewer copies raw cells and selected visible columns in current row order (3470.235143ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 68410.018263

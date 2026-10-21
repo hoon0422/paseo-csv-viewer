@@ -7,13 +7,14 @@ import type { PluginHandlerContext } from "@getpaseo/plugin/server";
 import type { z } from "zod";
 import { openPreview } from "../shared/session";
 import { duckdb } from "./native";
+import { sortPage, type Sort } from "./sort";
 
 type OpenInput = z.output<typeof openPreview.input>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Phase = "preview" | "scanning" | "preparing" | "complete" | "error" | "cancelled";
 type Session = {
   id: string; panelId: string; turn: number; cancelled: boolean; phase: Phase; message: string;
-  sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null;
+  sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null; width: number;
   directory?: string; db?: DuckDBInstance; connection?: DuckDBConnection;
   opening?: Promise<unknown>; operation?: Promise<unknown>; cleanup?: Promise<void>; pageBusy?: boolean;
   interruptTimer?: ReturnType<typeof setInterval>;
@@ -118,7 +119,7 @@ export function createSessions() {
     latestTurn.set(input.panelId, turn);
     const previous = active.get(input.panelId);
     if (previous) cancel(previous);
-    const session: Session = { id: randomUUID(), panelId: input.panelId, turn, cancelled: false, phase: "preview", message: "Opening preview", sourceBytes: 0, bytesScanned: 0, percent: null, rowCount: null };
+    const session: Session = { id: randomUUID(), panelId: input.panelId, turn, cancelled: false, phase: "preview", message: "Opening preview", sourceBytes: 0, bytesScanned: 0, percent: null, rowCount: null, width: 0 };
     active.set(input.panelId, session);
     owned.add(session);
     const initialize = async () => {
@@ -143,6 +144,7 @@ export function createSessions() {
       session.sourceBytes = info.size;
       const delimiter = extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c;
       const width = await scanCsv(path, delimiter, () => current(session), true);
+      session.width = width;
       if (!current(session)) throw new Error("Session cancelled");
       const base = { sessionId: session.id, fileName: basename(path), sourceBytes: info.size, status: "preview" as const, limit: LIMIT };
       if (!width) {
@@ -221,17 +223,22 @@ export function createSessions() {
     }
     return { phase: session.phase, message: session.message, bytesScanned: session.bytesScanned, sourceBytes: session.sourceBytes, percent, rowCount: session.rowCount };
   }
-  async function page(id: string, offset: number, limit: number) {
+  async function page(id: string, offset: number, limit: number, options?: { sort?: Sort }) {
     const session = find(id);
     if (!session || session.phase !== "complete" || !session.connection) throw new Error("Rows are not ready for this session");
-    if (!Number.isSafeInteger(offset) || !Number.isSafeInteger(limit) || limit < 1 || limit > LIMIT) throw new Error("Invalid page range");
+    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > LIMIT) throw new Error("Invalid page range");
     if (session.operation && session.pageBusy) throw new Error("A page is already loading");
     session.pageBusy = true;
     const pending = (async () => {
+      if (options?.sort) {
+        const sorted = await sortPage(session.connection!, session.width, options.sort, offset, limit);
+        if (!current(session)) throw new Error("Session cancelled");
+        return { offset, ...sorted };
+      }
       const reader = await session.connection!.runAndReadAll("SELECT * FROM rows WHERE rowid >= ? ORDER BY rowid LIMIT ?", [offset, limit]);
       try {
         if (!current(session)) throw new Error("Session cancelled");
-        return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))) };
+        return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), sortMode: undefined };
       } finally { reader.closeSync(); }
     })();
     session.operation = pending;
