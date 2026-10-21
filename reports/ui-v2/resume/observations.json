@@ -1,5 +1,5 @@
 {
-  "source": "Assistant observations from Space tool responses; original logs remain in /home/cua/ui-v2-resume and could not be exported after transport failure.",
+  "source": "Initial tool observations, supplemented by the four delayed raw-file exports now committed alongside this file.",
   "space": "local:paseo-x64-ubuntu-ticket-2",
   "installedPackageSha256": "eedc60d8047ff041ff16b12fa9bd02e14f59b86e6917d04af6bdc843e715a80c",
   "disk": {
@@ -48,7 +48,8 @@
     "terminationConfirmed": false,
     "confirmedFirstSortedPageLowerBoundMs": 88309.220771,
     "laterSortStage": "Unknown: later resource-only samples do not identify the active sort or establish whether an earlier sort finished.",
-    "state": "Termination requests could not be confirmed; the owned measurement may still be running."
+    "state": "Termination requests could not be confirmed; the owned measurement may still be running.",
+    "rawPrefixSpanAfterLoadMs": 656027.3366009998
   },
   "testFirstFix": {
     "spaceRed": "path count assertion failed, 0/1",
@@ -93,5 +94,11 @@
     ],
     "refreshMatchedRows": 6025,
     "hiddenRuleMatchedRows": 6025
-  }
+  },
+  "rawExportsArrivedAfterCanceledWait": [
+    "medium.jsonl",
+    "large.jsonl",
+    "path-count-red.log",
+    "path-count-green.log"
+  ]
 }
