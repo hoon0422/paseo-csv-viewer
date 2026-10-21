@@ -122,6 +122,7 @@ test("panel-local Filter shortcuts focus the value, Enter applies, and Escape cl
     await act(async () => { zone.drop(await write("keys.csv", "id,value\n1,keep\n2,skip\n")); });
     await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
     const panel = () => tree.root.findByProps({ "aria-label": "CSV viewer" });
+    zone.focus();
     const key = async (key: string, target = zone, modifiers = {}) => {
       let prevented = false;
       await act(async () => { panel().props.onKeyDown({ key, target, ctrlKey: true, ...modifiers,
@@ -218,13 +219,15 @@ const menuNode = {
 };
 
 class DropZone {
+  parent: DropZone | null = null;
   focused = "";
   editable = false;
   isContentEditable = false;
-  closest() { return this.editable ? this : null; }
   querySelector(selector: string) { return { focus: () => { this.focused = selector; } }; }
-  focus() { this.focused = "panel"; }
   private listeners = new Map<string, (event: unknown) => void>();
+  contains(target: unknown): boolean { return target === this || target instanceof DropZone && this.contains(target.parent); }
+  closest() { return this.editable ? this : null; }
+  focus() { this.focused = "panel"; Object.assign(document, { activeElement: this }); }
   addEventListener(name: string, listener: (event: unknown) => void) { this.listeners.set(name, listener); }
   removeEventListener(name: string) { this.listeners.delete(name); }
   drag(name: string, types = ["Files"]) {
@@ -244,6 +247,16 @@ class DropZone {
   }
 }
 
+function shortcut(tree: ReactTestRenderer, target: DropZone, key: string, modifiers = {}) {
+  let prevented = false;
+  let stopped = false;
+  tree.root.findByProps({ "aria-label": "CSV viewer" }).props.onKeyDownCapture({
+    key, target, ctrlKey: true, nativeEvent: {}, ...modifiers,
+    preventDefault() { prevented = true; }, stopPropagation() { stopped = true; },
+  });
+  return { prevented, stopped };
+}
+
 async function panelTest(run: (app: {
   tree: ReactTestRenderer; zone: DropZone; file: (path: string, rows: number) => Promise<string>;
   write: (path: string, content: string) => Promise<string>;
@@ -256,7 +269,7 @@ async function panelTest(run: (app: {
   holdStatus: (next: Promise<void>) => void;
   pageCalls: () => { filter?: unknown; sort?: unknown }[];
   clipboard: () => string;
-  press: (label: string) => Promise<void>; wait: (condition: () => boolean) => Promise<void>;
+  press: (label: string, modifiers?: { ctrlKey?: boolean }) => Promise<void>; wait: (condition: () => boolean) => Promise<void>;
 }) => Promise<void>) {
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-panel-"));
   const sessions = createSessions();
@@ -323,7 +336,7 @@ async function panelTest(run: (app: {
       holdStatus: (next) => { statusGate = next; },
       pageCalls: () => pageCalls,
       clipboard: () => clipboard,
-      press: async (label) => {
+      press: async (label, modifiers = {}) => {
         const menuName = label.startsWith("Hide ") ? label.slice(5) : /^Sort column \d+ (.*) (?:ascending|descending)$/.exec(label)?.[1];
         if (menuName) await act(async () => {
           tree.root.findByProps({ "aria-label": `Column menu ${menuName}` }).props.onClick({ currentTarget: menuNode, stopPropagation() {} });
@@ -334,7 +347,7 @@ async function panelTest(run: (app: {
             let form = node.parent;
             while (form && form.type !== "form") form = form.parent;
             form?.props.onSubmit({ preventDefault() {} });
-          } else (label.startsWith("Copy cell ") ? node.props.onDoubleClick : node.props.onClick ?? node.props.onPress)({ currentTarget: menuNode, stopPropagation() {} });
+          } else (label.startsWith("Copy cell ") ? node.props.onDoubleClick : node.props.onClick ?? node.props.onPress)({ currentTarget: menuNode, ...modifiers, stopPropagation() {} });
         });
       },
       wait,
@@ -349,6 +362,148 @@ async function panelTest(run: (app: {
     Reflect.deleteProperty(globalThis, "navigator");
   }
 }
+
+test("row clicks replace, toggle and extend Selection in displayed order without checkboxes", async () => {
+  await panelTest(async ({ tree, zone, file, wait }) => {
+    await act(async () => { zone.drop(await file("selection.csv", 20)); });
+    await wait(() => tree.root.findAllByType(TableView).some((table) => table.props.rows.length === 20));
+    const selected = () => tree.root.findByType(TableView).props.presentation.selected;
+    const click = async (row: number, modifiers = {}) => {
+      await act(async () => { tree.root.findByProps({ "aria-label": `Select row ${row}` }).props.onClick(modifiers); });
+    };
+    assert.equal(tree.root.findAllByProps({ accessibilityRole: "checkbox" }).length, 0);
+    await click(4);
+    assert.deepEqual(selected(), [3]);
+    await click(2);
+    assert.deepEqual(selected(), [1]);
+    await click(5, { ctrlKey: true });
+    assert.deepEqual(selected(), [1, 4]);
+    await click(2, { ctrlKey: true });
+    assert.deepEqual(selected(), [4]);
+    await click(6, { shiftKey: true });
+    assert.deepEqual(selected(), [1, 2, 3, 4, 5]);
+    await click(4, { shiftKey: true });
+    assert.deepEqual(selected(), [3, 4, 5]);
+    assert.equal(tree.root.findByProps({ "aria-label": "Select row 4" }).props["aria-selected"], true);
+    assert.equal(tree.root.findByProps({ "aria-label": "Select row 4" }).props.style.backgroundColor, "rgba(128, 128, 128, 0.25)");
+    assert.ok(tree.root.findByProps({ "aria-label": "Source status" }).findAllByType("span").some((span) => span.children.join("") === "3 selected"));
+    Object.defineProperty(navigator, "platform", { configurable: true, value: "MacIntel" });
+    await click(1, { metaKey: true });
+    assert.deepEqual(selected(), [3, 4, 5, 0]);
+    await click(1, { ctrlKey: true });
+    assert.deepEqual(selected(), [0]);
+  });
+});
+
+test("panel shortcuts select partly visible rows and copy only while focused outside inputs during Preparation", async () => {
+  await panelTest(async ({ tree, zone, file, wait, holdStatus, clipboard, press }) => {
+    holdStatus(new Promise<void>(() => {}));
+    await act(async () => { zone.drop(await file("shortcuts.csv", 20)); });
+    await wait(() => tree.root.findAllByType(TableView).length > 0);
+    const table = () => tree.root.findByType(TableView);
+    await act(async () => { table().props.onVisibleRowsChange([1, 2]); });
+    const root = tree.root.findByProps({ "aria-label": "CSV viewer" });
+    await act(async () => { root.props.onPointerDownCapture({ target: zone }); });
+    assert.equal(document.activeElement, zone);
+    await act(async () => { assert.deepEqual(shortcut(tree, zone, "a"), { prevented: true, stopped: true }); });
+    assert.deepEqual(table().props.presentation.selected, [1, 2]);
+    await act(async () => { shortcut(tree, zone, "c"); });
+    assert.equal(clipboard(), "1\tshortcuts.csv-1\n2\tshortcuts.csv-2");
+    assert.equal(tree.root.findByProps({ "aria-label": "Toast" }).children[0], "Copied 2 rows");
+    await press("Copy selected rows");
+    assert.equal(clipboard(), "1\tshortcuts.csv-1\n2\tshortcuts.csv-2");
+    const input = new DropZone(); input.parent = zone; input.editable = true;
+    input.focus();
+    for (const key of ["a", "c", "f"]) assert.deepEqual(shortcut(tree, input, key), { prevented: false, stopped: false });
+    await act(async () => { root.props.onPointerDownCapture({ target: input }); });
+    assert.equal(document.activeElement, input);
+    input.editable = false; input.isContentEditable = true;
+    assert.equal(shortcut(tree, input, "a").prevented, false);
+    new DropZone().focus();
+    assert.equal(shortcut(tree, zone, "a").prevented, false);
+    zone.focus();
+    assert.equal(shortcut(tree, new DropZone(), "a").prevented, false);
+    for (const modifiers of [{ ctrlKey: false }, { shiftKey: true }, { altKey: true }, { repeat: true }, { defaultPrevented: true }, { nativeEvent: { isComposing: true } }]) {
+      assert.equal(shortcut(tree, zone, "a", modifiers).prevented, false);
+    }
+    assert.equal(shortcut(tree, zone, "f").prevented, false);
+    Object.defineProperty(navigator, "platform", { configurable: true, value: "MacIntel" });
+    await press("Copy selected rows");
+    assert.equal(shortcut(tree, zone, "a").prevented, false);
+    await act(async () => { shortcut(tree, zone, "A", { metaKey: true, ctrlKey: false }); });
+    assert.deepEqual(table().props.presentation.selected, [1, 2]);
+    await act(async () => { shortcut(tree, zone, "C", { metaKey: true, ctrlKey: false }); });
+    assert.equal(clipboard(), "1\tshortcuts.csv-1\n2\tshortcuts.csv-2");
+  });
+});
+
+test("Selection accepts 10,000 rows and rejects an over-limit range, toggle or select-all unchanged", async () => {
+  await panelTest(async ({ tree, zone, file, wait }) => {
+    await act(async () => { zone.drop(await file("limit.csv", 10_001)); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    const table = () => tree.root.findByType(TableView);
+    while (table().props.rows.length < 10_001) {
+      const loaded = table().props.rows.length;
+      await act(async () => { table().props.onEndReached(); });
+      await wait(() => table().props.rows.length > loaded);
+    }
+    const click = async (index: number, modifiers = {}) => {
+      await act(async () => { table().props.onSelectRow(index, modifiers); });
+    };
+    await click(0);
+    await click(10_000, { shiftKey: true });
+    assert.deepEqual(table().props.presentation.selected, [0]);
+    assert.equal(tree.root.findByProps({ "aria-label": "Toast" }).children[0], "Can't select more than 10,000 rows");
+    await click(9_999, { shiftKey: true });
+    const selection = table().props.presentation.selected;
+    assert.equal(selection.length, 10_000);
+    assert.equal(selection[0], 0);
+    assert.equal(selection.at(-1), 9_999);
+    await click(10_000, { ctrlKey: true });
+    assert.equal(table().props.presentation.selected, selection);
+    zone.focus();
+    await act(async () => {
+      table().props.onVisibleRowsChange(Array.from({ length: 10_001 }, (_, index) => index));
+      shortcut(tree, zone, "a");
+    });
+    assert.equal(table().props.presentation.selected, selection);
+    await click(9_998, { shiftKey: true });
+    assert.deepEqual(table().props.presentation.selected, [9_998, 9_999]);
+  });
+});
+
+test("source changes clear the Selection anchor and the previous viewport", async () => {
+  await panelTest(async ({ tree, zone, file, wait }) => {
+    await act(async () => { zone.drop(await file("anchor.csv", 20)); });
+    await wait(() => tree.root.findAllByType(TableView).length > 0);
+    let table = tree.root.findByType(TableView);
+    await act(async () => { table.props.onSelectRow(9, {}); table.props.onVisibleRowsChange([9, 10]); });
+    await act(async () => { zone.drop(await file("replacement.csv", 20)); });
+    await wait(() => tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value === "replacement.csv");
+    table = tree.root.findByType(TableView);
+    assert.deepEqual(table.props.presentation.selected, []);
+    await act(async () => { table.props.onSelectRow(1, { shiftKey: true }); });
+    assert.deepEqual(tree.root.findByType(TableView).props.presentation.selected, [1]);
+    zone.focus();
+    await act(async () => { shortcut(tree, zone, "a"); });
+    assert.deepEqual(tree.root.findByType(TableView).props.presentation.selected, []);
+  });
+});
+
+test("cancelling Preparation clears Selection and cannot select rows from the removed source", async () => {
+  await panelTest(async ({ tree, zone, file, wait, holdStatus, press }) => {
+    holdStatus(new Promise<void>(() => {}));
+    await act(async () => { zone.drop(await file("cancel-selection.csv", 20)); });
+    await wait(() => tree.root.findAllByType(TableView).length > 0);
+    await act(async () => { tree.root.findByType(TableView).props.onVisibleRowsChange([1, 2]); });
+    await press("Select row 1");
+    await press("Cancel preparation");
+    assert.equal(tree.root.findByProps({ "aria-label": "Copy selected rows" }).props.disabled, true);
+    zone.focus();
+    await act(async () => { shortcut(tree, zone, "a"); });
+    assert.equal(tree.root.findByProps({ "aria-label": "Copy selected rows" }).props.disabled, true);
+  });
+});
 
 test("scrolling appends 200 rows once, preserves selection and stops at the end", async () => {
   await panelTest(async ({ tree, zone, file, press, wait, pageCalls }) => {
@@ -496,7 +651,7 @@ test("filtered sorting and visible-column copy use the displayed order; clear ke
     await press("Sort column 2 visible descending");
     await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "90"));
     await press("Select row 1");
-    await press("Select row 2");
+    await press("Select row 2", { ctrlKey: true });
     await press("Copy selected rows");
     assert.equal(clipboard(), "90\tzeta\n70\tgamma");
     await clearFilter(tree);
@@ -761,7 +916,7 @@ test("Refresh preserves sort, filter, hidden columns and widths; header and sour
     assert.equal(tree.root.findByProps({ "aria-label": "Sort mode" }).props.value, "auto");
     assert.equal(cells(tree, "secret").length, 0);
     assert.equal(cell(tree, "value").props.style.width, 200);
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Select row 1" }).props.accessibilityState.checked, false);
+    assert.equal(tree.root.findByProps({ "aria-label": "Select row 1" }).props["aria-selected"], false);
     assert.ok(JSON.stringify(tree.toJSON()).includes("2 of 3 rows"));
     assert.equal((pageCalls().at(-1)?.sort as any).direction, "asc");
     await press("First record is header");
@@ -786,7 +941,7 @@ test("shell copies raw selected visible cells as TSV, and reports clipboard erro
     await wait(() => cells(tree, "note").length > 0);
     await press("Hide hidden");
     await press("Select row 2");
-    await press("Select row 1");
+    await press("Select row 1", { ctrlKey: true });
     await press("Copy selected rows");
     assert.equal(clipboard(), '001\t"猫\t""quoted""\r\nnext"\t\n002\tplain\t');
     assert.equal(tree.root.findByProps({ "aria-label": "Toast" }).children[0], "Copied 2 rows");

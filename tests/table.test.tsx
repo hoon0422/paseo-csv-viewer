@@ -41,7 +41,7 @@ function ControlledTable(props: Omit<ComponentProps<typeof TableView>, "presenta
   return <TableView {...props} presentation={presentation} onPresentation={onPresentation} onCopy={(value) => { void navigator.clipboard.writeText(value); }} />;
 }
 
-test("the table copies raw cells and exposes selection and column presentation", async () => {
+test("the table copies raw cells and exposes column presentation", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-table-"));
   const copied: string[] = [];
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async (value: string) => { copied.push(value); } } } });
@@ -73,10 +73,6 @@ test("the table copies raw cells and exposes selection and column presentation",
     assert.equal(copied.at(-1), "");
     await press("Hide hidden");
     assert.equal(tree.root.findAllByProps({ "aria-label": "Copy cell row 2, hidden, value: secret" }).length, 0);
-    await press("Select row 2");
-    await press("Select row 1");
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Select row 1" }).props.accessibilityState.checked, true);
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Select row 2" }).props.accessibilityState.checked, true);
     await press("Copy cell row 2, id, value: 001");
     assert.equal(copied.at(-1), "001");
     await act(async () => { tree.unmount(); });
@@ -207,8 +203,8 @@ test("headers expose a labelled menu with sort, clear, hide, checks and keyboard
     const trigger = () => tree.root.findByProps({ "aria-label": "Column menu id" });
     assert.equal(trigger().props["aria-haspopup"], "menu");
     assert.equal(trigger().children[0], "⋮");
-    assert.equal(tree.root.findByProps({ role: "columnheader" }).props.onClick, undefined);
-    assert.equal(tree.root.findByProps({ role: "columnheader" }).props["aria-sort"], "descending");
+    assert.equal(tree.root.findByProps({ role: "columnheader", "aria-label": "id" }).props.onClick, undefined);
+    assert.equal(tree.root.findByProps({ role: "columnheader", "aria-label": "id" }).props["aria-sort"], "descending");
     assert.equal(tree.root.findAllByProps({ "aria-label": "Hide id" }).length, 0);
     const open = async () => { await act(async () => { trigger().props.onClick({ currentTarget: rendererNode, stopPropagation() {} }); }); };
     await open();
@@ -227,7 +223,7 @@ test("headers expose a labelled menu with sort, clear, hide, checks and keyboard
     assert.equal(trigger().props["aria-expanded"], false);
     await open();
     await act(async () => { tree.root.findByProps({ "aria-label": "Hide id" }).props.onClick({ stopPropagation() {} }); });
-    assert.equal(tree.root.findAllByProps({ role: "columnheader" }).length, 0);
+    assert.equal(tree.root.findAllByProps({ role: "columnheader", "aria-label": "id" }).length, 0);
   } finally { await act(async () => { tree.unmount(); }); }
 });
 
