@@ -102,8 +102,9 @@ export function ColumnMenu({ anchor, container, name, column, theme, direction, 
     const target = anchor.getBoundingClientRect();
     const height = popup.getBoundingClientRect().height;
     const width = Math.min(220, bounds.width);
+    const top = Math.max(0, Math.min(target.bottom - bounds.top, bounds.height - height));
     setPosition({ left: Math.max(0, Math.min(target.right - bounds.left - width, bounds.width - width)),
-      top: Math.max(0, Math.min(target.bottom - bounds.top, bounds.height - height)), width, maxHeight: bounds.height });
+      top, width, maxHeight: bounds.height - top });
     popup.querySelector<HTMLButtonElement>("button:not(:disabled)")?.focus();
     const outside = (event: PointerEvent) => {
       if (!popup.contains(event.target as Node) && !anchor.contains(event.target as Node)) latestClose.current();
