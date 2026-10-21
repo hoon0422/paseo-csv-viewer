@@ -1,0 +1,104 @@
+{
+  "source": "Initial tool observations, supplemented by the four delayed raw-file exports now committed alongside this file.",
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "installedPackageSha256": "eedc60d8047ff041ff16b12fa9bd02e14f59b86e6917d04af6bdc843e715a80c",
+  "disk": {
+    "beforeMediumBytes": 6059626496,
+    "before5GBBytes": 5758476288,
+    "lastConfirmedBytes": 4802945024,
+    "tableBudgetBytes": 2000000000,
+    "orderBudgetBytes": 1500000000,
+    "spillAllowanceBytes": 1000000000,
+    "runnerMinimumStartBytes": 5000000000,
+    "runnerStopFreeBytes": 750000000
+  },
+  "medium": {
+    "bytes": 300000000,
+    "dataRows": 2999999,
+    "previewToAllReadyElapsedMs": 26982.644959999998,
+    "manualNumericFirstPageMs": 20598.377795000008,
+    "observedRetainedNumericPages": [
+      {
+        "page": 2,
+        "ms": 368.06440000000293
+      },
+      {
+        "page": 3,
+        "ms": 342.44044200000644
+      },
+      {
+        "page": 4,
+        "ms": 506.62317500000063
+      },
+      {
+        "page": 5,
+        "ms": 367.50740199998836
+      }
+    ],
+    "exitCode": 0
+  },
+  "large": {
+    "bytes": 5000000000,
+    "dataRows": 49999999,
+    "previewElapsedMs": 1827.186377,
+    "allReadyElapsedMs": 309979.46906800003,
+    "firstSortedPage": "not observed before transport failure",
+    "lastObservedResourceElapsedMs": 398288.689839,
+    "lastObservedRssBytes": 1631424512,
+    "terminationConfirmed": false,
+    "confirmedFirstSortedPageLowerBoundMs": 88309.220771,
+    "laterSortStage": "Unknown: later resource-only samples do not identify the active sort or establish whether an earlier sort finished.",
+    "state": "Termination requests could not be confirmed; the owned measurement may still be running.",
+    "rawPrefixSpanAfterLoadMs": 656027.3366009998
+  },
+  "testFirstFix": {
+    "spaceRed": "path count assertion failed, 0/1",
+    "spaceGreen": "1/1 passed; 8030.610248 ms test duration",
+    "commit": "ff199b665dc22a420f5d5964196a08841dc2e5e8"
+  },
+  "recovery": {
+    "firstDesktopRestartRecovered": true,
+    "daemonRestarted": false,
+    "vmRestarted": false,
+    "laterDesktopTermRequestAccepted": true,
+    "laterDesktopExitConfirmed": true,
+    "laterDesktopExitEvidence": "ps -p 38888 returned no PID in the 2026-10-21 17:33:40 UTC Space readback"
+  },
+  "stopRequest": {
+    "content": [
+      {
+        "type": "text",
+        "text": "error: transport error: http2 error (operation timed out)"
+      }
+    ],
+    "structuredContent": {
+      "error": {
+        "kind": "env",
+        "message": "transport error: http2 error (operation timed out)"
+      }
+    },
+    "isError": true
+  },
+  "memoryAtLastReadback": {
+    "utc": "2026-10-21T17:33:40Z",
+    "memAvailableKB": 96712,
+    "benchmarkRssBytes": 2992631808,
+    "freeTmpBytes": 4801884160
+  },
+  "domGestureReadbacks": {
+    "resizeMinimumPx": 40,
+    "fitNotePx": 600,
+    "refreshRetainedWidths": [
+      40,
+      600
+    ],
+    "refreshMatchedRows": 6025,
+    "hiddenRuleMatchedRows": 6025
+  },
+  "rawExportsArrivedAfterCanceledWait": [
+    "medium.jsonl",
+    "large.jsonl",
+    "path-count-red.log",
+    "path-count-green.log"
+  ]
+}

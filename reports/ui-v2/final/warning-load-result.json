@@ -1,0 +1,253 @@
+{
+  "events": [
+    {
+      "kind": "native OK pointerdown",
+      "ms": 1413094,
+      "utc": "2026-10-21T19:57:51.933Z",
+      "trusted": true
+    },
+    {
+      "status": "1 of 30,050 rows1 selected646.1 kBOpening preview…",
+      "path": "ui-v2-30050.csv",
+      "elapsedMs": 107.60000000149012,
+      "utc": "2026-10-21T19:57:52.041Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing…Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 819,
+      "utc": "2026-10-21T19:57:52.752Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 0%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 1102.5,
+      "utc": "2026-10-21T19:57:53.036Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 2%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 1356.7000000029802,
+      "utc": "2026-10-21T19:57:53.290Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 4%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 1643.2000000029802,
+      "utc": "2026-10-21T19:57:53.576Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 6%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 2641.60000000149,
+      "utc": "2026-10-21T19:57:54.575Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 8%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 3242.10000000149,
+      "utc": "2026-10-21T19:57:55.175Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 11%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 4241.20000000298,
+      "utc": "2026-10-21T19:57:56.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 13%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 4641.70000000298,
+      "utc": "2026-10-21T19:57:56.575Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 17%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 5658,
+      "utc": "2026-10-21T19:57:57.591Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 21%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 6652,
+      "utc": "2026-10-21T19:57:58.585Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 23%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 7240.29999999702,
+      "utc": "2026-10-21T19:57:59.173Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 27%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 8240.39999999851,
+      "utc": "2026-10-21T19:58:00.173Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 29%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 9241.10000000149,
+      "utc": "2026-10-21T19:58:01.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 30%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 9641,
+      "utc": "2026-10-21T19:58:01.574Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 36%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 10640.89999999851,
+      "utc": "2026-10-21T19:58:02.574Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 40%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 12240.70000000298,
+      "utc": "2026-10-21T19:58:04.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 44%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 13240.5,
+      "utc": "2026-10-21T19:58:05.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 46%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 13647.29999999702,
+      "utc": "2026-10-21T19:58:05.580Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 49%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 14641.70000000298,
+      "utc": "2026-10-21T19:58:06.575Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 53%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 15641.10000000149,
+      "utc": "2026-10-21T19:58:07.574Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 55%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 16641.29999999702,
+      "utc": "2026-10-21T19:58:08.574Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 59%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 17240.5,
+      "utc": "2026-10-21T19:58:09.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 61%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 18241.39999999851,
+      "utc": "2026-10-21T19:58:10.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 63%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 18643.20000000298,
+      "utc": "2026-10-21T19:58:10.576Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 65%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 19240.60000000149,
+      "utc": "2026-10-21T19:58:11.174Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 68%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 19642.89999999851,
+      "utc": "2026-10-21T19:58:11.576Z"
+    },
+    {
+      "status": "Showing 50 rows0 selected500.0 MBPreparing 70%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 20645.10000000149,
+      "utc": "2026-10-21T19:58:12.578Z"
+    },
+    {
+      "status": "Showing 50 rows1 selected500.0 MBPreparing 70%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 21152.29999999702,
+      "utc": "2026-10-21T19:58:13.085Z"
+    },
+    {
+      "status": "Showing 50 rows1 selected500.0 MBPreparing 72%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 21242.10000000149,
+      "utc": "2026-10-21T19:58:13.175Z"
+    },
+    {
+      "status": "Showing 50 rows1 selected500.0 MBPreparing 76%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 22240.70000000298,
+      "utc": "2026-10-21T19:58:14.174Z"
+    },
+    {
+      "status": "Showing 50 rows1 selected500.0 MBPreparing 78%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 22653.5,
+      "utc": "2026-10-21T19:58:14.587Z"
+    },
+    {
+      "status": "Showing 50 rows1 selected500.0 MBPreparing 82%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 23641.5,
+      "utc": "2026-10-21T19:58:15.575Z"
+    },
+    {
+      "status": "Showing 50 rows1 selected500.0 MBPreparing 84%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 24640.70000000298,
+      "utc": "2026-10-21T19:58:16.574Z"
+    },
+    {
+      "status": "Showing 50 rows17 selected500.0 MBPreparing 84%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 24929.70000000298,
+      "utc": "2026-10-21T19:58:16.863Z"
+    },
+    {
+      "status": "Showing 50 rows17 selected500.0 MBPreparing 85%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 25241.60000000149,
+      "utc": "2026-10-21T19:58:17.175Z"
+    },
+    {
+      "status": "Showing 50 rows17 selected500.0 MBPreparing 89%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 26241.60000000149,
+      "utc": "2026-10-21T19:58:18.175Z"
+    },
+    {
+      "status": "Showing 50 rows17 selected500.0 MBPreparing 91%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 26643.70000000298,
+      "utc": "2026-10-21T19:58:18.577Z"
+    },
+    {
+      "status": "Showing 50 rows17 selected500.0 MBPreparing 95%Cancel",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 27662.70000000298,
+      "utc": "2026-10-21T19:58:19.596Z"
+    },
+    {
+      "status": "Showing 50 of 5,000,000 rows17 selected500.0 MBReady",
+      "path": "/home/cua/ui-v2-final/over-500mb.csv",
+      "elapsedMs": 28686.10000000149,
+      "utc": "2026-10-21T19:58:20.619Z"
+    }
+  ],
+  "totalMs": 28689.79999999702,
+  "completed": true,
+  "note": "Native OK pointerdown to DOM status Ready; 200 ms polling; emulated Cua reference only"
+}

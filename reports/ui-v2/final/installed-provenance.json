@@ -1,0 +1,32 @@
+{
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "packageDirectory": "/home/cua/ui-v2-final/package",
+  "artifactSHA256": "10ab7e52e582c4321da29406b2b49f9a505447823fdc4598207803d0984f1fda",
+  "files": {
+    "npm-shrinkwrap.json": "d85566a90e01a984f9ffd8687ac6d5d8ed08295f8cf205bd65bdc25583c65d33",
+    "OVERVIEW.md": "9fee1ad6b5e709ee89f7126da30410294e57651419e3f7d476dc532d2dead265",
+    "index.client.tsx": "a9a0b05942f874b03a8447faa47735fa1f0a6192fd71eb2f6e4999f7d0898d29",
+    "index.server.ts": "24bc9fc37aed95b463449c219b77093132bd111b9563abfde78345b19c4226b7",
+    "README.md": "2432153a3f638810a037f7f55227cc211e972a2f0804fa9fd5bf0cf2641e3572",
+    "paseo-plugin.json": "edeb30e27661a9870df3bee0334ff18ee76acb1b083f4ac8b9b9e4b9fae60041",
+    "package.json": "6e16c823602a7ce60ce0e2f72ad63ef46cf6a4ec7c919be5e53a0afd3d0db993",
+    "server/native.ts": "bdeb88cce2e54e2a6842ee09952477f3dd79f41e7617772c02d5a464b5abd5ca",
+    "server/filter.ts": "00317a76ebd07cbe8190bcba290c576f1f5f4f09e83f7a7043cc4db925089eac",
+    "server/session.ts": "c8d27a1f7d6ee7f67c011ae30ef8d09199499bc3df1dc449e2d85c9903f7941c",
+    "server/sort.ts": "19b5504090c2d5aa7f28e9b154091253a5324eefe1cb9c22f0799f6232d09d27",
+    "shared/session.ts": "aea49e90c10b43b6ff8c5f06320d5a97f9e6e1a23af8774446d3a08febbef5e2",
+    "assets/screenshot.png": "6c36deb1f29a1ecb2ed1f10c7b96559a7b7ade1773ef1f22a6976a5025214942",
+    "client/columns.tsx": "3779e70ce662e26309e4832b0f95416a38136e5ef929e8933200f9a5c7512425",
+    "client/panel.tsx": "6a120256ab34a4db878e790efde1ccff186a3845192ebce671139ac5f2c54e8c",
+    "client/drop.ts": "ca385428c1f6d152b082e4112e158d223d8f238d09d7cd18a15bf99710f886ae",
+    "client/filter.tsx": "bcc2ac5e5b2de31c602beba52bfb2165a1d9a17ac52912f8791f3d85272e3de8",
+    "client/table.tsx": "8e98010840c1a1a0776c4e55a2f2f8cfe9a331b02a834f1c8a86c8338f4b5cd9"
+  },
+  "desktopPid": 39987,
+  "desktopWindow": 18874372,
+  "daemonHome": "/home/cua/.paseo-x64-ticket-2",
+  "daemonPort": 6779,
+  "version": "official Paseo 0.12.0",
+  "ownedBenchmarkProcesses": [],
+  "note": "Exact argv process check at 19:34 UTC found no matching benchmark; no benchmark was killed or rerun."
+}

@@ -1,0 +1,84 @@
+// Run through the official desktop's DevTools console; public DOM controls only.
+// Native gestures are recorded separately. No React state or RPC is bypassed.
+(async () => {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const root = document.querySelector('[aria-label="CSV viewer"]');
+  const q = label => root.querySelector(`[aria-label="${label}"]`);
+  const allRows = () => [...root.querySelectorAll('[role="row"]')];
+  const status = () => q('Source status').textContent;
+  const results = window.t20 = [];
+  const assert = (ok, why) => { if (!ok) throw Error(why); };
+  const wait = async (fn, ms = 120000) => { const end = performance.now() + ms; while (!fn()) { assert(performance.now() < end, 'Timed out: ' + fn); await sleep(50); } };
+  const checkpoint = async (name, detail = {}) => { results.push({name, utc: new Date().toISOString(), status: status(), ...detail}); document.title = 'T20-' + name; await sleep(2500); };
+  const set = (el, value) => { const proto = el.tagName === 'SELECT' ? HTMLSelectElement.prototype : HTMLInputElement.prototype; Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, value); el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', {bubbles:true})); };
+  const key = (el, key, modifiers = {}) => el.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles:true, ...modifiers}));
+  const click = (el, modifiers = {}) => { assert(el, 'Missing click target'); el.dispatchEvent(new MouseEvent('click', {bubbles:true, ...modifiers})); };
+  const ready = () => /Ready/.test(status());
+  const open = async path => { set(q('Workspace file path'), path); await sleep(50); key(q('Workspace file path'), 'Enter'); await sleep(100); await wait(() => ready() && q('Workspace file path').value === path.replace('/home/cua/ticket-10/fixtures/', '')); };
+  const apply = async () => { click(q('Apply filter')); await sleep(100); await wait(ready); };
+  const scroller = () => { let el = allRows()[0]; while (el && !(/auto|scroll/.test(getComputedStyle(el).overflowY) && el.clientHeight > 0 && el.scrollHeight > el.clientHeight)) el = el.parentElement; assert(el, 'Missing row scroller'); return el; };
+  try {
+    await sleep(5000); // Close DevTools before the checkpoints start.
+    await checkpoint('08-empty', {placeholder:q('Workspace file path').placeholder, icons:[...root.querySelectorAll('button[title],select[title]')].map(el => ({label:el.getAttribute('aria-label'),title:el.title,disabled:el.disabled}))});
+    await open('ui-v2.csv');
+    assert(allRows()[0].textContent.includes('00000'), 'First source row');
+    await checkpoint('09-path-relative');
+    set(q('Workspace file path'), 'discard.csv'); await sleep(30); key(q('Workspace file path'), 'Escape'); await sleep(50);
+    assert(q('Workspace file path').value === 'ui-v2.csv', 'Escape restore');
+    set(q('Workspace file path'), 'blur.csv'); await sleep(30); q('Workspace file path').focus(); q('Workspace file path').blur(); await sleep(100);
+    assert(q('Workspace file path').value === 'ui-v2.csv', 'Blur restore');
+    set(q('Workspace file path'), 'absent-ui-v2.csv'); await sleep(30); key(q('Workspace file path'), 'Enter'); await wait(() => root.querySelector('[role="alert"]'));
+    assert(allRows()[0].textContent.includes('00000'), 'Error preserves table'); await checkpoint('10-path-error');
+    await open('/home/cua/ticket-10/fixtures/ui-v2.csv');
+    assert(q('Workspace file path').value === 'ui-v2.csv', 'Inside absolute normalized to relative');
+    await checkpoint('11-path-restored');
+    for (const n of [1,2]) q(`Toggle row ${n} expansion`).dispatchEvent(new MouseEvent('dblclick',{bubbles:true}));
+    await sleep(100); assert(q('Toggle row 1 expansion').getAttribute('aria-expanded') === 'true', 'Expand row');
+    await checkpoint('12-expanded-rows', {expanded: [1,2].map(n => q(`Toggle row ${n} expansion`).getAttribute('aria-expanded'))});
+    q('Toggle row 1 expansion').dispatchEvent(new MouseEvent('dblclick',{bubbles:true})); await sleep(50);
+    assert(q('Toggle row 1 expansion').getAttribute('aria-expanded') === 'false', 'Collapse row');
+    click(q('Column menu note')); await sleep(50); click(q('Hide column')); await sleep(100);
+    assert(!q('Column menu note'), 'Hide note'); await checkpoint('13-hidden-badge');
+    click(q('Filter')); await sleep(50); assert(document.activeElement === q('Filter value 1'), 'Filter focuses value');
+    set(q('Filter value 1'), 'secret'); await sleep(50); await apply(); assert(/0 of 12,050 rows/.test(status()), 'Any column skips hidden note');
+    await checkpoint('14-any-visible');
+    set(q('Filter column 1'), '2'); await sleep(50); await apply(); assert(/1 of 12,050 rows/.test(status()), 'Named hidden note applies');
+    await checkpoint('15-hidden-rule', {columns:[...q('Filter column 1').options].map(o=>o.text)});
+    click(q('Reveal hidden columns')); await sleep(50);
+    key(q('Filter value 1'), 'Escape'); await sleep(100); await wait(ready);
+    assert(!q('Filter rules'), 'Escape closes filter');
+    click(q('Filter')); await sleep(50);
+    set(q('Filter column 1'), '0'); set(q('Filter operator 1'), 'between'); await sleep(50);
+    set(q('Filter value 1'), '2'); set(q('Filter upper value 1'), '4'); await sleep(50); await apply();
+    assert(/3 of 12,050 rows/.test(status()), 'Numeric between'); await checkpoint('16-between');
+    click(q('Add filter rule after 1')); await sleep(50);
+    set(q('Filter column 2'), '1'); set(q('Filter value 2'), 'ALPHA'); await sleep(50); await apply();
+    await checkpoint('17-match-all-casefold');
+    click(q('Case sensitive')); await sleep(30); await apply(); assert(/0 of 12,050 rows/.test(status()), 'Case-sensitive filter'); await checkpoint('18-case-sensitive');
+    set(q('Match filter rules'), 'any'); await sleep(30); await apply(); assert(/3 of 12,050 rows/.test(status()), 'Match any'); await checkpoint('19-match-any');
+    click(q('Enable filter rule 1')); await sleep(100); await wait(ready); assert(/0 of 12,050 rows/.test(status()), 'Checkbox applies immediately'); await checkpoint('20-disabled-rule');
+    set(q('Filter value 2'), ''); await sleep(30); await apply(); assert(q('Filter value 2').getAttribute('aria-invalid') === 'true', 'Incomplete red border'); assert(/12,050 rows/.test(status()), 'Incomplete rule ignored'); await checkpoint('21-incomplete-rule');
+    set(q('Filter operator 2'), 'matches regex'); await sleep(30); set(q('Filter value 2'), '['); await sleep(30); click(q('Apply filter')); await wait(() => root.querySelector('[role="alert"]')); await checkpoint('22-regex-error');
+    set(q('Filter value 2'), '^alpha$'); await sleep(30); click(q('Case sensitive')); await sleep(30); await apply(); assert(!root.querySelector('[role="alert"]'), 'Regex recovery'); await checkpoint('23-regex-recovery');
+    key(q('Filter value 2'), 'Escape'); await sleep(100); await wait(ready);
+    click(q('Column menu id')); await sleep(30); click(q('Sort descending')); await sleep(100); await wait(ready);
+    assert(allRows()[0].textContent.includes('12049'), 'Sort descending'); assert(q('Toggle row 1 expansion').getAttribute('aria-expanded') === 'false', 'Sort clears expansion'); await checkpoint('24-sort-reset');
+    click(q('Column menu id')); await sleep(30); await checkpoint('25-sort-check'); click(q('Clear sort')); await sleep(100); await wait(ready);
+    root.focus(); key(root, 'a', {ctrlKey:true}); await sleep(100);
+    const viewport = scroller().getBoundingClientRect();
+    const visible = allRows().filter(el => {const b=el.getBoundingClientRect(); return b.bottom > viewport.top && b.top < viewport.bottom;}).length;
+    assert(status().includes(visible + ' selected'), 'Ctrl+A visible only'); await checkpoint('26-visible-selection',{visible});
+    click(q('Copy selected rows')); await sleep(50); await checkpoint('27-copy-toast');
+    results.push({name:'copied-tsv',value:await navigator.clipboard.readText()});
+    click(allRows()[0]); await sleep(50);
+    let loaded = () => Number((status().match(/Showing ([\d,]+) of/) || [,'12050'])[1].replaceAll(',',''));
+    let scrolls = 0;
+    while (loaded() <= 10200) { const before=loaded(); const el=scroller(); el.scrollTop=el.scrollHeight; await wait(() => loaded()>before); scrolls++; }
+    await checkpoint('28-infinite-scroll', {loaded:loaded(),scrolls,mounted:allRows().length});
+    let el=scroller(); el.scrollTop=0; await wait(() => q('Select row 1')); click(q('Select row 1')); await sleep(50);
+    el=scroller(); el.scrollTop=el.scrollHeight; await sleep(500); const last=allRows().at(-1); assert(Number(last.getAttribute('aria-label').match(/\d+/)[0])>10000,'Over-limit range target');
+    click(last,{shiftKey:true}); await sleep(50); assert(/1 selected/.test(status()),'Over-limit preserves selection'); assert(q('Toast')?.textContent.includes("10,000"), 'Over-limit toast'); await checkpoint('29-selection-limit');
+    results.push({name:'done',utc:new Date().toISOString()}); document.title='T20-30-done';
+  } catch(error) { results.push({name:'FAILED',message:String(error),stack:error.stack,status:status()}); document.title='T20-FAILED'; console.error(error); }
+  console.log('T20 results', JSON.stringify(results));
+})();

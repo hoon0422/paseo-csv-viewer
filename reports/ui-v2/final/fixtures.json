@@ -1,0 +1,17 @@
+{
+  "/home/cua/ticket-10/fixtures/ui-v2.csv": {
+    "bytes": 240573,
+    "sha256": "d6f5ef7054f03fff969c4286b18fafd240b1dd2a497fdc84b51c3a7fc7942ea6",
+    "lines": 12055
+  },
+  "/home/cua/ticket-10/fixtures/ui-v2-30050.csv": {
+    "bytes": 646089,
+    "sha256": "91717b66a04119b1893c79d8a1acdff6939a3dc75fb791ea3c936a4c673ba009",
+    "lines": 30051
+  },
+  "/home/cua/ui-v2-final/over-500mb.csv": {
+    "bytes": 500000100,
+    "sha256": "a9fae7bd106b8c5a637969d3ab54f5a4f1cc4bb22a73842b81de4f71fa11d51f",
+    "method": "First 500000100 bytes of retained fixed-width 100-byte-line synthetic large.csv; 5000000 data rows; not a 5 GB run"
+  }
+}

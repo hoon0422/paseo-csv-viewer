@@ -1,0 +1,15 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "error: transport error: http2 error (operation timed out)"
+    }
+  ],
+  "structuredContent": {
+    "error": {
+      "kind": "env",
+      "message": "transport error: http2 error (operation timed out)"
+    }
+  },
+  "isError": true
+}

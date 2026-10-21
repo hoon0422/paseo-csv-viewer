@@ -1,0 +1,190 @@
+
+> paseo-csv-viewer@0.1.0 check
+> npm run typecheck
+
+
+> paseo-csv-viewer@0.1.0 typecheck
+> tsc --noEmit
+
+
+> paseo-csv-viewer@0.1.0 test
+> tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts*
+
+✔ Any column filter covers visible columns while a rule can name a hidden column (4517.203063ms)
+✔ Any column negated text operators require no visible cell to match (832.808668ms)
+✔ Any column is empty only when all visible cells are empty, and is not empty when any has content (418.596838ms)
+✔ Any column positive text, regex and numeric operators match at least one visible cell (985.569972ms)
+✔ text filter operators combine rules, ignore incomplete rules and honor case sensitivity (724.674449ms)
+✔ numeric filter operators compare DOUBLE values using the sort numeric grammar (625.56225ms)
+✔ regex filters use case mode and report invalid patterns without failing the session (348.986697ms)
+✔ filter values are literal parameters and malformed rule inputs are rejected at both RPCs (358.559717ms)
+✔ filtered cursor pages follow the full sort, keep counts and rebuild for changed rules or sort (606.40221ms)
+✔ a new filter cancels a running build and the cancelled filter can be retried (6960.091858ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter rules wait for Apply, and rule checkboxes reapply immediately (3464.29782ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter rule inputs keep their identity when edited and when a preceding rule is removed (1682.154306ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter rules combine numeric ranges, empty cells, match mode and case sensitivity (4095.484032ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Any column follows visibility while named hidden-column rules keep applying (5180.463127ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ panel-local Filter shortcuts focus the value, Enter applies, and Escape closes and clears (1948.926801ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ a regex error stays readable and a corrected filter recovers (2075.117041ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ preparation disables sort and filter controls; Escape still clears the retained filter (2821.887487ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ row clicks replace, toggle and extend Selection in displayed order without checkboxes (3905.634576ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ panel shortcuts select partly visible rows and copy only while focused outside inputs during Preparation (1093.740117ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Selection accepts 10,000 rows and rejects an over-limit range, toggle or select-all unchanged (13919.535818ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ source changes clear the Selection anchor and the previous viewport (1057.868028ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cancelling Preparation clears Selection and cannot select rows from the removed source (516.86299ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ scrolling appends 200 rows once, preserves selection and stops at the end (1768.409386ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ sorting and filtering status ends after the first page and stays Ready while appending (2431.000648ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cancelling an unfiltered sort restores source order and supersedes its page (1300.261483ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cancelling a running sort preserves the applied filter and ignores the superseded sort page (1452.420771ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cancelling a running filter preserves the applied sort and ignores the superseded filter page (1450.445764ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filtered cursor pages append across gaps and sort or filter changes collapse expanded rows (4180.327953ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ a pending append cannot mix into a new sort or filter (3521.857684ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ scrolling during preparation continues from the same rows when ready (8417.586912ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ preview scrolling does not wait for the first preparation status response (876.866653ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filtered sorting and visible-column copy use the displayed order; clear keeps sorting (2566.883833ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ replacement clears an old page load and header switch applies to the next drop (2382.655479ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ two pending OS drops keep action order when locality checks resolve out of order (472.843888ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ an OS drop resolving after panel unload cannot open a session (107.816202ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cross-host and malformed Paseo Files drops explain rejection without opening a source (156.979295ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+An update to VirtualizedList inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+✔ panel shows a source change notice and Refresh loads the selected file (3450.877471ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+An update to VirtualizedList inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+✔ a newer selection wins over a pending Refresh (4092.564656ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter shows pending, hidden-column matches and no results; stale filter cannot replace cleared rows (5635.35651ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the path bar opens on Enter, restores edits and keeps the current table after an error (2644.542919ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the shell owns compact controls, counts, sort mode, hidden columns and short-lived copy toasts (3934.471304ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ whole-panel file drops show an overlay without flickering over children or accepting text drags (816.151513ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Refresh preserves sort, filter, hidden columns and widths; header and source changes reset them (3765.058969ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ shell copies raw selected visible cells as TSV, and reports clipboard errors (525.573971ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the path bar keeps an outside source absolute and working after a rejected path (484.627895ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Clear sort from a column menu keeps the applied filter and resets selection and expansion (2211.588083ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ choosing another column sort supersedes one still being prepared (1419.675618ms)
+✔ opens a real CSV as a bounded read-only viewer session and replaces it (2885.495291ms)
+✔ empty CSV has an honest empty preview (22.573041ms)
+✔ workspace selection stays inside its workspace and rejects other file kinds (267.060489ms)
+✔ preview response stays at 50 data rows (419.517769ms)
+✔ prepares a file-backed session and pages beyond the preview in source order (926.605696ms)
+✖ scrolls beyond the preview during preparation without interrupting the load (8000.317609ms)
+✔ superseding direct CSV pages leaves preparation running and cancellation removes storage (3017.621492ms)
+✔ a filtered page starts promptly and can be polled through completion (626.69114ms)
+✔ rejected stale and duplicate starts leave the active filtered page pollable (525.020954ms)
+✔ filters all visible prepared columns beyond preview as literal Unicode text and clears to source order (619.292125ms)
+✔ new filter, source replacement and cancellation supersede an in-flight filter (740.890346ms)
+✔ closing a pending open and cancelling preparation cannot revive that panel (298.854543ms)
+✔ a delayed open or close cannot supersede a newer panel request (242.695441ms)
+✔ a source removed after preview ends in an actionable error, never complete (1151.545765ms)
+✔ unavailable temporary storage reports how to recover (57.703244ms)
+✔ preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes (381.013007ms)
+✔ keeps duplicate and blank headers by position and handles header-only TSV (669.707227ms)
+✔ opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF (249.958731ms)
+✔ a quoted multiline first record still defines column positions (210.733243ms)
+✔ skips leading and single-column blank lines but keeps quoted empty values (1741.556262ms)
+✔ skips blank lines before and after the preview while preserving quoted newlines (448.606155ms)
+✔ rejects malformed quoting, width and UTF-8 with locations, including after 50 rows (599.371199ms)
+✔ automatic numeric sort covers the whole file and keeps equal values in source order (1630.014938ms)
+✔ consecutive 200-row pages append after a known sort position with stable ties (666.260409ms)
+✔ closing a sorted session removes its temporary storage and leaves the source untouched (432.640426ms)
+✔ numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact (397.66688ms)
+✔ late nonnumeric text forces auto text order; manual numeric keeps all rows (1018.633907ms)
+✔ numeric DOUBLE comparison keeps rounded ties in file order and preserves original text (604.720239ms)
+✔ DOUBLE overflow and underflow stay numeric, special spellings stay text, and blanks keep file order (622.798017ms)
+✔ filter and sort share a filtered page count while auto inference still sees late text (1281.857597ms)
+✔ new sort requests cancel a build, and clearing sort restores file order (24156.562272ms)
+✔ sorted filter keeps the completed snapshot stale until Refresh creates a new session (1170.156732ms)
+✔ external edits leave a completed snapshot stale until an explicit new session (2768.572748ms)
+✔ append, truncation, atomic replacement, deletion, and loss of access mark only their own snapshot stale (2021.427831ms)
+✔ an edit during preparation invalidates the preview instead of completing mixed rows (242.14211ms)
+✔ a source replacement during filtering returns only the completed snapshot (1454.733674ms)
+✔ superseded opens and closes release session storage without reviving an old view (309.378321ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ a cell copies its raw value only on double-click or keyboard activation (489.792285ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the table copies raw cells and exposes column presentation (2053.841096ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ long column names keep visible controls compact and full accessible labels (213.012527ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the table windows loaded rows and independently expands multiline values at the row edge (733.200493ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ column edges drag with a 40 px minimum, keep manual widths above 600 and release capture (137.9104ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ double-click fit measures loaded cells outside the render window, multiline values and the header (651.393456ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ headers expose a labelled menu with sort, clear, hide, checks and keyboard dismissal (755.809256ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the column menu stays inside a compact panel, moves focus and dismisses cleanly (539.173768ms)
+✔ preparation disables sort menu actions while hide, resize and cell copy stay available (235.897278ms)
+ℹ tests 93
+ℹ suites 0
+ℹ pass 92
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 228213.46515
+
+✖ failing tests:
+
+test at tests/session.test.ts:3:959
+✖ scrolls beyond the preview during preparation without interrupting the load (8000.317609ms)
+  Error: Session did not settle
+      at settled (/home/cua/ui-v2-source/tests/session.test.ts:16:9)
+      at async TestContext.<anonymous> (/home/cua/ui-v2-source/tests/session.test.ts:162:22)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

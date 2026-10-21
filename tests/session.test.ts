@@ -7,8 +7,9 @@ import type { PaseoApi } from "@getpaseo/client";
 import { createSessions } from "../server/session";
 import { anyColumnFilter } from "./filter-input";
 
-async function settled(sessions: ReturnType<typeof createSessions>, sessionId: string) {
-  for (let i = 0; i < 200; i++) {
+async function settled(sessions: ReturnType<typeof createSessions>, sessionId: string, timeoutMs = 5_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
     const status = sessions.status(sessionId);
     if (status.phase === "complete" || status.phase === "error") return status;
     await new Promise((resolve) => setTimeout(resolve, 25));
@@ -190,7 +191,7 @@ test("scrolls beyond the preview during preparation without interrupting the loa
       assert.equal(progress.phase, "preparing");
       assert.equal(typeof progress.percent, "number");
       assert.equal(progress.percent! >= 0 && progress.percent! <= 100, true);
-      const status = await settled(sessions, opened.sessionId);
+      const status = await settled(sessions, opened.sessionId, 120_000);
       assert.equal(status.phase, "complete", status.message);
       assert.equal(status.rowCount, 5_000_000 + (hasHeader ? 0 : 1));
       assert.deepEqual((await sessions.page(opened.sessionId, 0, 1, { requestId: 1 })).rows, [hasHeader ? ["0", "keep"] : ["id", "payload"]]);

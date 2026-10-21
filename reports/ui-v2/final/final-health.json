@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-21T20:00:05.706830+00:00",
+  "owned5GBBenchmarkProcesses": [],
+  "memAvailableKB": 2624636,
+  "diskAvailableBytes": 4225859584,
+  "stoppedOwnedMonitorPids": [
+    40515,
+    41143
+  ],
+  "vmRestarted": false,
+  "newVMCreated": false,
+  "existingEvidenceDeleted": false
+}

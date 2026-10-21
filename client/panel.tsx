@@ -272,7 +272,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   useEffect(() => {
     if (!preview || status?.phase !== "complete" || busy || !preview.columns.length) return;
     if (queryDirty.current) void navigate();
-    else setTotalRows(status.rowCount);
+    else setTotalRows((current) => current ?? status.rowCount);
   }, [preview?.sessionId, status?.phase, busy]);
 
   useEffect(() => {
