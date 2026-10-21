@@ -3,6 +3,11 @@
   "branch": "ticket/7-search",
   "testedCodeSha": "ef2c27a8f5c24b7b82780eb7a7e3122f8e74e78b",
   "baseSha": "ecf4ccd74e5acbe8b078663b6d7048861981146a",
+  "integrationMerge": {
+    "tipAtCheck": "ecf4ccd74e5acbe8b078663b6d7048861981146a",
+    "result": "Already up to date",
+    "note": "Tickets 8 and 9 were not yet on integration/csv-viewer at this check."
+  },
   "space": "local:paseo-x64-ubuntu-ticket-2",
   "runtime": {
     "os": "Ubuntu 24.04.5 LTS x86_64",
