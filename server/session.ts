@@ -234,12 +234,18 @@ export function createSessions() {
       requireSource(session);
       session.phase = "preparing";
       session.message = "Preparing disk-backed rows";
-      const result = await session.connection!.run(`CREATE TABLE rows AS SELECT * FROM ${from}${hasHeader ? " OFFSET 1" : ""}`, params);
+      const columns = Array.from({ length: session.width! }, (_, i) => `column${i}`).join(", ");
+      const result = await session.connection!.run(`CREATE TABLE rows AS SELECT *, row_number() OVER () - 1 AS source_row,
+        to_json([${columns}])::VARCHAR AS source_cells FROM (SELECT * FROM ${from}${hasHeader ? " OFFSET 1" : ""})`, params);
       result.closeSync();
       requireSource(session);
       if (!current(session)) return;
       const count = await session.connection!.runAndReadAll("SELECT COUNT(*) FROM rows");
       try { session.rowCount = Number(count.getRows()[0][0]); } finally { count.closeSync(); }
+      requireSource(session);
+      if (!current(session)) return;
+      const indexed = await session.connection!.run("CREATE UNIQUE INDEX source_rows ON rows(source_row)");
+      indexed.closeSync();
       requireSource(session);
       if (!current(session)) return;
       session.phase = "complete";
@@ -369,18 +375,33 @@ export function createSessions() {
       }
       checkCurrent();
       const totalRows = session.filterOrder?.totalRows ?? session.rowCount ?? 0;
-      const position = filtered ? "filtered.pos" : sortPosition;
-      const from = filtered ? "filter_order filtered JOIN rows ON rows.rowid = filtered.src" : sortFrom;
       const start = options?.afterPosition !== undefined ? options.afterPosition + 1 : filtered ? 0 : offset;
-      const range = filtered ? `${position} >= ?` : `${position} >= ? AND ${position} < ?`;
-      const params = filtered ? [start, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit];
-      const reader = await session.connection!.runAndReadAll(
-        `SELECT rows.*, ${position} FROM ${from} WHERE ${range}
-          ORDER BY ${position} LIMIT ?${filtered ? " OFFSET ?" : ""}`, params);
+      let sql = `SELECT source_cells, rowid FROM rows WHERE rowid >= ? AND rowid < ? ORDER BY rowid LIMIT ?`;
+      let params: (number | bigint)[] = [start, start + limit, limit];
+      let page: (number | bigint)[][] | undefined;
+      if (session.order || filtered) {
+        const table = filtered ? "filter_order" : "sort_order";
+        const range = filtered ? "pos >= ?" : "pos >= ? AND pos < ?";
+        const positions = await connection.runAndReadAll(`SELECT src, pos FROM ${table} WHERE ${range}
+          ORDER BY pos LIMIT ?${filtered ? " OFFSET ?" : ""}`,
+          filtered ? [start, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit]);
+        try { page = positions.getRows() as (number | bigint)[][]; }
+        finally { positions.closeSync(); }
+        checkCurrent();
+        // Fetch one packed row per index lookup instead of independent cell-column blocks.
+        sql = `SELECT source_cells, source_row FROM rows WHERE ${page.length ? `source_row IN (${page.map(() => "?").join(",")})` : "false"}`;
+        params = page.map(([src]) => src);
+      }
+      const reader = await connection.runAndReadAll(sql, params);
       try {
         checkCurrent();
         checkSource(session);
-        const values = reader.getRows();
+        let stored = reader.getRows();
+        if (page) {
+          const rows = new Map(stored.map(([cells, src]) => [Number(src), cells]));
+          stored = page.map(([src, pos]) => [rows.get(Number(src))!, pos]);
+        }
+        const values = stored.map(([cells, pos]) => [...JSON.parse(String(cells)), pos]);
         return { offset, nextPosition: values.length ? Number(values[values.length - 1][session.width!]) : null,
           rows: values.map((row) => row.slice(0, session.width).map((value) => value == null ? "" : String(value))),
           totalRows, ...(session.order ? { sortMode: session.order.mode } : {}) };

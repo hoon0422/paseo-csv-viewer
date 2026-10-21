@@ -18,24 +18,29 @@ export async function buildSortOrder(connection: DuckDBConnection, width: number
   const cell = `COALESCE(${column}, '')`;
   const direction = sort.direction.toUpperCase();
   let mode = sort.mode;
-  if (mode === "auto") {
-    const result = await connection.runAndReadAll(`SELECT COALESCE(BOOL_AND(trim(${cell}, ${whitespace}) = '' OR regexp_full_match(trim(${cell}, ${whitespace}), ${number})), true) FROM rows`);
-    try { mode = result.getRows()[0][0] ? "numeric" : "text"; }
+  let allNumeric = false;
+  if (mode !== "text") {
+    // Validate once outside the window so numeric columns only sort a DOUBLE and rowid.
+    const result = await connection.runAndReadAll(`SELECT COALESCE(BOOL_AND(trim(${cell}, ${whitespace}) = '' OR
+      regexp_full_match(trim(${cell}, ${whitespace}), ${number})), true) FROM rows`);
+    try { allNumeric = !!result.getRows()[0][0]; }
     finally { result.closeSync(); }
+    if (mode === "auto") mode = allNumeric ? "numeric" : "text";
   }
   checkCurrent();
   let order: string;
+  let from = "rows";
   if (mode === "text") {
-    order = `trim(${cell}, ${whitespace}) = '', CASE WHEN trim(${cell}, ${whitespace}) <> '' THEN ${cell} END ${direction}, rowid`;
+    order = `CASE WHEN trim(${cell}, ${whitespace}) <> '' THEN ${cell} END ${direction} NULLS LAST, rowid`;
+  } else if (allNumeric) {
+    order = `TRY_CAST(${cell} AS DOUBLE) ${direction} NULLS LAST, rowid`;
   } else {
-    const value = `trim(${cell}, ${whitespace})`;
-    const valid = `regexp_full_match(${value}, ${number})`;
-    order = `CASE WHEN ${value} = '' THEN 2 WHEN ${valid} THEN 0 ELSE 1 END,
-        ${numericValue(cell)} ${direction},
-        CASE WHEN NOT ${valid} AND ${value} <> '' THEN ${cell} END ${direction}, rowid`;
+    from = `(SELECT rowid, ${numericValue(cell)} AS num,
+      CASE WHEN trim(${cell}, ${whitespace}) <> '' THEN ${cell} END AS text FROM rows)`;
+    order = `num ${direction} NULLS LAST, CASE WHEN num IS NULL THEN text END ${direction} NULLS LAST, rowid`;
   }
   const result = await connection.run(`CREATE TABLE sort_order AS
-    SELECT row_number() OVER (ORDER BY ${order}) - 1 AS pos, rowid AS src FROM rows`);
+    SELECT row_number() OVER (ORDER BY ${order}) - 1 AS pos, rowid AS src FROM ${from}`);
   result.closeSync();
   return mode;
 }
