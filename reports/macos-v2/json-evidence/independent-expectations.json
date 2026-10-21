@@ -1,0 +1,11 @@
+{
+  "numericGreater12048": 2,
+  "matchAll": 1,
+  "matchAny": 3162,
+  "between12048And12050": 3,
+  "textAscendingFirstTwo": [
+    "1",
+    "10"
+  ],
+  "numericDescendingFirst": 12050
+}

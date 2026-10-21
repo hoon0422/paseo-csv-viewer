@@ -1,12 +1,13 @@
 {
-  "source": "9eece4b0d4a8bbdaa20ecf06cf4ef53aee9877a9",
+  "source": "170add003b49484364501be3c4eaeb27025733e4",
+  "productSource": "fa02073",
   "artifact": "paseo-csv-viewer-0.1.0.tgz",
-  "sha256": "f700a75c59dd62047dd63005c023f58a70b113a92c7b8e6c3e5cc2df85263ed1",
+  "sha256": "64ea117c5568f0f8d5e89b0c7f6b3959786e200f2dcdeb76f22a555a5ac50a0b",
   "filesMatchSource": true,
   "files": [
     {
       "path": "server/child.cjs",
-      "sha256": "b8130b63b2c4f438ecf7702a525c5f445f10d8b8fc6d74ad7090a25b9701ed3c"
+      "sha256": "d5cf7e6e8a87b1a0e628ff54a9618196e352f8df600f80f602ae6531f3f412f4"
     },
     {
       "path": "package.json",
@@ -30,7 +31,7 @@
     },
     {
       "path": "server/child.ts",
-      "sha256": "3d697e6e57a63b27708b0d00fb0d8e85e15cf68f27f345c888d807d7729152bf"
+      "sha256": "8a690ff628bded018e42300a65f9bc724c9bd8128f0966eb81aafd94ec066b75"
     },
     {
       "path": "client/drop.ts",
@@ -50,7 +51,7 @@
     },
     {
       "path": "server/proxy.ts",
-      "sha256": "b2cec50319d1f6cb8ccf08bd7fae2c2c92788637972a2271b7f25728b7711c58"
+      "sha256": "931bdca85a4e6df5b5aaea85b9585e652b7c085d918c1a396dc358c7274a4705"
     },
     {
       "path": "server/session.ts",
@@ -87,6 +88,10 @@
     {
       "path": "npm-shrinkwrap.json",
       "sha256": "dbd265c94f5d5f15f85e8879eb519e2977346494dcabf0bdeb7d92cf2b8d0265"
+    },
+    {
+      "path": "server/ipc.ts",
+      "sha256": "79f2986ab8af266c689dd9c597dce915f793ad1346d1d39d5ac5976cfb7419bf"
     }
   ]
 }

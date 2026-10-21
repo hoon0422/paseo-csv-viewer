@@ -1,0 +1,4 @@
+  PID  PPID    RSS  %CPU COMM
+ 1348  1331 199088   1.1 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper (Renderer).app/Contents/MacOS/Paseo Helper (Renderer)
+ 2271  1287  56032   0.0 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper
+ 2349  2271 205440   0.0 /Users/lume/csv-macos-21/node/bin/node

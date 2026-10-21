@@ -1,0 +1,11 @@
+Wed Oct 21 21:27:18 UTC 2026
+ProductName:		macOS
+ProductVersion:		26.5.2
+BuildVersion:		25F84
+arm64
+hw.memsize: 4294967296
+hw.ncpu: 2
+Filesystem     1024-blocks     Used Available Capacity iused      ifree %iused  Mounted on
+/dev/disk4s1s1   151531520 12275644 118629324    10%  458726 1186293240    0%   /
+v24.22.1
+System Integrity Protection status: disabled.

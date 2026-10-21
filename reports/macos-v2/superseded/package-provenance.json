@@ -1,0 +1,92 @@
+{
+  "source": "9eece4b0d4a8bbdaa20ecf06cf4ef53aee9877a9",
+  "artifact": "paseo-csv-viewer-0.1.0.tgz",
+  "sha256": "f700a75c59dd62047dd63005c023f58a70b113a92c7b8e6c3e5cc2df85263ed1",
+  "filesMatchSource": true,
+  "files": [
+    {
+      "path": "server/child.cjs",
+      "sha256": "b8130b63b2c4f438ecf7702a525c5f445f10d8b8fc6d74ad7090a25b9701ed3c"
+    },
+    {
+      "path": "package.json",
+      "sha256": "23ecc73e7ee8909df1c4243e505cd23739cb1dad5effe326e5f39201ec7c2d5f"
+    },
+    {
+      "path": "paseo-plugin.json",
+      "sha256": "edeb30e27661a9870df3bee0334ff18ee76acb1b083f4ac8b9b9e4b9fae60041"
+    },
+    {
+      "path": "OVERVIEW.md",
+      "sha256": "9fee1ad6b5e709ee89f7126da30410294e57651419e3f7d476dc532d2dead265"
+    },
+    {
+      "path": "README.md",
+      "sha256": "125aba479079824c25abe0fa60ac09c52b49a33449aef68d1a20f5e6e39bed4b"
+    },
+    {
+      "path": "assets/screenshot.png",
+      "sha256": "6c36deb1f29a1ecb2ed1f10c7b96559a7b7ade1773ef1f22a6976a5025214942"
+    },
+    {
+      "path": "server/child.ts",
+      "sha256": "3d697e6e57a63b27708b0d00fb0d8e85e15cf68f27f345c888d807d7729152bf"
+    },
+    {
+      "path": "client/drop.ts",
+      "sha256": "ca385428c1f6d152b082e4112e158d223d8f238d09d7cd18a15bf99710f886ae"
+    },
+    {
+      "path": "server/filter.ts",
+      "sha256": "00317a76ebd07cbe8190bcba290c576f1f5f4f09e83f7a7043cc4db925089eac"
+    },
+    {
+      "path": "index.server.ts",
+      "sha256": "ff4edd1fe624bc9bc4a97f21f8fdbd3fa376dbb56631e5facd2755a9d90d741d"
+    },
+    {
+      "path": "server/native.ts",
+      "sha256": "66ef12456c1dd0ddc776789e64f4ea9934806563ab2354f96328e33fc726b2f4"
+    },
+    {
+      "path": "server/proxy.ts",
+      "sha256": "b2cec50319d1f6cb8ccf08bd7fae2c2c92788637972a2271b7f25728b7711c58"
+    },
+    {
+      "path": "server/session.ts",
+      "sha256": "4fa30f54dec9db5924a30fc0526457caaaa957b184f8818594d02a91df1aabf6"
+    },
+    {
+      "path": "shared/session.ts",
+      "sha256": "aea49e90c10b43b6ff8c5f06320d5a97f9e6e1a23af8774446d3a08febbef5e2"
+    },
+    {
+      "path": "server/sort.ts",
+      "sha256": "19b5504090c2d5aa7f28e9b154091253a5324eefe1cb9c22f0799f6232d09d27"
+    },
+    {
+      "path": "client/columns.tsx",
+      "sha256": "3779e70ce662e26309e4832b0f95416a38136e5ef929e8933200f9a5c7512425"
+    },
+    {
+      "path": "client/filter.tsx",
+      "sha256": "bcc2ac5e5b2de31c602beba52bfb2165a1d9a17ac52912f8791f3d85272e3de8"
+    },
+    {
+      "path": "index.client.tsx",
+      "sha256": "a9a0b05942f874b03a8447faa47735fa1f0a6192fd71eb2f6e4999f7d0898d29"
+    },
+    {
+      "path": "client/panel.tsx",
+      "sha256": "6a120256ab34a4db878e790efde1ccff186a3845192ebce671139ac5f2c54e8c"
+    },
+    {
+      "path": "client/table.tsx",
+      "sha256": "8e98010840c1a1a0776c4e55a2f2f8cfe9a331b02a834f1c8a86c8338f4b5cd9"
+    },
+    {
+      "path": "npm-shrinkwrap.json",
+      "sha256": "dbd265c94f5d5f15f85e8879eb519e2977346494dcabf0bdeb7d92cf2b8d0265"
+    }
+  ]
+}
