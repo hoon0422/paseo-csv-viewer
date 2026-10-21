@@ -48,13 +48,13 @@ export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presen
     </Pressable>
   );
 
-  return <View style={{ flex: 1, minHeight: 0 }}>
+  return <View role="table" accessibilityLabel="CSV rows" style={{ flex: 1, minHeight: 0 }}>
     <ScrollView horizontal style={{ flex: 1 }} contentContainerStyle={{ minWidth: "100%" }}>
       <View style={{ flex: 1 }}>
-        <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: theme.border, backgroundColor: theme.border }}>
-          <Text style={{ width: 70, padding: 6, color: theme.foreground, fontWeight: "700" }}>#</Text>
+        <View role="row" style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: theme.border, backgroundColor: theme.border }}>
+          <Text role="columnheader" style={{ width: 70, padding: 6, color: theme.foreground, fontWeight: "700" }}>#</Text>
           {visible.map((index) => <View key={index} style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 4, gap: 3 }}>
-            <Text accessibilityRole="header" accessibilityLabel={columns[index] || `Column ${index + 1}`}
+            <Text role="columnheader" accessibilityRole="header" accessibilityLabel={columns[index] || `Column ${index + 1}`}
               numberOfLines={1} style={{ color: theme.foreground, fontWeight: "700" }}>{columns[index] || `Column ${index + 1}`}</Text>
             {sort?.column === index && <Text style={{ color: theme.muted }}>{sort.direction === "asc" ? "Ascending ↑" : "Descending ↓"}</Text>}
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3 }}>
@@ -74,7 +74,7 @@ export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presen
             aria-selected={selected.includes(rowIndex)} onClick={(event) => onSelectRow?.(rowIndex, event)}
             style={{ display: "flex", position: "relative", backgroundColor: selected.includes(rowIndex) ? "rgba(128, 128, 128, 0.25)" : "transparent",
               minHeight: 30, boxSizing: "border-box", borderBottom: `1px solid ${theme.border}` }}>
-            <Text style={{ width: 70, padding: 6, color: theme.foreground }}>{rowIndex + 1}</Text>
+            <Text role="rowheader" style={{ width: 70, padding: 6, color: theme.foreground }}>{rowIndex + 1}</Text>
             {visible.map((index) => {
               const value = row[index] ?? "";
               return <Pressable key={index} accessibilityRole="button"
