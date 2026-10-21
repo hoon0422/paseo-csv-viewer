@@ -78,6 +78,32 @@ function explain(cause: unknown) {
   return message.split(/Possible fixes?:|Possible Solution:/i)[0].trim();
 }
 
+async function resolveSource(input: Pick<OpenInput, "workspaceId" | "source">, paseo?: PaseoApi) {
+  let path: string;
+  let sourcePath: string;
+  if (input.source.kind === "workspace") {
+    if (!paseo) throw new Error("Workspace lookup is unavailable");
+    if (isAbsolute(input.source.path)) throw new Error("Workspace file path must be relative");
+    const workspace = await paseo.workspaces.ref(input.workspaceId).refresh();
+    if (!workspace || workspace.id !== input.workspaceId || !workspace.workspaceDirectory) throw new Error("Workspace is unavailable");
+    const root = await realpath(workspace.workspaceDirectory);
+    sourcePath = resolve(root, input.source.path);
+    path = await realpath(sourcePath);
+    const within = relative(root, path);
+    if (!within || within === ".." || within.startsWith(`..${sep}`) || isAbsolute(within)) throw new Error("File is outside this workspace");
+  } else {
+    if (!isAbsolute(input.source.path)) throw new Error("Local file path must be absolute");
+    sourcePath = input.source.path;
+    path = await realpath(sourcePath);
+  }
+  if (!/\.(csv|tsv)$/i.test(extname(path))) throw new Error("Choose a CSV or TSV file");
+  const info = await stat(path);
+  if (!info.isFile()) throw new Error("Choose a regular file");
+  const revision = sourceRevision(sourcePath);
+  if (revision.resolved !== path) throw new Error(CHANGED);
+  return { path, sourcePath, revision };
+}
+
 export function createSessions() {
   const active = new Map<string, Session>();
   const owned = new Set<Session>();
@@ -139,6 +165,12 @@ export function createSessions() {
     void drain(session).catch((cause) => console.error("CSV Viewer cleanup failed:", cause));
   }
 
+  async function inspect(input: Pick<OpenInput, "workspaceId" | "source">, paseo?: PaseoApi) {
+    if (disposed) throw new Error("Viewer is closed");
+    const { revision } = await resolveSource(input, paseo);
+    return { sourceBytes: revision.size };
+  }
+
   async function open(input: OpenInput, paseo?: PaseoApi) {
     if (disposed) throw new Error("Viewer is closed");
     const turn = input.turn ?? 0;
@@ -150,30 +182,9 @@ export function createSessions() {
     active.set(input.panelId, session);
     owned.add(session);
     const initialize = async () => {
-      let path: string;
-      let sourcePath: string;
-      if (input.source.kind === "workspace") {
-        if (!paseo) throw new Error("Workspace lookup is unavailable");
-        if (isAbsolute(input.source.path)) throw new Error("Workspace file path must be relative");
-        const workspace = await paseo.workspaces.ref(input.workspaceId).refresh();
-        if (!workspace || workspace.id !== input.workspaceId || !workspace.workspaceDirectory) throw new Error("Workspace is unavailable");
-        const root = await realpath(workspace.workspaceDirectory);
-        sourcePath = resolve(root, input.source.path);
-        path = await realpath(sourcePath);
-        const within = relative(root, path);
-        if (!within || within === ".." || within.startsWith(`..${sep}`) || isAbsolute(within)) throw new Error("File is outside this workspace");
-      } else {
-        if (!isAbsolute(input.source.path)) throw new Error("Local file path must be absolute");
-        sourcePath = input.source.path;
-        path = await realpath(sourcePath);
-      }
+      const { path, sourcePath, revision } = await resolveSource(input, paseo);
       if (!current(session)) throw new Error("Session cancelled");
-      if (!/\.(csv|tsv)$/i.test(extname(path))) throw new Error("Choose a CSV or TSV file");
-      const info = await stat(path);
-      if (!info.isFile()) throw new Error("Choose a regular file");
       session.sourcePath = sourcePath;
-      const revision = sourceRevision(sourcePath);
-      if (revision.resolved !== path) throw new Error(CHANGED);
       session.revision = revision.key;
       session.sourceBytes = revision.size;
       const delimiter = extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c;
@@ -420,5 +431,5 @@ export function createSessions() {
     sessions.forEach(cancel);
     await Promise.allSettled(sessions.map(drain));
   }
-  return { open, status, page, beginPage, pollPage, close, dispose };
+  return { inspect, open, status, page, beginPage, pollPage, close, dispose };
 }

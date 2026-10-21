@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
-import { mkdtemp, writeFile, rm, stat, readFile, mkdir, readdir } from "node:fs/promises";
+import { mkdtemp, writeFile, rm, stat, readFile, mkdir, readdir, truncate } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PaseoApi } from "@getpaseo/client";
@@ -40,6 +40,37 @@ test("opens a real CSV as a bounded read-only viewer session and replaces it", a
     await sessions.dispose();
   } finally {
     await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("source inspection reads the current size without preparing or replacing a session", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "csv-viewer-inspect-"));
+  const previous = process.env.TMPDIR;
+  const sessions = createSessions();
+  try {
+    const storage = join(directory, "storage");
+    await mkdir(storage);
+    process.env.TMPDIR = storage;
+    const large = join(directory, "large.csv");
+    await writeFile(large, "value\nlarge\n");
+    await truncate(large, 500_000_001);
+    const input = { workspaceId: "workspace", source: { kind: "local" as const, path: large } };
+    assert.deepEqual(await sessions.inspect(input), { sourceBytes: 500_000_001 });
+    assert.deepEqual(await readdir(storage), []);
+    const current = join(directory, "current.csv");
+    await writeFile(current, "value\nkeep\n");
+    const opened = await sessions.open({ ...input, panelId: crypto.randomUUID(), source: { kind: "local", path: current } });
+    assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
+    await truncate(large, 500_000_002);
+    assert.deepEqual(await sessions.inspect(input), { sourceBytes: 500_000_002 });
+    assert.deepEqual((await sessions.page(opened.sessionId, 0, 50)).rows, [["keep"]]);
+    assert.equal((await readdir(storage)).length, 1);
+    const paseo = { workspaces: { ref: () => ({ refresh: async () => ({ id: "workspace", workspaceDirectory: storage }) }) } } as any;
+    await assert.rejects(sessions.inspect({ ...input, source: { kind: "workspace", path: "../large.csv" } }, paseo), /outside this workspace/);
+  } finally {
+    await sessions.dispose();
+    if (previous === undefined) delete process.env.TMPDIR; else process.env.TMPDIR = previous;
+    await rm(directory, { recursive: true, force: true });
   }
 });
 

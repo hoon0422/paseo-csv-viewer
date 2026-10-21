@@ -65,6 +65,18 @@ test("consecutive 200-row pages append after a known sort position with stable t
   });
 });
 
+test("sorted pages preserve quoted, multiline, Unicode and empty cells", async () => {
+  await fixture('id,value,payload\n0,2,"a""b"\n1,1,"line\nbreak"\n2,1,"한글\t\\tail"\n3,1,\n', async (s, id) => {
+    const sort = { column: 1, direction: "asc" as const, mode: "numeric" as const };
+    const first = await s.page(id, 0, 2, { sort });
+    const next = await s.page(id, 2, 2, { sort, afterPosition: first.nextPosition! });
+    assert.deepEqual([...first.rows, ...next.rows], [
+      ["1", "1", "line\nbreak"], ["2", "1", "한글\t\\tail"], ["3", "1", ""], ["0", "2", 'a"b'],
+    ]);
+    assert.deepEqual((await s.page(id, 0, 1)).rows, [["0", "2", 'a"b']]);
+  });
+});
+
 test("closing a sorted session removes its temporary storage and leaves the source untouched", async () => {
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-sort-close-"));
   const storage = join(directory, "storage");
@@ -100,6 +112,37 @@ test("numeric grammar accepts signs, decimals, exponents and surrounding ASCII w
     assert.equal(result.sortMode, "numeric");
     const automatic = await s.page(id, 0, 1, { sort: { column: 0, direction: "asc", mode: "auto" } });
     assert.equal(automatic.sortMode, "text");
+  });
+});
+
+test("cast-only spellings and whitespace inside numbers stay text in Numeric and Auto", async () => {
+  const text = ["\v1", "+Infinity", "0x10", "1\f", "1 0", "1_0", "1\u00a0", "NaN", "inf", "\u00a01"];
+  for (const value of text) {
+    await fixture(`value\n"${value}"\n2\n10\n"  "\n""\n`, async (s, id) => {
+      const sort = { column: 0, direction: "asc" as const, mode: "numeric" as const };
+      assert.deepEqual((await s.page(id, 0, 200, { sort })).rows, [["2"], ["10"], [value], ["  "], [""]]);
+      assert.equal((await s.page(id, 0, 200, { sort: { ...sort, mode: "auto" } })).sortMode, "text");
+    });
+  }
+  await fixture("value\n" + ["10", "2", ...text, "  ", ""].map((v) => `"${v}"`).join("\n") + "\n", async (s, id) => {
+    const sort = { column: 0, direction: "desc" as const, mode: "numeric" as const };
+    assert.deepEqual((await s.page(id, 0, 200, { sort })).rows.map((r) => r[0]), ["10", "2", ...text.toReversed(), "  ", ""]);
+  });
+});
+
+test("all-numeric sorts keep overflow, rounded ties and ASCII blanks stable across pages", async () => {
+  const values = ["\t", "1e309", "-1e309", " -0\r\n", "1e-400", "  +.5\t", "1e+2", "", "  ", "9007199254740993", "9007199254740992"];
+  await fixture("value\n" + values.map((v) => `"${v}"`).join("\n") + "\n", async (s, id) => {
+    for (const mode of ["auto", "numeric"] as const) {
+      const sort = { column: 0, direction: "asc" as const, mode };
+      const first = await s.page(id, 0, 6, { sort });
+      const next = await s.page(id, 6, 6, { sort, afterPosition: first.nextPosition! });
+      assert.equal(first.sortMode, "numeric");
+      assert.deepEqual([...first.rows, ...next.rows].map((r) => r[0]),
+        ["-1e309", " -0\r\n", "1e-400", "  +.5\t", "1e+2", "9007199254740993", "9007199254740992", "1e309", "\t", "", "  "]);
+      assert.deepEqual((await s.page(id, 0, 200, { sort: { ...sort, direction: "desc" } })).rows.map((r) => r[0]),
+        ["1e309", "9007199254740993", "9007199254740992", "1e+2", "  +.5\t", " -0\r\n", "1e-400", "-1e309", "\t", "", "  "]);
+    }
   });
 });
 

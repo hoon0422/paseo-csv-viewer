@@ -4,7 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState, type MouseEvent } from "re
 import { Text } from "react-native";
 import { Icon } from "@getpaseo/plugin/client/react-native";
 import type { z } from "zod";
-import { activeRule, closePreview, openPreview, PAGE_SIZE, pageQuery, pageRows, sessionStatus, type Filter, type Sort, type source } from "../shared/session";
+import { activeRule, closePreview, inspectSource, LARGE_SOURCE_BYTES, openPreview, PAGE_SIZE, pageQuery, pageRows, sessionStatus, type Filter, type Sort, type source } from "../shared/session";
 import { chooseLocalFile, listenForDrops } from "./drop";
 import { TableView, type TablePresentation } from "./table";
 import { FilterBar, emptyFilter } from "./filter";
@@ -13,8 +13,17 @@ type Source = z.output<typeof source>;
 type Preview = z.output<typeof openPreview.output>;
 type Status = z.output<typeof sessionStatus.output>;
 
+function formatSize(bytes: number) {
+  const unit = Math.min(4, Math.floor(Math.log10(Math.max(1, bytes)) / 3));
+  return `${(bytes / 1000 ** unit).toFixed(1)} ${["B", "kB", "MB", "GB", "TB"][unit]}`;
+}
+
 export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspacePanelProps) {
   const [path, setPath] = useState("");
+  const [confirmation, setConfirmation] = useState<{
+    file: Source; header: boolean; refresh: boolean; action: number; sourceBytes: number;
+  } | null>(null);
+  const confirmationId = useId();
   const [preview, setPreview] = useState<Preview | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const [rows, setRows] = useState<string[][]>([]);
@@ -56,6 +65,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const zone = useRef<HTMLDivElement>(null);
   const lastClickedRow = useRef<number | null>(null);
   const visibleRows = useRef<number[]>([]);
+  const inspectRpc = useRpc(inspectSource);
   const openRpc = useRpc(openPreview);
   const closeRpc = useRpc(closePreview);
   const statusRpc = useRpc(sessionStatus);
@@ -65,13 +75,35 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const isMac = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform || navigator.userAgent || "");
 
   async function open(file: Source, header = currentHeader.current, refresh = false) {
-    if (!mounted.current) return;
+    const action = ++selection.current;
+    setConfirmation(null);
+    setMessage("");
+    try {
+      const { sourceBytes } = await inspectRpc({ workspaceId, source: file });
+      if (!mounted.current || action !== selection.current || currentHost.current !== host.id || currentWorkspace.current !== workspaceId) return;
+      if (sourceBytes > LARGE_SOURCE_BYTES) {
+        setPath(displayPath(selectedSource.current?.path ?? ""));
+        setConfirmation({ file, header, refresh, action, sourceBytes });
+      } else await load(file, header, refresh, action);
+    } catch (cause) {
+      if (mounted.current && action === selection.current) setMessage(cause instanceof Error ? cause.message : String(cause));
+    }
+  }
+
+  function cancelOpen() {
+    ++selection.current;
+    setConfirmation(null);
+    setPath(displayPath(selectedSource.current?.path ?? ""));
+    zone.current?.focus({ preventScroll: true });
+  }
+
+  async function load(file: Source, header: boolean, refresh: boolean, action: number) {
+    if (!mounted.current || action !== selection.current) return;
     if (currentHost.current !== host.id || currentWorkspace.current !== workspaceId) {
       setMessage("The selected workspace or host changed. Try the file again.");
       return;
     }
     const turn = ++generation.current;
-    ++selection.current;
     ++pageRequest.current;
     ++queryRequest.current;
     pageInFlight.current = false;
@@ -83,7 +115,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     pendingPanel.current = candidate;
     try {
       const next = await mutation.mutateAsync({ panelId: candidate, workspaceId, source: file, hasHeader: header, turn });
-      if (!mounted.current || turn !== generation.current || currentHost.current !== host.id) {
+      if (!mounted.current || turn !== generation.current || action !== selection.current || currentHost.current !== host.id || currentWorkspace.current !== workspaceId) {
         void closeRpc({ sessionId: next.sessionId });
         return;
       }
@@ -112,7 +144,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       setPreview(next);
       setRows(next.rows);
     } catch (cause) {
-      if (mounted.current && turn === generation.current) setMessage(cause instanceof Error ? cause.message : String(cause));
+      if (mounted.current && turn === generation.current && action === selection.current) setMessage(cause instanceof Error ? cause.message : String(cause));
     } finally {
       if (pendingPanel.current === candidate) pendingPanel.current = null;
       if (mounted.current && turn === generation.current) setBusy(false);
@@ -128,6 +160,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
 
   function select(source: Source | Promise<Source | null>) {
     const action = ++selection.current;
+    setConfirmation(null);
     void Promise.resolve(source).then((file) => {
       if (file && mounted.current && action === selection.current && currentHost.current === host.id && currentWorkspace.current === workspaceId) void open(file, currentHeader.current);
     }, (cause) => {
@@ -267,6 +300,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     return () => { live = false; clearInterval(timer); };
   }, [preview?.sessionId, statusRpc]);
   useEffect(() => {
+    setConfirmation(null);
     setPath("");
     setTable({ hidden: [], widths: {}, selected: [] });
     setFilterOpen(false);
@@ -371,9 +405,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     ? `${count(totalRows)} of ${count(status.rowCount)} rows`
     : rowCount == null ? `Showing ${count(rows.length)} rows`
     : rows.length < rowCount ? `Showing ${count(rows.length)} of ${count(rowCount)} rows` : `${count(rowCount)} rows`;
-  const bytes = preview?.sourceBytes ?? 0;
-  const unit = Math.min(4, Math.floor(Math.log10(Math.max(1, bytes)) / 3));
-  const size = `${(bytes / 1000 ** unit).toFixed(1)} ${["B", "kB", "MB", "GB", "TB"][unit]}`;
+  const size = formatSize(preview?.sourceBytes ?? 0);
   const state = busy ? "Opening preview…" : status?.phase === "error" ? status.message
     : pendingOperation || (pageBusy && !sort && !filter) ? (pendingOperation === "filter" ? "Filtering…" : pendingOperation === "sort" ? "Sorting…" : "Loading rows…")
     : ready ? "Ready" : preview ? `Preparing${status?.percent == null ? "…" : ` ${Math.round(status.percent)}%`}` : "No source";
@@ -424,6 +456,16 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
             if (event.key === "Escape") { event.preventDefault(); setPath(displayPath(selectedSource.current?.path ?? "")); }
           }} style={{ minWidth: 0, flex: 1, padding: 4, color: foreground, backgroundColor: colors.surface0, border: `1px solid ${colors.border}`, borderRadius: 4 }} />
       </div>
+      {confirmation && <div role="alertdialog" aria-labelledby={confirmationId}
+        onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); cancelOpen(); } }}
+        style={{ padding: 8, borderBottom: `1px solid ${colors.border}`, backgroundColor: colors.surface1 }}>
+        <p id={confirmationId} style={{ margin: "0 0 8px" }}>This file is {formatSize(confirmation.sourceBytes)}. Files over 500 MB can take a long time to sort and filter. Open anyway?</p>
+        <button type="button" aria-label="Open large file" autoFocus style={textButtonStyle} onClick={() => {
+          setConfirmation(null);
+          void load(confirmation.file, confirmation.header, confirmation.refresh, confirmation.action);
+        }}>OK</button>{" "}
+        <button type="button" aria-label="Cancel large file" style={textButtonStyle} onClick={cancelOpen}>Cancel</button>
+      </div>}
       {!!message && <div id={pathErrorId} role="alert" style={{ padding: "4px 8px", color: colors.statusDanger }}>{message}</div>}
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 2, padding: "2px 4px", borderBottom: `1px solid ${colors.border}` }}>
         {iconButton("Choose local CSV or TSV", "FolderOpen", () => select(chooseLocalFile(host.id)))}
