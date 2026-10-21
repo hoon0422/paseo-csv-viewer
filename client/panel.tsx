@@ -17,7 +17,10 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [status, setStatus] = useState<Status | null>(null);
   const [rows, setRows] = useState<string[][]>([]);
   const [offset, setOffset] = useState(0);
+  const [totalRows, setTotalRows] = useState<number | null>(null);
   const [pageBusy, setPageBusy] = useState(false);
+  const [search, setSearch] = useState("");
+  const [queryPending, setQueryPending] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [hasHeader, setHasHeader] = useState(true);
@@ -25,6 +28,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const generation = useRef(0);
   const selection = useRef(0);
   const pageRequest = useRef(0);
+  const queryRequest = useRef(0);
+  const queryDirty = useRef(false);
   const mounted = useRef(true);
   const session = useRef<string | null>(null);
   const selectedSource = useRef<Source | null>(null);
@@ -49,9 +54,14 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     const turn = ++generation.current;
     ++selection.current;
     ++pageRequest.current;
+    ++queryRequest.current;
+    queryDirty.current = false;
     selectedSource.current = file;
     setBusy(true);
     setPageBusy(false);
+    setSearch("");
+    setQueryPending(false);
+    setTotalRows(null);
     setMessage("");
     setPreview(null);
     setStatus(null);
@@ -82,22 +92,43 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     });
   }
 
+  function changeSearch(next: string) {
+    queryDirty.current = true;
+    ++queryRequest.current;
+    ++pageRequest.current;
+    setSearch(next);
+    setRows([]);
+    setOffset(0);
+    setTotalRows(null);
+    setPageBusy(false);
+    setQueryPending(!!next);
+  }
+
   async function navigate(nextOffset: number) {
     if (!preview || status?.phase !== "complete") return;
     const turn = generation.current;
     const request = ++pageRequest.current;
+    const query = queryRequest.current;
     setPageBusy(true);
+    if (nextOffset === 0) setQueryPending(true);
     try {
-      const page = await pageRpc({ sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit });
-      if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;
+      const page = await pageRpc({ sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, search, requestId: query });
+      if (!mounted.current || turn !== generation.current || request !== pageRequest.current || query !== queryRequest.current || session.current !== preview.sessionId) return;
       setRows(page.rows);
       setOffset(page.offset);
+      setTotalRows(page.totalRows);
     } catch (cause) {
       if (mounted.current && turn === generation.current && request === pageRequest.current) setMessage(cause instanceof Error ? cause.message : String(cause));
     } finally {
-      if (mounted.current && turn === generation.current && request === pageRequest.current) setPageBusy(false);
+      if (mounted.current && turn === generation.current && request === pageRequest.current) { setPageBusy(false); setQueryPending(false); }
     }
   }
+
+  useEffect(() => {
+    if (!preview || status?.phase !== "complete" || !preview.columns.length) return;
+    if (queryDirty.current) void navigate(0);
+    else setTotalRows(status.rowCount);
+  }, [preview?.sessionId, status?.phase, search]);
 
   useEffect(() => {
     let live = true;
@@ -124,8 +155,12 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setStatus(null);
     setRows([]);
     setOffset(0);
+    setTotalRows(null);
     setBusy(false);
     setPageBusy(false);
+    setSearch("");
+    setQueryPending(false);
+    queryDirty.current = false;
     setMessage("");
     session.current = null;
     selectedSource.current = null;
@@ -133,6 +168,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       const turn = ++generation.current;
       ++selection.current;
       ++pageRequest.current;
+      ++queryRequest.current;
       void closeRpc({ panelId: panelId.current, turn });
     };
   }, [host.id, workspaceId]);
@@ -171,22 +207,36 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       {!!message && <Text accessibilityRole="alert" style={{ color: foreground }}>{message}</Text>}
       {preview && <>
         <Text style={{ color: foreground }}>{preview.fileName} · {preview.sourceBytes} bytes</Text>
+        {preview.columns.length > 0 && <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          <TextInput value={search} onChangeText={changeSearch} maxLength={2048} placeholder="Search all columns"
+            placeholderTextColor={muted} accessibilityLabel="Search all columns"
+            style={{ minWidth: 220, flexGrow: 1, borderWidth: 1, borderColor: muted, borderRadius: 6, padding: 8, color: foreground }} />
+          {!!search && <Pressable accessibilityRole="button" accessibilityLabel="Clear search" onPress={() => changeSearch("")}>
+            <Text style={{ color: foreground }}>Clear search</Text>
+          </Pressable>}
+          {queryPending && status?.phase === "complete" && <Pressable accessibilityRole="button" accessibilityLabel="Cancel search" onPress={() => changeSearch("")}>
+            <Text style={{ color: foreground }}>Cancel search</Text>
+          </Pressable>}
+        </View>}
+        {!!search && status?.phase !== "complete" && status?.phase !== "error" && <Text style={{ color: muted }}>Search pending until the whole file is ready.</Text>}
+        {queryPending && status?.phase === "complete" && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>Searching the whole file…</Text>}
         {status && <Text accessibilityRole="text" style={{ color: status.phase === "error" ? foreground : muted }}>
           {status.phase === "error" ? status.message : `${status.message}${status.percent == null ? "" : ` · ${Math.round(status.percent)}%`}`}
         </Text>}
         {status?.phase !== "complete" && status?.phase !== "error" && <Pressable accessibilityRole="button" accessibilityLabel="Cancel preparation"
-          onPress={() => { const turn = ++generation.current; ++selection.current; ++pageRequest.current; setPageBusy(false); void closeRpc({ panelId: panelId.current, turn }); setPreview(null); setStatus(null); setRows([]); setMessage("Preparation cancelled"); }}>
+          onPress={() => { const turn = ++generation.current; ++selection.current; ++pageRequest.current; ++queryRequest.current; setPageBusy(false); setQueryPending(false); void closeRpc({ panelId: panelId.current, turn }); setPreview(null); setStatus(null); setRows([]); setMessage("Preparation cancelled"); }}>
           <Text style={{ color: foreground }}>Cancel</Text>
         </Pressable>}
-        {status?.phase === "complete" && !!status.rowCount && <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
+        {status?.phase === "complete" && totalRows !== null && totalRows > 0 && !queryPending && <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Previous rows" disabled={pageBusy || offset === 0}
             onPress={() => void navigate(Math.max(0, offset - preview.limit))}><Text style={{ color: foreground }}>Previous</Text></Pressable>
-          <Text style={{ color: muted }}>Rows {offset + 1}–{Math.min(offset + rows.length, status.rowCount)} of {status.rowCount}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Next rows" disabled={pageBusy || offset + rows.length >= status.rowCount}
+          <Text style={{ color: muted }}>Rows {offset + 1}–{Math.min(offset + rows.length, totalRows)} of {totalRows}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Next rows" disabled={pageBusy || offset + rows.length >= totalRows}
             onPress={() => void navigate(offset + preview.limit)}><Text style={{ color: foreground }}>Next</Text></Pressable>
         </View>}
         {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
-          {rows.length === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
+          {search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
+          {!search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={preview.sessionId} columns={preview.columns} rows={rows}
             theme={{ foreground, muted, border: theme.colors.border }} /></>}
       </>}

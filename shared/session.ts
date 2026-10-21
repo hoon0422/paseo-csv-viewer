@@ -41,8 +41,8 @@ export const sessionStatus = defineRpc({
 
 export const pageRows = defineRpc({
   name: "viewer.page",
-  input: z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(50) }),
-  output: z.object({ offset: z.number(), rows: z.array(z.array(z.string())) }),
+  input: z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(50), search: z.string().max(2048).optional(), requestId: z.number().int().nonnegative().optional() }),
+  output: z.object({ offset: z.number(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative() }),
 });
 
 export const workspaceFileDrag = z.object({
