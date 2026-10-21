@@ -1,0 +1,209 @@
+[
+  {
+    "name": "auto first-sorted-page ",
+    "metrics": {
+      "durationMs": 1645.4921250000007,
+      "targetMs": 2000
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "auto appended-page 1",
+    "metrics": {
+      "durationMs": 34.56829199999993,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "auto appended-page 2",
+    "metrics": {
+      "durationMs": 34.268583999999464,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "auto appended-page 3",
+    "metrics": {
+      "durationMs": 35.10958400000072,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "auto appended-page 4",
+    "metrics": {
+      "durationMs": 34.45929100000012,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "auto appended-page 5",
+    "metrics": {
+      "durationMs": 34.445291,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "text first-sorted-page ",
+    "metrics": {
+      "durationMs": 597.640292,
+      "targetMs": 2000
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "text appended-page 1",
+    "metrics": {
+      "durationMs": 9.79358300000058,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "text appended-page 2",
+    "metrics": {
+      "durationMs": 8.14116599999943,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "text appended-page 3",
+    "metrics": {
+      "durationMs": 8.889957999999751,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "text appended-page 4",
+    "metrics": {
+      "durationMs": 7.739707999999155,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "text appended-page 5",
+    "metrics": {
+      "durationMs": 9.410291000000143,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "numeric first-sorted-page ",
+    "metrics": {
+      "durationMs": 713.8160000000007,
+      "targetMs": 2000
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "numeric appended-page 1",
+    "metrics": {
+      "durationMs": 36.096041000000696,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "numeric appended-page 2",
+    "metrics": {
+      "durationMs": 37.14954099999886,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "numeric appended-page 3",
+    "metrics": {
+      "durationMs": 37.86316599999918,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "numeric appended-page 4",
+    "metrics": {
+      "durationMs": 35.50300000000061,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "numeric appended-page 5",
+    "metrics": {
+      "durationMs": 35.104707999998936,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "filter appended-page 1",
+    "metrics": {
+      "durationMs": 38.62029199999961,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "filter appended-page 2",
+    "metrics": {
+      "durationMs": 40.860083999999915,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "filter appended-page 3",
+    "metrics": {
+      "durationMs": 39.78299999999945,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "filter appended-page 4",
+    "metrics": {
+      "durationMs": 39.23520800000006,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  },
+  {
+    "name": "filter appended-page 5",
+    "metrics": {
+      "durationMs": 39.69987500000025,
+      "targetMs": 200
+    },
+    "status": "passed",
+    "context": "Native Apple M4 Pro; raw event retained in native-500mb.json"
+  }
+]

@@ -1,0 +1,2674 @@
+{
+  "utc": "2026-10-21T19:46:01.191Z",
+  "ms": 702352.5,
+  "title": "CSV Viewer",
+  "url": "paseo://app/h/srv_Ssxondu_-ziz/workspace/wks_a7f3cc280e23e217",
+  "status": "Showing 8,450 of 30,050 rows1 selected646.1 kBReady",
+  "drop": false,
+  "path": "ui-v2-30050.csv",
+  "focus": "CSV viewer",
+  "rows": [
+    {
+      "label": null,
+      "selected": null,
+      "text": "#id⋮text⋮note⋮",
+      "rect": {
+        "x": 320,
+        "y": 147,
+        "w": 711,
+        "h": 34
+      }
+    },
+    {
+      "label": "Select row 1",
+      "selected": "true",
+      "text": "100000alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256294,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 2",
+      "selected": "false",
+      "text": "200001betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256263,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 3",
+      "selected": "false",
+      "text": "300002alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256232,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 4",
+      "selected": "false",
+      "text": "400003betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256201,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 5",
+      "selected": "false",
+      "text": "500004alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256170,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 6",
+      "selected": "false",
+      "text": "600005betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256139,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 7",
+      "selected": "false",
+      "text": "700006alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256108,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8",
+      "selected": "false",
+      "text": "800007betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256077,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 9",
+      "selected": "false",
+      "text": "900008alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256046,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 10",
+      "selected": "false",
+      "text": "1000009betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -256015,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 11",
+      "selected": "false",
+      "text": "1100010alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255984,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 12",
+      "selected": "false",
+      "text": "1200011betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255953,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 13",
+      "selected": "false",
+      "text": "1300012alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255922,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 14",
+      "selected": "false",
+      "text": "1400013betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255891,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 15",
+      "selected": "false",
+      "text": "1500014alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255860,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 16",
+      "selected": "false",
+      "text": "1600015betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255829,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 17",
+      "selected": "false",
+      "text": "1700016alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255798,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 18",
+      "selected": "false",
+      "text": "1800017betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255767,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 19",
+      "selected": "false",
+      "text": "1900018alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255736,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 20",
+      "selected": "false",
+      "text": "2000019betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -255705,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8221",
+      "selected": "false",
+      "text": "822108220alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1474,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8222",
+      "selected": "false",
+      "text": "822208221betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1443,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8223",
+      "selected": "false",
+      "text": "822308222alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1412,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8224",
+      "selected": "false",
+      "text": "822408223betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1381,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8225",
+      "selected": "false",
+      "text": "822508224alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1350,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8226",
+      "selected": "false",
+      "text": "822608225betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1319,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8227",
+      "selected": "false",
+      "text": "822708226alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1288,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8228",
+      "selected": "false",
+      "text": "822808227betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1257,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8229",
+      "selected": "false",
+      "text": "822908228alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1226,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8230",
+      "selected": "false",
+      "text": "823008229betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1195,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8231",
+      "selected": "false",
+      "text": "823108230alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1164,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8232",
+      "selected": "false",
+      "text": "823208231betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1133,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8233",
+      "selected": "false",
+      "text": "823308232alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1102,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8234",
+      "selected": "false",
+      "text": "823408233betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1071,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8235",
+      "selected": "false",
+      "text": "823508234alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1040,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8236",
+      "selected": "false",
+      "text": "823608235betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -1009,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8237",
+      "selected": "false",
+      "text": "823708236alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -978,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8238",
+      "selected": "false",
+      "text": "823808237betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -947,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8239",
+      "selected": "false",
+      "text": "823908238alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -916,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8240",
+      "selected": "false",
+      "text": "824008239betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -885,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8241",
+      "selected": "false",
+      "text": "824108240alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -854,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8242",
+      "selected": "false",
+      "text": "824208241betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -823,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8243",
+      "selected": "false",
+      "text": "824308242alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -792,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8244",
+      "selected": "false",
+      "text": "824408243betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -761,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8245",
+      "selected": "false",
+      "text": "824508244alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -730,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8246",
+      "selected": "false",
+      "text": "824608245betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -699,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8247",
+      "selected": "false",
+      "text": "824708246alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -668,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8248",
+      "selected": "false",
+      "text": "824808247betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -637,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8249",
+      "selected": "false",
+      "text": "824908248alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -606,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8250",
+      "selected": "false",
+      "text": "825008249betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -575,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8251",
+      "selected": "false",
+      "text": "825108250alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -544,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8252",
+      "selected": "false",
+      "text": "825208251betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -513,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8253",
+      "selected": "false",
+      "text": "825308252alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -482,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8254",
+      "selected": "false",
+      "text": "825408253betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -451,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8255",
+      "selected": "false",
+      "text": "825508254alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -420,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8256",
+      "selected": "false",
+      "text": "825608255betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -389,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8257",
+      "selected": "false",
+      "text": "825708256alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -358,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8258",
+      "selected": "false",
+      "text": "825808257betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -327,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8259",
+      "selected": "false",
+      "text": "825908258alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -296,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8260",
+      "selected": "false",
+      "text": "826008259betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -265,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8261",
+      "selected": "false",
+      "text": "826108260alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -234,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8262",
+      "selected": "false",
+      "text": "826208261betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -203,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8263",
+      "selected": "false",
+      "text": "826308262alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -172,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8264",
+      "selected": "false",
+      "text": "826408263betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -141,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8265",
+      "selected": "false",
+      "text": "826508264alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -110,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8266",
+      "selected": "false",
+      "text": "826608265betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -79,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8267",
+      "selected": "false",
+      "text": "826708266alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": -48,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8268",
+      "selected": "false",
+      "text": "826808267betaordinary",
+      "rect": {
+        "x": 320,
+        "y": -17,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8269",
+      "selected": "false",
+      "text": "826908268alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 14,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8270",
+      "selected": "false",
+      "text": "827008269betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 45,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8271",
+      "selected": "false",
+      "text": "827108270alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 76,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8272",
+      "selected": "false",
+      "text": "827208271betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 107,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8273",
+      "selected": "false",
+      "text": "827308272alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 138,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8274",
+      "selected": "false",
+      "text": "827408273betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 169,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8275",
+      "selected": "false",
+      "text": "827508274alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 200,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8276",
+      "selected": "false",
+      "text": "827608275betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 231,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8277",
+      "selected": "false",
+      "text": "827708276alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 262,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8278",
+      "selected": "false",
+      "text": "827808277betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 293,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8279",
+      "selected": "false",
+      "text": "827908278alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 324,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8280",
+      "selected": "false",
+      "text": "828008279betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 355,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8281",
+      "selected": "false",
+      "text": "828108280alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 386,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8282",
+      "selected": "false",
+      "text": "828208281betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 417,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8283",
+      "selected": "false",
+      "text": "828308282alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 448,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8284",
+      "selected": "false",
+      "text": "828408283betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 479,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8285",
+      "selected": "false",
+      "text": "828508284alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 510,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8286",
+      "selected": "false",
+      "text": "828608285betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 541,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8287",
+      "selected": "false",
+      "text": "828708286alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 572,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8288",
+      "selected": "false",
+      "text": "828808287betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 603,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8289",
+      "selected": "false",
+      "text": "828908288alphaordinary",
+      "rect": {
+        "x": 320,
+        "y": 634,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8290",
+      "selected": "false",
+      "text": "829008289betaordinary",
+      "rect": {
+        "x": 320,
+        "y": 665,
+        "w": 701,
+        "h": 31
+      }
+    }
+  ],
+  "controls": [
+    {
+      "label": "Workspace file path",
+      "role": null,
+      "value": "ui-v2-30050.csv",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "checked": false,
+      "rect": {
+        "x": 477.328125,
+        "y": 78,
+        "w": 545.671875,
+        "h": 25
+      }
+    },
+    {
+      "label": "Choose local CSV or TSV",
+      "role": null,
+      "value": "",
+      "title": "Choose local CSV or TSV",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 324,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "First record is header",
+      "role": null,
+      "value": "",
+      "title": "First record is header",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 358,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Refresh source",
+      "role": null,
+      "value": "",
+      "title": "Refresh source",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 392,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Filter",
+      "role": null,
+      "value": "",
+      "title": "Filter (Ctrl+F)",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 426,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Copy selected rows",
+      "role": null,
+      "value": "",
+      "title": "Copy selected rows (Ctrl+C)",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 460,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Reveal hidden columns",
+      "role": null,
+      "value": "",
+      "title": "Reveal hidden columns",
+      "disabled": true,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 494,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Sort mode",
+      "role": null,
+      "value": "auto",
+      "title": "Sort mode",
+      "disabled": true,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 528,
+        "y": 114.5,
+        "w": 87,
+        "h": 27
+      }
+    },
+    {
+      "label": "Column menu id",
+      "role": null,
+      "value": "",
+      "title": "Column options for id",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 518,
+        "y": 153,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize id",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "160",
+      "rect": {
+        "x": 543,
+        "y": 147,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Column menu text",
+      "role": null,
+      "value": "",
+      "title": "Column options for text",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 678,
+        "y": 153,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize text",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "160",
+      "rect": {
+        "x": 703,
+        "y": 147,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Column menu note",
+      "role": null,
+      "value": "",
+      "title": "Column options for note",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 838,
+        "y": 153,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize note",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "160",
+      "rect": {
+        "x": 863,
+        "y": 147,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Toggle row 1 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256269,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 2 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256238,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 3 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256207,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 4 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256176,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 5 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256145,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 6 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256114,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 7 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256083,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256052,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 9 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -256021,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 10 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255990,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 11 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255959,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 12 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255928,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 13 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255897,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 14 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255866,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 15 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255835,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 16 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255804,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 17 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255773,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 18 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255742,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 19 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255711,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 20 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -255680,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8221 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1449,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8222 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1418,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8223 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1387,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8224 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1356,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8225 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1325,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8226 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1294,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8227 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1263,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8228 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1232,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8229 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1201,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8230 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1170,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8231 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1139,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8232 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1108,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8233 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1077,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8234 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1046,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8235 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -1015,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8236 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -984,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8237 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -953,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8238 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -922,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8239 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -891,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8240 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -860,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8241 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -829,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8242 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -798,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8243 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -767,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8244 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -736,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8245 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -705,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8246 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -674,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8247 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -643,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8248 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -612,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8249 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -581,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8250 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -550,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8251 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -519,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8252 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -488,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8253 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -457,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8254 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -426,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8255 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -395,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8256 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -364,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8257 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -333,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8258 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -302,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8259 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -271,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8260 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -240,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8261 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -209,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8262 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -178,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8263 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -147,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8264 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -116,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8265 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -85,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8266 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -54,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8267 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": -23,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8268 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 8,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8269 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 39,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8270 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 70,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8271 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 101,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8272 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 132,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8273 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 163,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8274 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 194,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8275 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 225,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8276 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 256,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8277 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 287,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8278 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 318,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8279 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 349,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8280 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 380,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8281 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 411,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8282 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 442,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8283 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 473,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8284 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 504,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8285 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 535,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8286 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 566,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8287 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 597,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8288 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 628,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8289 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 659,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8290 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 690,
+        "w": 701,
+        "h": 5
+      }
+    }
+  ]
+}

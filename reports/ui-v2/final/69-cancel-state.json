@@ -1,0 +1,387 @@
+{
+  "utc": "2026-10-21T19:57:33.230Z",
+  "ms": 1394391.1000000015,
+  "title": "CSV Viewer",
+  "url": "paseo://app/h/srv_Ssxondu_-ziz/workspace/wks_a7f3cc280e23e217",
+  "status": "1 of 30,050 rows1 selected646.1 kBReady",
+  "drop": false,
+  "path": "ui-v2-30050.csv",
+  "focus": "CSV viewer",
+  "rows": [
+    {
+      "label": null,
+      "selected": null,
+      "text": "#id↓⋮text⋮",
+      "rect": {
+        "x": 320,
+        "y": 219,
+        "w": 711,
+        "h": 34
+      }
+    },
+    {
+      "label": "Select row 1",
+      "selected": "true",
+      "text": "100002alpha",
+      "rect": {
+        "x": 320,
+        "y": 253,
+        "w": 711,
+        "h": 31
+      }
+    }
+  ],
+  "controls": [
+    {
+      "label": "Workspace file path",
+      "role": null,
+      "value": "ui-v2-30050.csv",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "checked": false,
+      "rect": {
+        "x": 477.328125,
+        "y": 78,
+        "w": 545.671875,
+        "h": 25
+      }
+    },
+    {
+      "label": "Choose local CSV or TSV",
+      "role": null,
+      "value": "",
+      "title": "Choose local CSV or TSV",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 324,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "First record is header",
+      "role": null,
+      "value": "",
+      "title": "First record is header",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 358,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Refresh source",
+      "role": null,
+      "value": "",
+      "title": "Refresh source",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 392,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Filter",
+      "role": null,
+      "value": "",
+      "title": "Filter (Ctrl+F)",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 426,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Copy selected rows",
+      "role": null,
+      "value": "",
+      "title": "Copy selected rows (Ctrl+C)",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 460,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Reveal hidden columns",
+      "role": null,
+      "value": "",
+      "title": "Reveal hidden columns",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 494,
+        "y": 112,
+        "w": 42,
+        "h": 32
+      }
+    },
+    {
+      "label": "Sort mode",
+      "role": null,
+      "value": "auto",
+      "title": "Auto — Numeric detected",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 538,
+        "y": 114.5,
+        "w": 87,
+        "h": 27
+      }
+    },
+    {
+      "label": "Enable filter rule 1",
+      "role": null,
+      "value": "on",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "checked": true,
+      "rect": {
+        "x": 330,
+        "y": 160,
+        "w": 13,
+        "h": 13
+      }
+    },
+    {
+      "label": "Filter column 1",
+      "role": null,
+      "value": "any",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 352,
+        "y": 153,
+        "w": 109,
+        "h": 27
+      }
+    },
+    {
+      "label": "Filter operator 1",
+      "role": null,
+      "value": "contains",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 467,
+        "y": 153,
+        "w": 142,
+        "h": 27
+      }
+    },
+    {
+      "label": "Filter value 1",
+      "role": null,
+      "value": "00002",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": "false",
+      "width": null,
+      "checked": false,
+      "rect": {
+        "x": 615,
+        "y": 154,
+        "w": 355.65625,
+        "h": 25
+      }
+    },
+    {
+      "label": "Remove filter rule 1",
+      "role": null,
+      "value": "",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 976.65625,
+        "y": 154,
+        "w": 21.171875,
+        "h": 25
+      }
+    },
+    {
+      "label": "Add filter rule after 1",
+      "role": null,
+      "value": "",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 1003.828125,
+        "y": 154,
+        "w": 21.171875,
+        "h": 25
+      }
+    },
+    {
+      "label": "Match filter rules",
+      "role": null,
+      "value": "all",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 326,
+        "y": 186,
+        "w": 100,
+        "h": 27
+      }
+    },
+    {
+      "label": "Case sensitive",
+      "role": null,
+      "value": "",
+      "title": "Case sensitive",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 432,
+        "y": 187,
+        "w": 27.296875,
+        "h": 25
+      }
+    },
+    {
+      "label": "Apply filter",
+      "role": null,
+      "value": "",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 465.296875,
+        "y": 187,
+        "w": 43.015625,
+        "h": 25
+      }
+    },
+    {
+      "label": "Column menu id",
+      "role": null,
+      "value": "",
+      "title": "Column options for id",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 508,
+        "y": 225,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize id",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "150",
+      "rect": {
+        "x": 533,
+        "y": 219,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Column menu text",
+      "role": null,
+      "value": "",
+      "title": "Column options for text",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 668,
+        "y": 225,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize text",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "160",
+      "rect": {
+        "x": 693,
+        "y": 219,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Toggle row 1 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "true",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 278,
+        "w": 711,
+        "h": 5
+      }
+    }
+  ]
+}

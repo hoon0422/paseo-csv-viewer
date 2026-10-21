@@ -1,0 +1,50 @@
+[
+  {
+    "name": "All 18 package entries equal merged source and installed Space files; plugin running",
+    "status": "passed"
+  },
+  {
+    "name": "All 23 native ADR 0003 timing checks pass",
+    "status": "passed"
+  },
+  {
+    "name": "Native viewport Ctrl+A selected rows 1\u201317 only",
+    "status": "passed"
+  },
+  {
+    "name": "Native oversized Shift range preserved one selected row and showed the cap toast",
+    "status": "passed"
+  },
+  {
+    "name": "30,050 loaded rows, 104 mounted rows, trusted native wheel input measured",
+    "status": "passed"
+  },
+  {
+    "name": "Corrected regex returns the three expected IDs",
+    "status": "passed"
+  },
+  {
+    "name": "Header toggle and confirmed new source reset sort/filter/hidden/width/selection/expansion",
+    "status": "passed"
+  },
+  {
+    "name": "Rejected path preserves matching count; warning Cancel retains changed presentation",
+    "status": "passed"
+  },
+  {
+    "name": "Native warning OK opens 500000100-byte fixture and reaches Ready",
+    "status": "passed"
+  },
+  {
+    "name": "Native row TSV and double-click cell clipboard values match exactly",
+    "status": "passed"
+  },
+  {
+    "name": "Final readback confirms no owned 5 GB benchmark remains",
+    "status": "passed"
+  },
+  {
+    "name": "All relative README evidence links resolve",
+    "status": "passed"
+  }
+]
