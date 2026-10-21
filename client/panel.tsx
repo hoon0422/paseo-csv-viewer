@@ -169,6 +169,14 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       </Pressable>
       {busy && <Text style={{ color: muted }}>Opening preview…</Text>}
       {!!message && <Text accessibilityRole="alert" style={{ color: foreground }}>{message}</Text>}
+      {status?.sourceChanged && status.phase === "complete" && <Text accessibilityRole="alert" style={{ color: foreground }}>
+        Source file changed or is no longer accessible. Showing the completed snapshot; refresh to read the current file.
+      </Text>}
+      {selectedSource.current && !busy && <Pressable accessibilityRole="button" accessibilityLabel="Refresh source"
+        onPress={() => { if (selectedSource.current) void open(selectedSource.current); }}
+        style={{ alignSelf: "flex-start", padding: 9, borderWidth: 1, borderColor: muted, borderRadius: 6 }}>
+        <Text style={{ color: foreground }}>Refresh</Text>
+      </Pressable>}
       {preview && <>
         <Text style={{ color: foreground }}>{preview.fileName} · {preview.sourceBytes} bytes</Text>
         {status && <Text accessibilityRole="text" style={{ color: status.phase === "error" ? foreground : muted }}>
@@ -185,7 +193,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           <Pressable accessibilityRole="button" accessibilityLabel="Next rows" disabled={pageBusy || offset + rows.length >= status.rowCount}
             onPress={() => void navigate(offset + preview.limit)}><Text style={{ color: foreground }}>Next</Text></Pressable>
         </View>}
-        {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
+        {status?.sourceChanged && status.phase !== "complete" ? null : preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
           {rows.length === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={preview.sessionId} columns={preview.columns} rows={rows}
             theme={{ foreground, muted, border: theme.colors.border }} /></>}

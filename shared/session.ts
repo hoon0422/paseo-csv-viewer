@@ -36,6 +36,7 @@ export const sessionStatus = defineRpc({
     sourceBytes: z.number().nonnegative(),
     percent: z.number().min(0).max(100).nullable(),
     rowCount: z.number().nonnegative().nullable(),
+    sourceChanged: z.boolean(),
   }),
 });
 

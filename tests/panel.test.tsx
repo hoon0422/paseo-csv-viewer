@@ -129,3 +129,38 @@ test("two pending OS drops keep action order when locality checks resolve out of
     assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "new.csv-0");
   });
 });
+
+test("panel shows a source change notice and Refresh loads the selected file", async () => {
+  await panelTest(async ({ tree, zone, file, press, wait }) => {
+    const source = await file("updated.csv", 2);
+    await act(async () => { zone.drop(source); });
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, value" }).length > 0);
+    await wait(() => JSON.stringify(tree.toJSON()).includes("All rows ready"));
+    await writeFile(source, "id,value\n0,new\n1,latest\n");
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Source file changed"));
+    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "updated.csv-0");
+    await press("Refresh source");
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, value" })
+      .some((cell) => cell.findByType("div").children[0] === "new"));
+    assert.equal(JSON.stringify(tree.toJSON()).includes("Source file changed"), false);
+  });
+});
+
+test("a newer selection wins over a pending Refresh", async () => {
+  await panelTest(async ({ tree, zone, file, wait }) => {
+    const first = await file("first.csv", 2);
+    const second = await file("second.csv", 2);
+    await act(async () => { zone.drop(first); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("All rows ready"));
+    await writeFile(first, "id,value\n" + "0,changed\n".repeat(30_000));
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Source file changed"));
+    await act(async () => {
+      tree.root.findByProps({ accessibilityLabel: "Refresh source" }).props.onPress();
+      zone.drop(second);
+    });
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, value" })
+      .some((cell) => cell.findByType("div").children[0] === "second.csv-0"));
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 100)); });
+    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "second.csv-0");
+  });
+});
