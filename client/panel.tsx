@@ -1,18 +1,17 @@
 import { useWorkspace, useRpc, type PluginWorkspacePanelProps } from "@getpaseo/plugin/client";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useId, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Text } from "react-native";
 import { Icon } from "@getpaseo/plugin/client/react-native";
 import type { z } from "zod";
-import { closePreview, openPreview, pageQuery, pageRows, sessionStatus, type Filter, type source } from "../shared/session";
+import { activeRule, closePreview, openPreview, PAGE_SIZE, pageQuery, pageRows, sessionStatus, type Filter, type Sort, type source } from "../shared/session";
 import { chooseLocalFile, listenForDrops } from "./drop";
 import { TableView, type TablePresentation } from "./table";
-import { FilterBar, activeRule, emptyFilter } from "./filter";
+import { FilterBar, emptyFilter } from "./filter";
 
 type Source = z.output<typeof source>;
 type Preview = z.output<typeof openPreview.output>;
 type Status = z.output<typeof sessionStatus.output>;
-type Sort = NonNullable<z.output<typeof pageRows.input>["sort"]>;
 
 export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspacePanelProps) {
   const [path, setPath] = useState("");
@@ -62,6 +61,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const statusRpc = useRpc(sessionStatus);
   const queryRpc = useRpc(pageQuery);
   const mutation = useMutation({ mutationFn: openRpc });
+  const visibleColumns = useMemo(() => preview?.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) ?? [], [preview?.columns, table.hidden]);
+  const isMac = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform || navigator.userAgent || "");
 
   async function open(file: Source, header = currentHeader.current, refresh = false) {
     if (!mounted.current) return;
@@ -156,7 +157,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     nextPosition.current = undefined;
     moreRows.current = true;
     setTable((current) => ({ ...current, selected: [] }));
-    // A query/source generation owns scroll position and expanded rows.
+    // Sort, filter and source changes reset scroll position and expanded rows.
     setTableKey((key) => key + 1);
   }
 
@@ -209,9 +210,9 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setPageBusy(true);
     if (!append) setQueryPending(true);
     try {
-      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: 200,
+      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: PAGE_SIZE,
         afterPosition: append ? nextPosition.current : undefined,
-        filter: nextFilter ? { ...nextFilter, visibleColumns: preview.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) } : undefined,
+        filter: nextFilter ? { ...nextFilter, visibleColumns } : undefined,
         requestId: query, sort: nextSort ?? undefined });
       let page: z.output<typeof pageRows.output>;
       for (;;) {
@@ -223,7 +224,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       if (!mounted.current || turn !== generation.current || request !== pageRequest.current || query !== queryRequest.current || session.current !== preview.sessionId) return;
       setRows((current) => append ? [...current, ...page.rows] : page.rows);
       nextPosition.current = page.nextPosition ?? undefined;
-      moreRows.current = page.rows.length === 200 && (page.totalRows === null || nextOffset + page.rows.length < page.totalRows);
+      moreRows.current = page.rows.length === PAGE_SIZE && (page.totalRows === null || nextOffset + page.rows.length < page.totalRows);
       setTotalRows(page.totalRows);
       setSortMode(page.sortMode);
     } catch (cause) {
@@ -321,9 +322,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
 
   function copySelected() {
     if (!table.selected.length) return;
-    const visible = preview?.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) ?? [];
     const tsv = (value: string) => /[\t\r\n"]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
-    const value = [...table.selected].sort((a, b) => a - b).map((index) => visible.map((column) => tsv(rows[index]?.[column] ?? "")).join("\t")).join("\n");
+    const value = [...table.selected].sort((a, b) => a - b).map((index) => visibleColumns.map((column) => tsv(rows[index]?.[column] ?? "")).join("\t")).join("\n");
     void copy(value, `Copied ${table.selected.length} ${table.selected.length === 1 ? "row" : "rows"}`);
   }
 
@@ -334,7 +334,6 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   }
 
   function selectRow(index: number, event: MouseEvent) {
-    const mac = /Mac/i.test(navigator.platform || navigator.userAgent || "");
     const anchor = lastClickedRow.current ?? index;
     if (event.shiftKey && Math.abs(index - anchor) >= 10_000) {
       setToast({ message: "Can't select more than 10,000 rows" });
@@ -342,7 +341,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     }
     const selected = event.shiftKey
       ? Array.from({ length: Math.abs(index - anchor) + 1 }, (_, offset) => Math.min(index, anchor) + offset)
-      : (mac ? event.metaKey : event.ctrlKey)
+      : (isMac ? event.metaKey : event.ctrlKey)
         ? table.selected.includes(index) ? table.selected.filter((row) => row !== index) : [...table.selected, index]
         : [index];
     if (selectRows(selected)) lastClickedRow.current = index;
@@ -352,7 +351,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const muted = theme.colors.foregroundMuted;
   const colors = theme.colors;
   const ready = status?.phase === "complete" && !busy;
-  const modifier = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform || navigator.userAgent || "") ? "⌘" : "Ctrl+";
+  const modifier = isMac ? "⌘" : "Ctrl+";
   const iconButton = (label: string, icon: string, action: () => void, disabled = false, title = label, pressed?: boolean, badge?: number) => (
     <span title={title} style={{ display: "inline-flex" }}>
       <button type="button" aria-label={label} title={title} disabled={disabled} aria-pressed={pressed} onClick={action}
@@ -374,7 +373,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const unit = Math.min(4, Math.floor(Math.log10(Math.max(1, bytes)) / 3));
   const size = `${(bytes / 1000 ** unit).toFixed(1)} ${["B", "kB", "MB", "GB", "TB"][unit]}`;
   const state = busy ? "Opening preview…" : status?.phase === "error" ? status.message
-    : queryPending || pageBusy ? (filter ? "Filtering…" : sort ? "Sorting…" : "Loading rows…")
+    : queryPending || (pageBusy && !sort && !filter) ? (filter ? "Filtering…" : sort ? "Sorting…" : "Loading rows…")
     : ready ? "Ready" : preview ? `Preparing${status?.percent == null ? "…" : ` ${Math.round(status.percent)}%`}` : "No source";
   const textButtonStyle = { color: foreground, backgroundColor: colors.surface0, border: `1px solid ${colors.border}`, borderRadius: 4, padding: 4 };
   const sortTitle = sort?.mode === "auto" ? `Auto${sortMode ? ` — ${sortMode === "numeric" ? "Numeric" : "Text"} detected` : " — detection pending"}` : "Sort mode";

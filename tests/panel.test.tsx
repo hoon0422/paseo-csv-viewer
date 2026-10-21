@@ -49,6 +49,24 @@ test("filter rules wait for Apply, and rule checkboxes reapply immediately", asy
   });
 });
 
+test("filter rule inputs keep their identity when edited and when a preceding rule is removed", async () => {
+  await panelTest(async ({ tree, zone, file, press, wait }) => {
+    await act(async () => { zone.drop(await file("rule-identity.csv", 3)); });
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    await press("Filter");
+    await press("Add filter rule after 1");
+    await press("Add filter rule after 2");
+    const input = tree.root.findByProps({ "aria-label": "Filter value 3" });
+    await change(tree, "Filter value 3", "keep focus");
+    assert.ok(tree.root.findByProps({ "aria-label": "Filter value 3" }) === input, "Editing or inserting must preserve the input");
+    await press("Remove filter rule 2");
+    assert.ok(tree.root.findByProps({ "aria-label": "Filter value 2" }) === input, "Removing an earlier rule must preserve the input");
+    assert.equal(input.props.value, "keep focus");
+    await press("Add filter rule after 1");
+    assert.ok(tree.root.findByProps({ "aria-label": "Filter value 3" }) === input, "Editing or inserting must preserve the input");
+  });
+});
+
 test("filter rules combine numeric ranges, empty cells, match mode and case sensitivity", async () => {
   await panelTest(async ({ tree, zone, write, press, wait }) => {
     await act(async () => { zone.drop(await write("operators.csv", "id,city,note\n1,Toronto,\n2,Ottawa,x\n3,toronto,y\n4,Montreal,\n")); });
@@ -270,7 +288,7 @@ async function panelTest(run: (app: {
   pageCalls: () => { filter?: unknown; sort?: unknown }[];
   clipboard: () => string;
   press: (label: string, modifiers?: { ctrlKey?: boolean }) => Promise<void>; wait: (condition: () => boolean) => Promise<void>;
-}) => Promise<void>) {
+}) => Promise<void>, platform = "") {
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-panel-"));
   const sessions = createSessions();
   const zone = new DropZone();
@@ -283,7 +301,7 @@ async function panelTest(run: (app: {
   let statusGate = Promise.resolve();
   const pageCalls: { filter?: unknown; sort?: unknown }[] = [];
   let clipboard = "";
-  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async (text: string) => { clipboard = text; } } } });
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { platform, clipboard: { writeText: async (text: string) => { clipboard = text; } } } });
   let opens = 0;
   Object.defineProperty(globalThis, "window", { configurable: true, value: {
     paseoDesktop: { webUtils: { getPathForFile: (file: { path: string }) => file.path }, invoke: () => status() },
@@ -364,35 +382,37 @@ async function panelTest(run: (app: {
 }
 
 test("row clicks replace, toggle and extend Selection in displayed order without checkboxes", async () => {
-  await panelTest(async ({ tree, zone, file, wait }) => {
-    await act(async () => { zone.drop(await file("selection.csv", 20)); });
-    await wait(() => tree.root.findAllByType(TableView).some((table) => table.props.rows.length === 20));
-    const selected = () => tree.root.findByType(TableView).props.presentation.selected;
-    const click = async (row: number, modifiers = {}) => {
-      await act(async () => { tree.root.findByProps({ "aria-label": `Select row ${row}` }).props.onClick(modifiers); });
-    };
-    assert.equal(tree.root.findAllByProps({ accessibilityRole: "checkbox" }).length, 0);
-    await click(4);
-    assert.deepEqual(selected(), [3]);
-    await click(2);
-    assert.deepEqual(selected(), [1]);
-    await click(5, { ctrlKey: true });
-    assert.deepEqual(selected(), [1, 4]);
-    await click(2, { ctrlKey: true });
-    assert.deepEqual(selected(), [4]);
-    await click(6, { shiftKey: true });
-    assert.deepEqual(selected(), [1, 2, 3, 4, 5]);
-    await click(4, { shiftKey: true });
-    assert.deepEqual(selected(), [3, 4, 5]);
-    assert.equal(tree.root.findByProps({ "aria-label": "Select row 4" }).props["aria-selected"], true);
-    assert.equal(tree.root.findByProps({ "aria-label": "Select row 4" }).props.style.backgroundColor, "rgba(128, 128, 128, 0.25)");
-    assert.ok(tree.root.findByProps({ "aria-label": "Source status" }).findAllByType("span").some((span) => span.children.join("") === "3 selected"));
-    Object.defineProperty(navigator, "platform", { configurable: true, value: "MacIntel" });
-    await click(1, { metaKey: true });
-    assert.deepEqual(selected(), [3, 4, 5, 0]);
-    await click(1, { ctrlKey: true });
-    assert.deepEqual(selected(), [0]);
-  });
+  for (const platform of ["Linux", "MacIntel"]) {
+    await panelTest(async ({ tree, zone, file, wait }) => {
+      await act(async () => { zone.drop(await file("selection.csv", 20)); });
+      await wait(() => tree.root.findAllByType(TableView).some((table) => table.props.rows.length === 20));
+      const selected = () => tree.root.findByType(TableView).props.presentation.selected;
+      const click = async (row: number, modifiers = {}) => {
+        await act(async () => { tree.root.findByProps({ "aria-label": `Select row ${row}` }).props.onClick(modifiers); });
+      };
+      assert.equal(tree.root.findAllByProps({ accessibilityRole: "checkbox" }).length, 0);
+      await click(4);
+      assert.deepEqual(selected(), [3]);
+      await click(2);
+      assert.deepEqual(selected(), [1]);
+      const modifier = platform === "MacIntel" ? { metaKey: true } : { ctrlKey: true };
+      await click(5, modifier);
+      assert.deepEqual(selected(), [1, 4]);
+      await click(2, modifier);
+      assert.deepEqual(selected(), [4]);
+      await click(6, { shiftKey: true });
+      assert.deepEqual(selected(), [1, 2, 3, 4, 5]);
+      await click(4, { shiftKey: true });
+      assert.deepEqual(selected(), [3, 4, 5]);
+      assert.equal(tree.root.findByProps({ "aria-label": "Select row 4" }).props["aria-selected"], true);
+      assert.equal(tree.root.findByProps({ "aria-label": "Select row 4" }).props.style.backgroundColor, "rgba(128, 128, 128, 0.25)");
+      assert.ok(tree.root.findByProps({ "aria-label": "Source status" }).findAllByType("span").some((span) => span.children.join("") === "3 selected"));
+      await click(1, modifier);
+      assert.deepEqual(selected(), [3, 4, 5, 0]);
+      await click(1, platform === "MacIntel" ? { ctrlKey: true } : { metaKey: true });
+      assert.deepEqual(selected(), [0]);
+    }, platform);
+  }
 });
 
 test("panel shortcuts select partly visible rows and copy only while focused outside inputs during Preparation", async () => {
@@ -528,6 +548,33 @@ test("scrolling appends 200 rows once, preserves selection and stops at the end"
   });
 });
 
+test("sorting and filtering status ends after the first page and stays Ready while appending", async () => {
+  await panelTest(async ({ tree, zone, file, press, wait, holdPage }) => {
+    await act(async () => { zone.drop(await file("status.csv", 650)); });
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    const table = () => tree.root.findByType(TableView);
+    const text = () => JSON.stringify(tree.toJSON());
+    for (const operation of ["Sorting…", "Filtering…"]) {
+      let release!: () => void;
+      holdPage(new Promise<void>((resolve) => { release = resolve; }));
+      try {
+        if (operation === "Sorting…") await press("Sort column 1 id descending");
+        else await applyValue(tree, "status.csv");
+        assert.ok(text().includes(operation));
+      } finally { await act(async () => { release(); }); }
+      await wait(() => table().props.rows.length === 200 && text().includes("Ready"));
+      holdPage(new Promise<void>((resolve) => { release = resolve; }));
+      try {
+        await act(async () => { table().props.onEndReached(); });
+        assert.equal(text().includes(operation), false);
+        assert.ok(text().includes("Ready"));
+        assert.equal(tree.root.findAllByProps({ "aria-label": operation === "Sorting…" ? "Cancel sort" : "Cancel filter" }).length, 0);
+      } finally { await act(async () => { release(); }); }
+      await wait(() => table().props.rows.length === 400);
+    }
+  });
+});
+
 test("cancelling an unfiltered sort restores source order and supersedes its page", async () => {
   await panelTest(async ({ tree, zone, file, holdSort, pageCalls, press, wait }) => {
     const source = await file("sort.csv", 120);
@@ -546,7 +593,7 @@ test("cancelling an unfiltered sort restores source order and supersedes its pag
   });
 });
 
-test("filtered cursor pages append across gaps and query changes collapse expanded rows", async () => {
+test("filtered cursor pages append across gaps and sort or filter changes collapse expanded rows", async () => {
   await panelTest(async ({ tree, zone, write, press, wait }) => {
     await act(async () => { zone.drop(await write("gaps.csv", "id,value\n" + Array.from({ length: 640 }, (_, i) =>
       `${i},${i % 2 === 0 ? "keep" : "skip"}\n`).join(""))); });

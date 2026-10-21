@@ -1,6 +1,5 @@
 import type { DuckDBConnection } from "@duckdb/node-api";
-
-export type Sort = { column: number; direction: "asc" | "desc"; mode: "auto" | "numeric" | "text" };
+import type { Sort } from "../shared/session";
 
 // Whitespace is ASCII space, tab, CR or LF; keep the numeric grammar stricter than DuckDB casts.
 const whitespace = "' \t\r\n'";

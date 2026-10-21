@@ -93,10 +93,10 @@ test("an edit during preparation invalidates the preview instead of completing m
 });
 
 test("a source replacement during filtering returns only the completed snapshot", async () => {
-  const directory = await mkdtemp(join(tmpdir(), "csv-viewer-query-change-"));
+  const directory = await mkdtemp(join(tmpdir(), "csv-viewer-filter-change-"));
   const sessions = createSessions();
   try {
-    const file = join(directory, "query.csv");
+    const file = join(directory, "filter.csv");
     await writeFile(file, "id,value\n" + Array.from({ length: 100_000 }, (_, i) => `${i},${i === 99_999 ? "needle-old" : "ordinary"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
