@@ -1,0 +1,26 @@
+{
+  "initial": {
+    "content": [
+      {
+        "type": "text",
+        "text": "error: invalid argument: sandbox paseo-x64-ubuntu-ticket-2 is Paused; resume it first"
+      }
+    ],
+    "structuredContent": {
+      "error": {
+        "kind": "invalid_argument",
+        "message": "invalid argument: sandbox paseo-x64-ubuntu-ticket-2 is Paused; resume it first"
+      }
+    },
+    "isError": true
+  },
+  "retry": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Wed Oct 21 20:30:44 UTC 2026\nLinux paseo-x64-ubuntu-ticket-2 6.8.0-146-generic #146-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep  3 16:12:30 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux\n               total        used        free      shared  buff/cache   available\nMem:            3914        1335        1092          38        1804        2578\nSwap:              0           0           0\nFilesystem      Size  Used Avail Use% Mounted on\n/dev/vda3        20G   15G  4.0G  79% /\n    PID    PPID COMMAND\n      1       0 /sbin/init\n      2       0 [kthreadd]\n      3       2 [pool_workqueue_release]\n      4       2 [kworker/R-rcu_g]\n      5       2 [kworker/R-rcu_p]\n      6       2 [kworker/R-slub_]\n      7       2 [kworker/R-netns]\n     10       2 [kworker/0:0H-events_highpri]\n     12       2 [kworker/R-mm_pe]\n     13       2 [rcu_tasks_kthread]\n     14       2 [rcu_tasks_rude_kthread]\n     15       2 [rcu_tasks_trace_kthread]\n     16       2 [ksoftirqd/0]\n     17       2 [rcu_preempt]\n     18       2 [migration/0]\n     19       2 [idle_inject/0]\n     20       2 [cpuhp/0]\n     21       2 [cpuhp/1]\n     22       2 [idle_inject/1]\n     23       2 [migration/1]\n     24       2 [ksoftirqd/1]\n     26       2 [kworker/1:0H-kblockd]\n     27       2 [kdevtmpfs]\n     28       2 [kworker/R-inet_]\n     29       2 [kauditd]\n     31       2 [khungtaskd]\n     33       2 [oom_reaper]\n     35       2 [kworker/R-write]\n     36       2 [kcompactd0]\n     37       2 [ksmd]\n     38       2 [khugepaged]\n     39       2 [kworker/R-kinte]\n     40       2 [kworker/R-kbloc]\n     41       2 [kworker/R-blkcg]\n     42       2 [irq/9-acpi]\n     43       2 [kworker/R-tpm_d]\n     44       2 [kworker/R-ata_s]\n     45       2 [kworker/R-md]\n     46       2 [kworker/R-md_bi]\n     47       2 [kworker/R-edac-]\n     48       2 [kworker/R-devfr]\n     49       2 [watchdogd]\n     50       2 [kworker/R-quota]\n     51       2 [kworker/0:1H-kblockd]\n     52       2 [kswapd0]\n     53       2 [ecryptfs-kthread]\n     54       2 [kworker/R-kthro]\n     55       2 [kworker/R-acpi_]\n     56       2 [kworker/R-mld]\n     57       2 [kworker/R-ipv6_]\n     65       2 [kworker/R-kstrp]\n     67       2 [kworker/u5:0]\n     80       2 [kworker/R-charg]\n    130       2 [scsi_eh_0]\n    131       2 [kworker/R-scsi_]\n    132       2 [scsi_eh_1]\n    133       2 [kworker/R-scsi_]\n    134       2 [scsi_eh_2]\n    135       2 [kworker/R-scsi_]\n[exit 0]"
+      }
+    ],
+    "isError": false
+  }
+}

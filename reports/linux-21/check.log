@@ -1,0 +1,411 @@
+npm notice run paseo-csv-viewer@0.1.0 check
+npm notice run npm run typecheck && node scripts/build-child.mjs --check
+npm notice run paseo-csv-viewer@0.1.0 typecheck
+npm notice run tsc --noEmit
+npm notice run paseo-csv-viewer@0.1.0 pretest
+npm notice run npm run build
+npm notice run paseo-csv-viewer@0.1.0 build
+npm notice run node scripts/build-child.mjs
+npm notice run paseo-csv-viewer@0.1.0 test
+npm notice run tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts*
+✔ the child bundle check detects source drift without silently rebuilding (355.670917ms)
+✔ panels share a Node child; a crash fails sessions, removes storage and restarts on demand (1648.589458ms)
+CSV Viewer Node.js child stderr: incompatible architecture
+✔ missing or incompatible Node reports a clear error, cleans storage and allows retry (115.002708ms)
+✔ Node lookup ignores relative PATH entries, directories and non-executable files (2.327334ms)
+CSV Viewer Node.js child failed: /Users/Younghoon/.config/nvm/versions/node/v26.5.0/bin/node Error: spawn ENOEXEC
+    at Timeout.fail (/Users/Younghoon/.paseo/worktrees/30yn510c/csv-21-linux/tests/child.test.ts:127:58)
+    at listOnTimeout (node:internal/timers:635:17)
+    at process.processTimers (node:internal/timers:571:7) {
+  code: 'ENOEXEC'
+}
+CSV Viewer Node.js child failed: /Users/Younghoon/.config/nvm/versions/node/v26.5.0/bin/node Error: spawn ENOEXEC
+    at Timeout.fail (/Users/Younghoon/.paseo/worktrees/30yn510c/csv-21-linux/tests/child.test.ts:127:58)
+    at listOnTimeout (node:internal/timers:635:17)
+    at process.processTimers (node:internal/timers:571:7) {
+  code: 'ENOEXEC'
+}
+✔ a spawn error without close rejects waiting and pending requests and cleans storage (19.306417ms)
+✔ closing an in-flight open rejects its delayed preview and closes the stray child session (94.321834ms)
+✔ the child rejects methods outside the session IPC allowlist (44.831792ms)
+✔ synchronous spawn failure and a missing native binding show concise architecture guidance (33.034042ms)
+✔ workspace lookup ids cannot collide with reused request ids (42.842083ms)
+✔ the child logs IPC send failures (44.943958ms)
+✔ preparation status errors are trimmed for the panel and logged in full (27.558792ms)
+✔ Any column filter covers visible columns while a rule can name a hidden column (1582.425833ms)
+✔ Any column negated text operators require no visible cell to match (128.733708ms)
+✔ Any column is empty only when all visible cells are empty, and is not empty when any has content (123.23225ms)
+✔ Any column positive text, regex and numeric operators match at least one visible cell (137.8455ms)
+✔ text filter operators combine rules, ignore incomplete rules and honor case sensitivity (136.854125ms)
+✔ numeric filter operators compare DOUBLE values using the sort numeric grammar (129.922375ms)
+CSV Viewer child request failed: Invalid regular expression: Invalid Input Error: missing ]: [
+✔ regex filters use case mode and report invalid patterns without failing the session (122.735084ms)
+CSV Viewer child request failed: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "all",
+      "any"
+    ],
+    "path": [
+      "match"
+    ],
+    "message": "Invalid option: expected one of \"all\"|\"any\""
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "expected": "boolean",
+    "code": "invalid_type",
+    "path": [
+      "caseSensitive"
+    ],
+    "message": "Invalid input: expected boolean, received string"
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "origin": "number",
+    "code": "too_small",
+    "minimum": 0,
+    "inclusive": true,
+    "path": [
+      "visibleColumns",
+      0
+    ],
+    "message": "Too small: expected number to be >=0"
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "expected": "boolean",
+    "code": "invalid_type",
+    "path": [
+      "rules",
+      0,
+      "enabled"
+    ],
+    "message": "Invalid input: expected boolean, received string"
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "number",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected number, received string"
+        }
+      ],
+      [
+        {
+          "code": "invalid_value",
+          "values": [
+            "any"
+          ],
+          "path": [],
+          "message": "Invalid input: expected \"any\""
+        }
+      ]
+    ],
+    "path": [
+      "rules",
+      0,
+      "column"
+    ],
+    "message": "Invalid input"
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "code": "invalid_union",
+    "errors": [
+      [
+        {
+          "expected": "int",
+          "format": "safeint",
+          "code": "invalid_type",
+          "path": [],
+          "message": "Invalid input: expected int, received number"
+        }
+      ],
+      [
+        {
+          "code": "invalid_value",
+          "values": [
+            "any"
+          ],
+          "path": [],
+          "message": "Invalid input: expected \"any\""
+        }
+      ]
+    ],
+    "path": [
+      "rules",
+      0,
+      "column"
+    ],
+    "message": "Invalid input"
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "contains",
+      "does not contain",
+      "=",
+      "≠",
+      "begins with",
+      "ends with",
+      "is empty",
+      "is not empty",
+      "matches regex",
+      ">",
+      "<",
+      "≥",
+      "≤",
+      "between"
+    ],
+    "path": [
+      "rules",
+      0,
+      "operator"
+    ],
+    "message": "Invalid option: expected one of \"contains\"|\"does not contain\"|\"=\"|\"≠\"|\"begins with\"|\"ends with\"|\"is empty\"|\"is not empty\"|\"matches regex\"|\">\"|\"<\"|\"≥\"|\"≤\"|\"between\""
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "rules",
+      0,
+      "value"
+    ],
+    "message": "Invalid input: expected string, received number"
+  }
+]
+CSV Viewer child request failed: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "sql"
+    ],
+    "path": [],
+    "message": "Unrecognized key: \"sql\""
+  }
+]
+CSV Viewer child request failed: Invalid filter column
+CSV Viewer child request failed: Invalid filter column
+✔ filter values are literal parameters and malformed rule inputs are rejected at both RPCs (175.995791ms)
+✔ filtered cursor pages follow the full sort, keep counts and rebuild for changed rules or sort (154.795917ms)
+CSV Viewer child request failed: INTERRUPT Error: Interrupted!
+CSV Viewer child request failed: Query superseded
+✔ a new filter cancels a running build and the cancelled filter can be retried (388.363833ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter rules wait for Apply, and rule checkboxes reapply immediately (1433.905333ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter rule inputs keep their identity when edited and when a preceding rule is removed (137.429792ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filter rules combine numeric ranges, empty cells, match mode and case sensitivity (444.257667ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Any column follows visibility while named hidden-column rules keep applying (409.744125ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ panel-local Filter shortcuts focus the value, Enter applies, and Escape closes and clears (220.536084ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Invalid regular expression: Invalid Input Error: missing ]: [
+✔ a regex error stays readable and a corrected filter recovers (791.400167ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ preparation disables sort and filter controls; Escape still clears the retained filter (824.243958ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ row clicks replace, toggle and extend Selection in displayed order without checkboxes (321.267ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ panel shortcuts select partly visible rows and copy only while focused outside inputs during Preparation (106.874709ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Selection accepts 10,000 rows and rejects an over-limit range, toggle or select-all unchanged (3967.376542ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ source changes clear the Selection anchor and the previous viewport (166.81625ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cancelling Preparation clears Selection and cannot select rows from the removed source (120.443667ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ scrolling appends 200 rows once, preserves selection and stops at the end (283.482917ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ sorting and filtering status ends after the first page and stays Ready while appending (429.893833ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Query superseded
+✔ cancelling an unfiltered sort restores source order and supersedes its page (214.184625ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Query superseded
+✔ cancelling a running sort preserves the applied filter and ignores the superseded sort page (399.21425ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Query superseded
+✔ cancelling a running filter preserves the applied sort and ignores the superseded filter page (398.043042ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filtered cursor pages append across gaps and sort or filter changes collapse expanded rows (529.378542ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Query superseded
+CSV Viewer child request failed: Query superseded
+✔ a pending append cannot mix into a new sort or filter (484.619208ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ scrolling during preparation continues from the same rows when ready (784.15975ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ preview scrolling does not wait for the first preparation status response (236.524625ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ filtered sorting and visible-column copy use the displayed order; clear keeps sorting (379.094792ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ replacement clears an old page load and header switch applies to the next drop (188.771584ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ two pending OS drops keep action order when locality checks resolve out of order (138.386375ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ an OS drop resolving after panel unload cannot open a session (27.795542ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ cross-host and malformed Paseo Files drops explain rejection without opening a source (1.94025ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ panel shows a source change notice and Refresh loads the selected file (652.058541ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ a newer selection wins over a pending Refresh (746.248041ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Query superseded
+CSV Viewer child request failed: Query superseded
+✔ filter shows pending, hidden-column matches and no results; stale filter cannot replace cleared rows (666.628042ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ large path opens wait for confirmation; Cancel preserves the current source and OK opens it (724.273917ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ drops warn only above 500,000,000 bytes, and a newer selection replaces a pending confirmation (208.33575ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ local picker waits for OK before opening a large source (143.420375ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Refresh checks growth and Cancel preserves the completed snapshot until OK (209.756625ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the path bar opens on Enter, restores edits and keeps the current table after an error (247.994125ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the shell owns compact controls, counts, sort mode, hidden columns and short-lived copy toasts (2300.081083ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ whole-panel file drops show an overlay without flickering over children or accepting text drags (150.400333ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Refresh preserves sort, filter, hidden columns and widths; header and source changes reset them (469.726917ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ shell copies raw selected visible cells as TSV, and reports clipboard errors (126.95375ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the path bar keeps an outside source absolute and working after a rejected path (119.662791ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ Clear sort from a column menu keeps the applied filter and resets selection and expansion (377.463667ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+CSV Viewer child request failed: Query superseded
+✔ choosing another column sort supersedes one still being prepared (178.511167ms)
+✔ opens a real CSV as a bounded read-only viewer session and replaces it (1497.132875ms)
+✔ source inspection reads the current size without preparing or replacing a session (116.30925ms)
+✔ empty CSV has an honest empty preview (42.688792ms)
+CSV Viewer child request failed: File is outside this workspace
+CSV Viewer child request failed: Choose a CSV or TSV file
+CSV Viewer child request failed: Choose a regular file
+✔ workspace selection stays inside its workspace and rejects other file kinds (178.401292ms)
+✔ preview response stays at 50 data rows (90.984666ms)
+✔ prepares a file-backed session and pages beyond the preview in source order (117.379833ms)
+CSV Viewer child request failed: Sort and filter are unavailable until preparation completes
+CSV Viewer child request failed: Sort and filter are unavailable until preparation completes
+CSV Viewer child request failed: Sort and filter are unavailable until preparation completes
+CSV Viewer child request failed: Sort and filter are unavailable until preparation completes
+✔ scrolls beyond the preview during preparation without interrupting the load (1208.497958ms)
+CSV Viewer child request failed: INTERRUPT Error: Interrupted!
+CSV Viewer child request failed: INTERRUPT Error: Interrupted!
+✔ superseding direct CSV pages leaves preparation running and cancellation removes storage (171.1105ms)
+CSV Viewer child request failed: Query superseded
+✔ a filtered page starts promptly and can be polled through completion (144.776958ms)
+CSV Viewer child request failed: Query superseded
+CSV Viewer child request failed: A page is already loading
+✔ rejected stale and duplicate starts leave the active filtered page pollable (175.201166ms)
+✔ filters all visible prepared columns beyond preview as literal Unicode text and clears to source order (125.285083ms)
+CSV Viewer child request failed: Query superseded
+CSV Viewer child request failed: Query superseded
+CSV Viewer child request failed: INTERRUPT Error: Interrupted!
+CSV Viewer child request failed: Query superseded
+✔ new filter, source replacement and cancellation supersede an in-flight filter (155.994792ms)
+CSV Viewer child request failed: Session cancelled
+✔ closing a pending open and cancelling preparation cannot revive that panel (161.152375ms)
+✔ a delayed open or close cannot supersede a newer panel request (113.065ms)
+CSV Viewer preparation failed: Source file changed or is no longer accessible. Refresh to read the current file.
+CSV Viewer child request failed: Rows are not ready for this session
+✔ a source removed after preview ends in an actionable error, never complete (96.645875ms)
+✔ unavailable temporary storage reports how to recover (1.214416ms)
+✔ preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes (95.29575ms)
+✔ keeps duplicate and blank headers by position and handles header-only TSV (109.323333ms)
+✔ opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF (90.532166ms)
+✔ a quoted multiline first record still defines column positions (84.923875ms)
+✔ skips leading and single-column blank lines but keeps quoted empty values (360.052917ms)
+✔ skips blank lines before and after the preview while preserving quoted newlines (151.778625ms)
+CSV Viewer child request failed: Invalid Input Error: CSV Error on Line: 2
+Original Line: 1,"unterminated
+
+Value with unterminated quote found.
+CSV Viewer child request failed: Invalid Input Error: CSV Error on Line: 3
+Original Line: 2
+Expected Number of Columns: 2 Found: 1
+CSV Viewer preparation failed: Invalid Input Error: CSV Error on Line: 5002
+Original Line: bad
+Expected Number of Columns: 2 Found: 1
+CSV Viewer child request failed: Invalid Input Error: CSV Error on Line: 2
+Original Line: 1,??
+Invalid unicode (byte sequence mismatch) detected. This file is not utf-8 encoded.
+✔ rejects malformed quoting, width and UTF-8 with locations, including after 50 rows (282.646708ms)
+✔ automatic numeric sort covers the whole file and keeps equal values in source order (1590.963ms)
+CSV Viewer child request failed: Invalid page position
+CSV Viewer child request failed: Invalid page position
+CSV Viewer child request failed: Invalid page position
+✔ consecutive 200-row pages append after a known sort position with stable ties (127.38375ms)
+✔ sorted pages preserve quoted, multiline, Unicode and empty cells (121.319125ms)
+✔ closing a sorted session removes its temporary storage and leaves the source untouched (120.720083ms)
+✔ numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact (122.229042ms)
+✔ cast-only spellings and whitespace inside numbers stay text in Numeric and Auto (1408.09125ms)
+✔ all-numeric sorts keep overflow, rounded ties and ASCII blanks stable across pages (122.68425ms)
+CSV Viewer child request failed: Invalid sort column
+✔ late nonnumeric text forces auto text order; manual numeric keeps all rows (127.158667ms)
+✔ numeric DOUBLE comparison keeps rounded ties in file order and preserves original text (123.276167ms)
+✔ DOUBLE overflow and underflow stay numeric, special spellings stay text, and blanks keep file order (119.510584ms)
+✔ filter and sort share a filtered page count while auto inference still sees late text (122.986291ms)
+CSV Viewer child request failed: INTERRUPT Error: Interrupted!
+✔ new sort requests cancel a build, and clearing sort restores file order (469.765667ms)
+✔ sorted filter keeps the completed snapshot stale until Refresh creates a new session (165.685625ms)
+✔ external edits leave a completed snapshot stale until an explicit new session (1616.177ms)
+CSV Viewer child request failed: Cannot read the source file. Check that it still exists and is accessible. ENOENT: no such file or directory, realpath '/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-revisions-4NJDxR/first.csv'
+✔ append, truncation, atomic replacement, deletion, and loss of access mark only their own snapshot stale (292.958125ms)
+CSV Viewer preparation failed: Source file changed or is no longer accessible. Refresh to read the current file.
+CSV Viewer child request failed: Rows are not ready for this session
+✔ an edit during preparation invalidates the preview instead of completing mixed rows (90.349625ms)
+✔ a source replacement during filtering returns only the completed snapshot (146.262583ms)
+CSV Viewer child request failed: Session cancelled
+✔ superseded opens and closes release session storage without reviving an old view (112.504584ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ a cell copies its raw value only on double-click or keyboard activation (17.833833ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the table copies raw cells and exposes column presentation (1287.655541ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ long column names keep visible controls compact and full accessible labels (4.091834ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the table windows loaded rows and independently expands multiline values at the row edge (21.677541ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ column edges drag with a 40 px minimum, keep manual widths above 600 and release capture (5.31225ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ double-click fit measures loaded cells outside the render window, multiline values and the header (15.035167ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ headers expose a labelled menu with sort, clear, hide, checks and keyboard dismissal (13.247084ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the column menu stays inside a compact panel, moves focus and dismisses cleanly (8.31225ms)
+✔ preparation disables sort menu actions while hide, resize and cell copy stay available (2.809083ms)
+ℹ tests 112
+ℹ suites 0
+ℹ pass 112
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21348.872333
+npm notice run paseo-csv-viewer@0.1.0 build
+npm notice run node scripts/build-child.mjs

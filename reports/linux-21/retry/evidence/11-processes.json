@@ -1,0 +1,28 @@
+{
+  "utc": "2026-10-21T20:41:16Z",
+  "processes": [
+    {
+      "pid": 40131,
+      "ppid": 40118,
+      "argv": "Paseo Daemon",
+      "exe": "/opt/Paseo/Paseo.bin",
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin",
+        "PASEO_HOME": "/home/cua/.paseo-x64-ticket-2"
+      },
+      "duckdbMappings": []
+    },
+    {
+      "pid": 42352,
+      "ppid": 40131,
+      "argv": "/opt/Paseo/Paseo.bin /opt/Paseo/resources/app.asar/node_modules/@getpaseo/server/dist/server/server/plugins/plugin-process.js",
+      "exe": "/opt/Paseo/Paseo.bin",
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin",
+        "PASEO_HOME": "/home/cua/.paseo-x64-ticket-2"
+      },
+      "duckdbMappings": []
+    }
+  ],
+  "ownedTemporaryRoots": []
+}

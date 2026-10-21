@@ -1,0 +1,12 @@
+{
+  "evidenceAssertions": "PASS",
+  "linuxRecheck": "PASS",
+  "sourceCommit": "90b519b60cfeb0155c59c1825188b08df5df19d1",
+  "integrationCommit": "fa020737da8036601a19fa0b91cabbda553c663d",
+  "testsPassed": 113,
+  "smallOpenSortFilter": "PASS",
+  "largeOpenSortFilter": "PASS",
+  "daemonAndPluginWithoutDuckDB": "PASS",
+  "nodeChildMapsDuckDB": "PASS",
+  "lastCloseStopsChildAndRemovesTemporaryRoot": "PASS"
+}

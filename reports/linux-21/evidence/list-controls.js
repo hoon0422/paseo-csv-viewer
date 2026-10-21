@@ -1,0 +1,1 @@
+[...document.querySelectorAll('button,[role="tab"],[aria-label]')].filter(e=>!e.closest('[aria-label="CSV viewer"]')).map(e=>({tag:e.tagName,label:e.getAttribute('aria-label'),role:e.getAttribute('role'),text:e.textContent?.slice(0,80),title:e.title,rect:((b)=>({x:b.x,y:b.y,w:b.width,h:b.height}))(e.getBoundingClientRect())})).filter(e=>e.rect.w&&e.rect.h)
