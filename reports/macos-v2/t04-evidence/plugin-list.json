@@ -1,0 +1,19 @@
+[
+  {
+    "id": "csv-viewer",
+    "path": "/Users/lume/csv-macos-21/t04-artifact/package",
+    "enabled": true,
+    "status": "running",
+    "name": "CSV Viewer",
+    "description": "Read-only CSV and TSV exploration in a workspace panel",
+    "media": [
+      "assets/screenshot.png"
+    ],
+    "installation": {
+      "identity": {
+        "kind": "directory",
+        "path": "/Users/lume/csv-macos-21/t04-artifact/package"
+      }
+    }
+  }
+]

@@ -1,0 +1,28 @@
+Executable=/Users/lume/csv-macos-21/node/bin/node
+Identifier=node
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=950160 flags=0x10000(runtime) hashes=29682+7 location=embedded
+VersionPlatform=1
+VersionMin=853248
+VersionSDK=983040
+Hash type=sha256 size=32
+CandidateCDHash sha256=7175c5b3761a2d5fbc7abac882c05f83c0f03f32
+CandidateCDHashFull sha256=7175c5b3761a2d5fbc7abac882c05f83c0f03f323c81dc1ebbbc2bf6958c4099
+Hash choices=sha256
+CMSDigest=7175c5b3761a2d5fbc7abac882c05f83c0f03f323c81dc1ebbbc2bf6958c4099
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=91717632
+Executable Segment flags=0x1
+Page size=4096
+CDHash=7175c5b3761a2d5fbc7abac882c05f83c0f03f32
+Signature size=8986
+Authority=Developer ID Application: Node.js Foundation (HX7739G8FX)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=20 Oct 2026 at 3:14:44 PM
+Info.plist=not bound
+TeamIdentifier=HX7739G8FX
+Runtime Version=15.0.0
+Sealed Resources=none
+Internal requirements count=1 size=164

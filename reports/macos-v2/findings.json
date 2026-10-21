@@ -1,0 +1,10 @@
+[
+  {
+    "severity": "high",
+    "title": "First CSV open crashes the external Node child during IPC deserialization",
+    "file": "server/proxy.ts",
+    "line": 57,
+    "detail": "Official Paseo 0.12.0 Electron 44.2.0 (V8 15.2) sends advanced IPC to official Node 24.22.1 (V8 13.6). Child stderr: Unable to deserialize cloned data due to invalid or unsupported version. All remaining macOS acceptance is blocked.",
+    "status": "confirmed"
+  }
+]

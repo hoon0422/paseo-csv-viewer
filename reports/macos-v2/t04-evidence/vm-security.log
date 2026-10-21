@@ -1,0 +1,27 @@
+System Integrity Protection status: disabled.
+Authenticated Root status: enabled
+boot-args	
+vm.cs_debug: 0
+vm.cs_debug_fail_on_unsigned_code: 0
+vm.cs_debug_unsigned_exec_failures: 0
+vm.cs_debug_unsigned_mmap_failures: 0
+vm.cs_enforcement_panic: 0
+security.mac.amfi.trust_cache_interface: 4
+security.mac.amfi.force_policy: 0
+security.mac.amfi.developer_mode_status: 1
+security.mac.amfi.developer_mode_resolved: 1
+security.mac.amfi.launch_constraints_enforced: 0
+security.mac.amfi.launch_constraints_3rd_party_allowed: 1
+security.mac.amfi.launch_constraints_cc_types_enforced: 15
+security.mac.amfi.launch_env_logging: 0
+security.mac.amfi.verbose_logging: 0
+security.mac.amfi.hsp_enable: 0
+security.mac.amfi.allow_only_platform_code: 0
+security.mac.amfi.platform_policy: 0
+security.mac.amfi.exec_requires_trustcache: 0
+security.mac.amfi.unsigned_code_policy: 0
+security.mac.amfi.forced_cs_kill: 0
+security.mac.amfi.recovery_on_as: 0
+security.mac.amfi.platform_ident_for_hardened_proc: 26
+security.mac.amfi.qa_root_certs_allowed: 1
+security.mac.amfi.supplemental_key_reloads: 0

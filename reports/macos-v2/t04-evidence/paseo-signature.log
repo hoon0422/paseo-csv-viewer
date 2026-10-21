@@ -1,0 +1,29 @@
+Executable=/Applications/Paseo.app/Contents/MacOS/Paseo
+Identifier=sh.paseo.desktop
+Format=app bundle with Mach-O thin (arm64)
+CodeDirectory v=20500 size=636 flags=0x10000(runtime) hashes=9+7 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=8364f9572bd9671489411ab970d41b310f3520cf
+CandidateCDHashFull sha256=8364f9572bd9671489411ab970d41b310f3520cf3548b48356a9329b1a76e8cd
+Hash choices=sha256
+CMSDigest=8364f9572bd9671489411ab970d41b310f3520cf3548b48356a9329b1a76e8cd
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=16384
+Executable Segment flags=0x1
+Page size=4096
+CDHash=8364f9572bd9671489411ab970d41b310f3520cf
+Signature size=8990
+Authority=Developer ID Application: Mohamed Boudra Ziani (99ZMJMKU9Y)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=18 Oct 2026 at 11:57:22 PM
+Notarization Ticket=stapled
+Info.plist entries=33
+TeamIdentifier=99ZMJMKU9Y
+Runtime Version=26.5.0
+Sealed Resources version=2 rules=13 files=183
+Internal requirements count=1 size=176
