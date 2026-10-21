@@ -1,0 +1,4 @@
+npm notice run paseo-csv-viewer@0.1.0 check
+npm notice run npm run typecheck && node scripts/build-child.mjs --check
+npm notice run paseo-csv-viewer@0.1.0 typecheck
+npm notice run tsc --noEmit

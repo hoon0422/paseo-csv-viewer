@@ -1,0 +1,2 @@
+npm notice run paseo-csv-viewer@0.1.0 build
+npm notice run node scripts/build-child.mjs

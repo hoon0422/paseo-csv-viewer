@@ -1,0 +1,38 @@
+[
+  {
+    "sequence": 1,
+    "timestamp": "2026-10-21T21:01:04.097Z",
+    "stream": "stdout",
+    "message": "[paseo] Loading plugin"
+  },
+  {
+    "sequence": 2,
+    "timestamp": "2026-10-21T21:01:04.474Z",
+    "stream": "stdout",
+    "message": "[paseo] Plugin ready"
+  },
+  {
+    "sequence": 3,
+    "timestamp": "2026-10-21T21:24:19.585Z",
+    "stream": "stderr",
+    "message": "CSV Viewer child request failed: Invalid regular expression: Invalid Input Error: missing ]: ["
+  },
+  {
+    "sequence": 4,
+    "timestamp": "2026-10-21T21:33:16.727Z",
+    "stream": "stderr",
+    "message": "CSV Viewer child request failed: Invalid Input Error: CSV Error on Line: 3"
+  },
+  {
+    "sequence": 5,
+    "timestamp": "2026-10-21T21:33:16.727Z",
+    "stream": "stderr",
+    "message": "Original Line: 3,4,5"
+  },
+  {
+    "sequence": 6,
+    "timestamp": "2026-10-21T21:33:16.727Z",
+    "stream": "stderr",
+    "message": "Expected Number of Columns: 2 Found: 3"
+  }
+]

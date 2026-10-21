@@ -1,0 +1,19 @@
+[Dict]
+	[Key] com.apple.security.cs.allow-dyld-environment-variables
+	[Value]
+		[Bool] true
+	[Key] com.apple.security.cs.allow-jit
+	[Value]
+		[Bool] true
+	[Key] com.apple.security.cs.allow-unsigned-executable-memory
+	[Value]
+		[Bool] true
+	[Key] com.apple.security.cs.disable-executable-page-protection
+	[Value]
+		[Bool] true
+	[Key] com.apple.security.cs.disable-library-validation
+	[Value]
+		[Bool] true
+	[Key] com.apple.security.get-task-allow
+	[Value]
+		[Bool] true
