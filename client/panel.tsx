@@ -1,12 +1,13 @@
 import { useWorkspace, useRpc, type PluginWorkspacePanelProps } from "@getpaseo/plugin/client";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useId, useRef, useState } from "react";
-import { Text, TextInput } from "react-native";
+import { Text } from "react-native";
 import { Icon } from "@getpaseo/plugin/client/react-native";
 import type { z } from "zod";
-import { closePreview, openPreview, pageQuery, pageRows, sessionStatus, type source } from "../shared/session";
+import { closePreview, openPreview, pageQuery, pageRows, sessionStatus, type Filter, type source } from "../shared/session";
 import { chooseLocalFile, listenForDrops } from "./drop";
 import { TableView, type TablePresentation } from "./table";
+import { FilterBar, activeRule, emptyFilter } from "./filter";
 
 type Source = z.output<typeof source>;
 type Preview = z.output<typeof openPreview.output>;
@@ -22,13 +23,15 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [pageBusy, setPageBusy] = useState(false);
   const [sort, setSort] = useState<Sort | null>(null);
   const [sortMode, setSortMode] = useState<"numeric" | "text" | undefined>();
-  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<Filter | undefined>();
+  const [filterDraft, setFilterDraft] = useState(emptyFilter);
   const [queryPending, setQueryPending] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [hasHeader, setHasHeader] = useState(true);
   const [table, setTable] = useState<TablePresentation>({ hidden: [], widths: {}, selected: [] });
   const [filterOpen, setFilterOpen] = useState(false);
+  const [filterFocus, setFilterFocus] = useState(0);
   const [toast, setToast] = useState<{ message: string } | null>(null);
   const [dragging, setDragging] = useState(false);
   const workspaceDirectory = useWorkspace(workspaceId, (workspace) => workspace.directory);
@@ -92,12 +95,13 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       setTotalRows(null);
       nextPosition.current = next.rows.length ? next.rows.length - 1 : undefined;
       moreRows.current = next.rows.length === next.limit;
-      queryDirty.current = refresh && !!(sort || search);
+      queryDirty.current = refresh && !!(sort || filter);
       setTableKey((key) => key + 1);
       if (!refresh) {
         setTable({ hidden: [], widths: {}, selected: [] });
         setFilterOpen(false);
-        setSearch("");
+        setFilter(undefined);
+        setFilterDraft(emptyFilter());
         setSort(null);
         setSortMode(undefined);
       }
@@ -127,13 +131,17 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     });
   }
 
-  function changeSearch(next: string) {
+  function applyFilter(next: Filter | undefined) {
+    if (status?.phase !== "complete" || busy) return;
     queryDirty.current = true;
     ++queryRequest.current;
     ++pageRequest.current;
-    setSearch(next);
+    const applied = next?.rules.some(activeRule) ? next : undefined;
+    setFilter(applied);
     resetRows();
     setQueryPending(true);
+    setMessage("");
+    void navigate(false, sort, applied ?? null);
   }
 
   function resetRows() {
@@ -148,15 +156,31 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setTableKey((key) => key + 1);
   }
 
+  function openFilter() {
+    if (status?.phase !== "complete" || busy || !preview?.columns.length) return;
+    setFilterOpen(true);
+    setFilterFocus((value) => value + 1);
+  }
+
+  function closeFilter() {
+    setFilterOpen(false);
+    setFilterDraft(emptyFilter());
+    setFilter(undefined);
+    queryDirty.current = true;
+    applyFilter(undefined);
+    zone.current?.focus({ preventScroll: true });
+  }
+
   function cancelQuery() {
     ++queryRequest.current;
     ++pageRequest.current;
     queryDirty.current = false;
-    setSearch("");
+    setFilter(undefined);
+    setFilterDraft(emptyFilter());
     setSort(null);
     setSortMode(undefined);
     resetRows();
-    void navigate(false, null, "");
+    void navigate(false, null, null);
   }
 
   function changeSort(next: Sort) {
@@ -167,10 +191,10 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     void navigate(false, next);
   }
 
-  async function navigate(append = false, nextSort = sort, nextSearch = search) {
+  async function navigate(append = false, nextSort = sort, nextFilter: Filter | null | undefined = filter) {
     // Preparation already runs when open returns, before the first status poll.
     if (!preview || busy || (status && status.phase !== "complete" && status.phase !== "preparing")) return;
-    if (status?.phase !== "complete" && (nextSort || nextSearch)) return;
+    if (status?.phase !== "complete" && (nextSort || nextFilter)) return;
     if (append && (pageInFlight.current || !moreRows.current || queryDirty.current)) return;
     const turn = generation.current;
     const request = ++pageRequest.current;
@@ -183,8 +207,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     try {
       await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: 200,
         afterPosition: append ? nextPosition.current : undefined,
-        filter: nextSearch ? { rules: [{ enabled: true, column: "any", operator: "contains", value: nextSearch }],
-          match: "all", caseSensitive: false, visibleColumns: preview.columns.map((_, index) => index) } : undefined,
+        filter: nextFilter ? { ...nextFilter, visibleColumns: preview.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) } : undefined,
         requestId: query, sort: nextSort ?? undefined });
       let page: z.output<typeof pageRows.output>;
       for (;;) {
@@ -207,10 +230,14 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   }
 
   useEffect(() => {
-    if (!preview || status?.phase !== "complete" || !preview.columns.length) return;
+    if (!preview || status?.phase !== "complete" || busy || !preview.columns.length) return;
     if (queryDirty.current) void navigate();
     else setTotalRows(status.rowCount);
-  }, [preview?.sessionId, status?.phase, search]);
+  }, [preview?.sessionId, status?.phase, busy]);
+
+  useEffect(() => {
+    if (filter?.rules.some((rule) => rule.column === "any" && activeRule(rule))) applyFilter(filter);
+  }, [table.hidden]);
 
   useEffect(() => {
     let live = true;
@@ -249,7 +276,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setTotalRows(null);
     setBusy(false);
     setPageBusy(false);
-    setSearch("");
+    setFilter(undefined);
+    setFilterDraft(emptyFilter());
     setQueryPending(false);
     queryDirty.current = false;
     setMessage("");
@@ -310,7 +338,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   );
   const count = (value: number) => value.toLocaleString("en-US");
   const rowCount = totalRows ?? status?.rowCount;
-  const rowSummary = search && totalRows !== null && status?.rowCount !== null && status?.rowCount !== undefined
+  const rowSummary = filter && totalRows !== null && status?.rowCount !== null && status?.rowCount !== undefined
     ? `${count(totalRows)} of ${count(status.rowCount)} rows`
     : rowCount == null ? `Showing ${count(rows.length)} rows`
     : rows.length < rowCount ? `Showing ${count(rows.length)} of ${count(rowCount)} rows` : `${count(rowCount)} rows`;
@@ -318,13 +346,28 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const unit = Math.min(4, Math.floor(Math.log10(Math.max(1, bytes)) / 3));
   const size = `${(bytes / 1000 ** unit).toFixed(1)} ${["B", "kB", "MB", "GB", "TB"][unit]}`;
   const state = busy ? "Opening preview…" : status?.phase === "error" ? status.message
-    : queryPending || pageBusy ? (search ? "Filtering…" : sort ? "Sorting…" : "Loading rows…")
+    : queryPending || pageBusy ? (filter ? "Filtering…" : sort ? "Sorting…" : "Loading rows…")
     : ready ? "Ready" : preview ? `Preparing${status?.percent == null ? "…" : ` ${Math.round(status.percent)}%`}` : "No source";
   const textButtonStyle = { color: foreground, backgroundColor: colors.surface0, border: `1px solid ${colors.border}`, borderRadius: 4, padding: 4 };
   const sortTitle = sort?.mode === "auto" ? `Auto${sortMode ? ` — ${sortMode === "numeric" ? "Numeric" : "Text"} detected` : " — detection pending"}` : "Sort mode";
 
   return (
-    <div ref={zone} tabIndex={0} aria-label="CSV viewer" style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0,
+    <div ref={zone} tabIndex={0} aria-label="CSV viewer"
+      onPointerDown={(event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const focusable = target.closest("input, textarea, select, button, a, [contenteditable], [tabindex]");
+        if (!focusable || focusable === event.currentTarget) event.currentTarget.focus({ preventScroll: true });
+      }}
+      onKeyDown={(event) => {
+        const target = event.target;
+        if (event.defaultPrevented || event.nativeEvent?.isComposing || !(target instanceof HTMLElement)) return;
+        if (target.isContentEditable || target.closest("input, textarea, select, [role=textbox]")) return;
+        if (event.key === "Escape" && filterOpen) { event.preventDefault(); event.stopPropagation(); closeFilter(); return; }
+        if (event.repeat || event.altKey || event.shiftKey || (modifier === "⌘" ? !event.metaKey || event.ctrlKey : !event.ctrlKey || event.metaKey)) return;
+        if (event.key.toLowerCase() === "f") { event.preventDefault(); event.stopPropagation(); openFilter(); }
+      }}
+      style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0,
       position: "relative", overflow: "hidden", color: foreground, backgroundColor: colors.surface0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderBottom: `1px solid ${colors.border}` }}>
         <span title={preview?.fileName} style={{ maxWidth: "35%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{preview?.fileName ?? ""}</span>
@@ -347,7 +390,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           if (selectedSource.current) void open(selectedSource.current, next);
         }, false, "First record is header", hasHeader)}
         {iconButton("Refresh source", "RefreshCw", () => { if (selectedSource.current) void open(selectedSource.current, currentHeader.current, true); }, !preview || busy)}
-        {iconButton("Filter", "Filter", () => setFilterOpen(!filterOpen), !ready || !preview?.columns.length, `Filter (${modifier}F)`, filterOpen)}
+        {iconButton("Filter", "Filter", openFilter, !ready || !preview?.columns.length, `Filter (${modifier}F)`, filterOpen)}
         {iconButton("Copy selected rows", "Copy", copySelected, !table.selected.length, `Copy selected rows (${modifier}C)`)}
         {iconButton("Reveal hidden columns", "Eye", () => setTable({ ...table, hidden: [] }), !table.hidden.length, "Reveal hidden columns", undefined, table.hidden.length)}
         <span title={sortTitle}>
@@ -358,16 +401,13 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           </select>
         </span>
       </div>
-      {filterOpen && preview && <div style={{ display: "flex", gap: 8, padding: 6, borderBottom: `1px solid ${colors.border}` }}>
-        <TextInput value={search} onChangeText={changeSearch} maxLength={2048} placeholder="Search all columns"
-          placeholderTextColor={muted} accessibilityLabel="Search all columns" editable={ready}
-          style={{ flex: 1, borderWidth: 1, borderColor: colors.border, padding: 4, color: foreground }} />
-        {!!search && <button type="button" style={textButtonStyle} aria-label="Clear search" onClick={() => changeSearch("")}>Clear search</button>}
-      </div>}
+      {filterOpen && preview && <FilterBar value={filterDraft} onChange={setFilterDraft} onApply={applyFilter}
+        columns={preview.columns} hidden={table.hidden} onClose={closeFilter} focusRequest={filterFocus}
+        disabled={!ready} style={textButtonStyle} danger={colors.statusDanger} />}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0 }}>
         {preview && !(status?.sourceChanged && status.phase !== "complete") && (preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
-          {search && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
-          {!search && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
+          {filter && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
+          {!filter && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={tableKey} columns={preview.columns} rows={rows} sort={sort} sortBusy={pageBusy || !ready}
             onEndReached={() => void navigate(true)}
             presentation={table} onPresentation={setTable} onCopy={(value, label) => void copy(value, label)}
@@ -380,7 +420,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
         {preview && <><span>{rowSummary}</span><span>{count(table.selected.length)} selected</span><span>{size}</span></>}
         <span>{state}</span>
         {status?.sourceChanged && <span>Source file changed or is no longer accessible. {ready ? "Showing the completed snapshot; refresh to read the current file." : "Refresh to read the current file."}</span>}
-        {queryPending && ready && <button type="button" style={textButtonStyle} aria-label={search ? "Cancel search" : "Cancel sort"} onClick={cancelQuery}>Cancel</button>}
+        {queryPending && ready && <button type="button" style={textButtonStyle} aria-label={filter ? "Cancel filter" : "Cancel sort"} onClick={cancelQuery}>Cancel</button>}
         {preview && !ready && !busy && status?.phase !== "error" && <button type="button" style={textButtonStyle} aria-label="Cancel preparation" onClick={() => {
           ++generation.current; ++selection.current; ++pageRequest.current; ++queryRequest.current;
           setPageBusy(false); setQueryPending(false);
