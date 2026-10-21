@@ -10,6 +10,8 @@ import { TableView, type TablePresentation } from "../client/table";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
+const rendererOptions = { createNodeMock: () => ({ addEventListener() {}, removeEventListener() {} }) };
+
 function ControlledTable(props: Omit<ComponentProps<typeof TableView>, "presentation" | "onPresentation" | "onCopy">) {
   const [presentation, onPresentation] = useState<TablePresentation>({ hidden: [], widths: {}, selected: [] });
   return <TableView {...props} presentation={presentation} onPresentation={onPresentation} onCopy={(value) => { void navigator.clipboard.writeText(value); }} />;
@@ -27,7 +29,7 @@ test("the table copies raw cells and exposes selection and column presentation",
     assert.deepEqual(preview.columns, ["id", "hidden", "note", "empty"]);
     assert.equal(preview.rows.length, 2);
     let tree!: ReturnType<typeof create>;
-    await act(async () => { tree = create(<ControlledTable columns={preview.columns} rows={preview.rows.toReversed()} theme={{ foreground: "#fff", muted: "#aaa", border: "#777" }} />); });
+    await act(async () => { tree = create(<ControlledTable columns={preview.columns} rows={preview.rows.toReversed()} theme={{ foreground: "#fff", muted: "#aaa", border: "#777" }} />, rendererOptions); });
     const press = async (label: string) => {
       await act(async () => { await tree.root.findByProps({ accessibilityLabel: label }).props.onPress(); });
     };
@@ -62,7 +64,7 @@ test("long column names keep visible controls compact and full accessible labels
   let tree!: ReturnType<typeof create>;
   await act(async () => { tree = create(<ControlledTable columns={[name]} rows={[["value"]]}
     sort={{ column: 0, direction: "desc", mode: "auto" }} onSort={() => {}}
-    theme={{ foreground: "#fff", muted: "#aaa", border: "#777" }} />); });
+    theme={{ foreground: "#fff", muted: "#aaa", border: "#777" }} />, rendererOptions); });
   try {
     const caption = (label: string) => tree.root.findByProps({ accessibilityLabel: label }).findByType("div").children[0];
     assert.equal(caption(`Narrow ${name}`), "−");
@@ -74,4 +76,28 @@ test("long column names keep visible controls compact and full accessible labels
   } finally {
     await act(async () => { tree.unmount(); });
   }
+});
+
+test("the table windows loaded rows and independently expands multiline values at the row edge", async () => {
+  const rows = Array.from({ length: 30_000 }, (_, index) => [`${index}: first\nsecond`]);
+  let tree!: ReturnType<typeof create>;
+  await act(async () => { tree = create(<ControlledTable columns={["note"]} rows={rows}
+    theme={{ foreground: "#fff", muted: "#aaa", border: "#777" }} />, rendererOptions); });
+  try {
+    const mountedCells = () => tree.root.findAll((node) => node.props.title?.endsWith?.("first\nsecond"));
+    assert.ok(mountedCells().length > 0 && mountedCells().length < 100);
+    const edge = (row: number) => tree.root.findByProps({ "aria-label": `Toggle row ${row} expansion` });
+    const expand = async (row: number) => { await act(async () => { edge(row).props.onDoubleClick({ stopPropagation() {} }); }); };
+    assert.equal(edge(1).props["aria-expanded"], false);
+    assert.equal(mountedCells()[0].props.style.whiteSpace, "nowrap");
+    assert.equal(mountedCells()[0].props.style.textOverflow, "ellipsis");
+    await expand(1);
+    await expand(2);
+    assert.equal(edge(1).props["aria-expanded"], true);
+    assert.equal(edge(2).props["aria-expanded"], true);
+    assert.equal(mountedCells()[0].props.style.whiteSpace, "pre-wrap");
+    await expand(1);
+    assert.equal(edge(1).props["aria-expanded"], false);
+    assert.equal(edge(2).props["aria-expanded"], true);
+  } finally { await act(async () => { tree.unmount(); }); }
 });
