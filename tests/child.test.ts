@@ -13,6 +13,7 @@ test("panels share a Node child; a crash fails sessions, removes storage and res
   const children: ChildProcess[] = [];
   const sessions = createSessionProxy(((file, args, options) => {
     assert.equal(isAbsolute(file), true);
+    assert.equal(options.serialization, "json");
     const child = spawn(file, args, options);
     children.push(child);
     return child;
@@ -51,13 +52,15 @@ test("panels share a Node child; a crash fails sessions, removes storage and res
   }
 });
 
-test("missing or incompatible Node reports a clear error, cleans storage and allows retry", async () => {
+test("missing Node and unexpected child exits report clear errors, clean storage and allow retry", async (t) => {
+  const logs: string[] = [];
+  t.mock.method(console, "error", (...values: unknown[]) => logs.push(values.map(String).join(" ")));
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-start-test-"));
   const previousPath = process.env.PATH;
   const previousTmp = process.env.TMPDIR;
   let incompatible = true;
   const sessions = createSessionProxy((file, args, options) => incompatible
-    ? spawn(file, ["-e", "process.stderr.write('incompatible architecture'); process.exit(71)"], options)
+    ? spawn(file, ["-e", "process.stderr.write('Unable to deserialize cloned data due to invalid or unsupported version'); process.exit(1)"], options)
     : spawn(file, args, options));
   try {
     process.env.TMPDIR = directory;
@@ -67,8 +70,13 @@ test("missing or incompatible Node reports a clear error, cleans storage and all
     process.env.PATH = join(directory, "missing");
     await assert.rejects(sessions.open(input), /Node.js.*PATH/);
     if (previousPath === undefined) delete process.env.PATH; else process.env.PATH = previousPath;
-    await assert.rejects(sessions.open(input), /child exited.*71.*architecture/s);
+    await assert.rejects(sessions.open(input), (cause: Error) => {
+      assert.match(cause.message, /child exited.*1/s);
+      assert.doesNotMatch(cause.message, /architecture|expected|arm64|x64/i);
+      return true;
+    });
     assert.deepEqual(await readdir(directory), ["source.csv"]);
+    assert.ok(logs.some((message) => message.includes("Unable to deserialize cloned data")));
     incompatible = false;
     const opened = await sessions.open(input);
     assert.deepEqual(opened.rows, [["keep"]]);
@@ -214,7 +222,7 @@ test("the child rejects methods outside the session IPC allowlist", async () => 
       const response = once(child, "message");
       child.send({ id: 1, method, args: [] });
       const [reply] = await response;
-      assert.match(reply.error, /unknown.*method/i);
+      assert.match(reply.error.message, /unknown.*method/i);
     }
   } finally {
     child.kill();
@@ -235,7 +243,7 @@ test("synchronous spawn failure and a missing native binding show concise archit
     createSessionProxy((file) => { node = file; throw Object.assign(new Error(detail), { code: "EBADARCH" }); }),
     createSessionProxy((file, _args, options) => {
       node = file;
-      return spawn(file, ["-e", `process.stderr.write(${JSON.stringify(detail)}); process.send({ready:true}); process.on('message', m => { if(m.method === 'dispose') { process.send({id:m.id}); process.disconnect(); } else process.send({id:m.id,error:${JSON.stringify("  Error: Cannot find module '@duckdb/node-bindings-darwin-x64'\n" + detail)}}); });`], options);
+      return spawn(file, ["-e", `process.stderr.write(${JSON.stringify(detail)}); process.send({ready:true}); process.on('message', m => { if(m.method === 'dispose') { process.send({id:m.id}); process.disconnect(); } else process.send({id:m.id,error:{message:${JSON.stringify("  Error: Cannot find module '@duckdb/node-bindings-darwin-x64'\n" + detail)}}}); });`], options);
     }),
   ];
   try {

@@ -4,6 +4,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, join } from "node:path";
 import type { PluginHandlerContext } from "@getpaseo/plugin/server";
+import { jsonMessage } from "./ipc";
 import { installationRoot } from "./native";
 import { resolveSource, type createSessions } from "./session";
 
@@ -11,7 +12,7 @@ type Sessions = ReturnType<typeof createSessions>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Method = Exclude<keyof Sessions, "inspect">;
 export type Request = { id: number; method: Method; args: any[] };
-export type Response = { ready: true } | { workspace: number; requestId: number; workspaceId: string } | { id: number; value?: any; error?: string };
+export type Response = { ready: true } | { workspace: number; requestId: number; workspaceId: string } | { id: number; value?: any; error?: { message: string } };
 type Panel = { panelId: string; turn: number; sessionId?: string; sourceBytes: number; child?: Child; error?: Error };
 type Child = {
   child: ChildProcess; fail: (cause: unknown) => void; ready: Promise<void>; ended: Promise<void>; error?: Error;
@@ -53,8 +54,7 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
     let childProcess: ChildProcess;
     try {
       childProcess = spawnChild(node, [join(installationRoot(), "server", "child.cjs"), directory], {
-        // JSON IPC turns omitted close arguments into null and changes cancellation semantics.
-        stdio: ["ignore", "ignore", "pipe", "ipc"], serialization: "advanced",
+        stdio: ["ignore", "ignore", "pipe", "ipc"], serialization: "json",
         env: { ...process.env, TMPDIR: directory, TMP: directory, TEMP: directory },
       });
     } catch (cause) {
@@ -88,7 +88,9 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
     }
     function fail(cause: unknown) {
       console.error("CSV Viewer Node.js child failed:", node, cause);
-      const error = nodeFailure(node);
+      const code = (cause as NodeJS.ErrnoException | null)?.code;
+      const error = code && ["ENOENT", "EACCES", "EPERM", "ENOEXEC", "EBADARCH"].includes(code)
+        ? nodeFailure(node) : new Error("CSV Viewer Node.js child communication failed. Reopen the source to try again. See plugin logs for details.");
       reject(error);
       childProcess.kill();
       void finish(error);
@@ -96,7 +98,7 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
     childProcess.stderr?.on("data", (chunk) => console.error("CSV Viewer Node.js child stderr:", String(chunk).trim()));
     childProcess.on("error", fail);
     childProcess.once("close", (code, signal) => {
-      void finish(state.error ?? new Error(`CSV Viewer Node.js child exited (${signal ?? code}). Node.js: "${node}"; expected ${process.platform}/${process.arch}. Check Node.js and DuckDB architectures, then reopen the source.`));
+      void finish(state.error ?? new Error(`CSV Viewer Node.js child exited (${signal ?? code}). Reopen the source to try again. See plugin logs for details.`));
     });
     childProcess.on("message", (message: Response) => {
       if (!message || typeof message !== "object") { state.fail(new Error("Invalid child IPC message")); return; }
@@ -110,10 +112,10 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
           try {
             if (!pending?.paseo) throw new Error("Workspace lookup is unavailable");
             const workspace = await pending.paseo.workspaces.ref(message.workspaceId).refresh();
-            if (childProcess.connected) childProcess.send({ workspace: message.workspace, value: workspace && { id: workspace.id, workspaceDirectory: workspace.workspaceDirectory } }, (error) => { if (error) state.fail(error); });
+            if (childProcess.connected) childProcess.send(jsonMessage({ workspace: message.workspace, value: workspace ? { id: workspace.id, workspaceDirectory: workspace.workspaceDirectory } : null }), (error) => { if (error) state.fail(error); });
           } catch (cause) {
             console.error("CSV Viewer workspace lookup failed:", cause);
-            if (childProcess.connected) childProcess.send({ workspace: message.workspace, error: panelMessage(cause) }, (error) => { if (error) state.fail(error); });
+            if (childProcess.connected) childProcess.send(jsonMessage({ workspace: message.workspace, error: { message: panelMessage(cause) } }), (error) => { if (error) state.fail(error); });
           }
         })();
         return;
@@ -121,9 +123,9 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
       const pending = state.pending.get(message.id);
       state.pending.delete(message.id);
       if (message.error) {
-        console.error("CSV Viewer child request failed:", message.error);
-        pending?.reject(/@duckdb\/node-bindings|incompatible architecture|wrong architecture|ERR_DLOPEN_FAILED/i.test(message.error)
-          ? nodeFailure(node) : new Error(panelMessage(message.error)));
+        console.error("CSV Viewer child request failed:", message.error.message);
+        pending?.reject(/@duckdb\/node-bindings|incompatible architecture|wrong architecture|ERR_DLOPEN_FAILED/i.test(message.error.message)
+          ? nodeFailure(node) : new Error(panelMessage(message.error.message)));
       } else pending?.resolve(message.value);
     });
     return state;
@@ -140,7 +142,7 @@ export function createSessionProxy(spawnChild: (file: string, args: string[], op
     return new Promise<Awaited<ReturnType<Sessions[K]>>>((resolve, reject) => {
       const id = ++sequence;
       state.pending.set(id, { resolve, reject, paseo });
-      try { state.child.send({ id, method, args } satisfies Request, (error) => { if (error) state.fail(error); }); }
+      try { state.child.send(jsonMessage({ id, method, args } satisfies Request), (error) => { if (error) state.fail(error); }); }
       catch (cause) { state.fail(cause); }
     });
   }
