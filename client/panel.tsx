@@ -227,7 +227,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           </Pressable>}
         </View>}
         {!!search && status?.phase !== "complete" && status?.phase !== "error" && <Text style={{ color: muted }}>Search pending until the whole file is ready.</Text>}
-        {queryPending && status?.phase === "complete" && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>{sort ? "Sorting matching rows…" : "Searching the whole file…"}</Text>}
+        {queryPending && status?.phase === "complete" && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>{sort ? (search ? "Searching and sorting matching rows…" : "Sorting the whole file…") : "Searching the whole file…"}</Text>}
         {status && <Text accessibilityRole="text" style={{ color: status.phase === "error" ? foreground : muted }}>
           {status.phase === "error" ? status.message : `${status.message}${status.percent == null ? "" : ` · ${Math.round(status.percent)}%`}`}
         </Text>}
@@ -242,7 +242,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           <Pressable accessibilityRole="button" accessibilityLabel="Next rows" disabled={pageBusy || offset + rows.length >= totalRows}
             onPress={() => void navigate(offset + preview.limit)}><Text style={{ color: foreground }}>Next</Text></Pressable>
         </View>}
-        {pageBusy && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>{sort ? "Sorting all rows…" : "Loading rows…"}</Text>}
+        {pageBusy && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>{sort ? "Sorting rows…" : "Loading rows…"}</Text>}
         {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
           {search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
           {!search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
