@@ -126,6 +126,31 @@ test("prepares a file-backed session and pages beyond the preview in source orde
   }
 });
 
+test("a page query starts promptly and can be polled through completion", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-query-poll-"));
+  const sessions = createSessions();
+  try {
+    const file = join(dir, "query.csv");
+    await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
+    const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
+    await settled(sessions, opened.sessionId);
+    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { search: "needle", requestId: 1 }), { state: "pending" });
+    let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
+    for (let i = 0; i < 100; i++) {
+      result = sessions.pollPage(opened.sessionId, 1);
+      if (result.state === "ready") break;
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+    assert.equal(result.state, "ready");
+    if (result.state === "ready") assert.deepEqual(result.page?.rows, [["9999", "needle"]]);
+    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { requestId: 2 }), { state: "pending" });
+    assert.throws(() => sessions.pollPage(opened.sessionId, 1), /superseded/i);
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test("searches all prepared columns beyond preview as literal Unicode text and clears to source order", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-search-"));
   const sessions = createSessions();

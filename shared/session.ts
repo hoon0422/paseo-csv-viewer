@@ -40,12 +40,18 @@ export const sessionStatus = defineRpc({
   }),
 });
 
-export const pageRows = defineRpc({
-  name: "viewer.page",
-  input: z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(50),
+const pageInput = z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(50),
     search: z.string().max(2048).optional(), requestId: z.number().int().nonnegative().optional(),
-    sort: z.object({ column: z.number().int().nonnegative(), direction: z.enum(["asc", "desc"]), mode: z.enum(["auto", "numeric", "text"]) }).optional() }),
-  output: z.object({ offset: z.number(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative(), sortMode: z.enum(["numeric", "text"]).optional() }),
+    sort: z.object({ column: z.number().int().nonnegative(), direction: z.enum(["asc", "desc"]), mode: z.enum(["auto", "numeric", "text"]) }).optional() });
+const pageOutput = z.object({ offset: z.number(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative(), sortMode: z.enum(["numeric", "text"]).optional() });
+
+export const pageRows = defineRpc({ name: "viewer.page", input: pageInput, output: pageOutput });
+
+export const pageQuery = defineRpc({
+  name: "viewer.query",
+  input: z.discriminatedUnion("action", [pageInput.extend({ action: z.literal("start"), requestId: z.number().int().nonnegative() }),
+    z.object({ action: z.literal("poll"), sessionId: z.string().uuid(), requestId: z.number().int().nonnegative() })]),
+  output: z.discriminatedUnion("state", [z.object({ state: z.literal("pending") }), z.object({ state: z.literal("ready"), page: pageOutput })]),
 });
 
 export const workspaceFileDrag = z.object({

@@ -52,9 +52,12 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
         const value = [...selected].sort((a, b) => a - b).map((index) => visible.map((column) => tsv(rows[index]?.[column] ?? "")).join("\t")).join("\n");
         void copy(value, "Rows");
       }, selected.length === 0)}
-      {hidden.map((index) => <View key={index}>{control(`Reveal ${columns[index] || `Column ${index + 1}`}`, () => setHidden(hidden.filter((value) => value !== index)))}</View>)}
+      {hidden.map((index) => <View key={index}>{control(`Reveal ${columns[index] || `Column ${index + 1}`}`, () => setHidden(hidden.filter((value) => value !== index)), false, "Reveal")}</View>)}
       {sort && onSortMode && <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
-        <Text style={{ color: theme.muted }}>Sort {columns[sort.column] || `Column ${sort.column + 1}`} {sort.direction === "asc" ? "ascending" : "descending"} · mode:</Text>
+        <Text accessibilityLabel={`Sort ${columns[sort.column] || `Column ${sort.column + 1}`} ${sort.direction === "asc" ? "ascending" : "descending"} · mode:`}
+          numberOfLines={1} style={{ color: theme.muted, maxWidth: 240, flexShrink: 1 }}>
+          Sort {columns[sort.column] || `Column ${sort.column + 1}`} {sort.direction === "asc" ? "ascending" : "descending"} · mode:
+        </Text>
         {(["auto", "numeric", "text"] as const).map((mode) => <View key={mode}>{control(`${mode === sort.mode ? "✓ " : ""}${mode[0].toUpperCase() + mode.slice(1)}`, () => onSortMode(mode), sortBusy)}</View>)}
         <Text style={{ color: theme.muted, width: "100%" }}>{sort.mode === "auto" && sortMode ? `Detected ${sortMode}. ` : ""}Blanks last. Numeric mode puts other text after numbers. Ties keep file order.</Text>
       </View>}
@@ -65,12 +68,13 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
         <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: theme.border, backgroundColor: theme.border }}>
           <Text style={{ width: 70, padding: 6, color: theme.foreground, fontWeight: "700" }}>Select</Text>
           {visible.map((index) => <View key={index} style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 4, gap: 3 }}>
-            <Text accessibilityRole="header" style={{ color: theme.foreground, fontWeight: "700" }}>{columns[index] || `Column ${index + 1}`}</Text>
+            <Text accessibilityRole="header" accessibilityLabel={columns[index] || `Column ${index + 1}`}
+              numberOfLines={1} style={{ color: theme.foreground, fontWeight: "700" }}>{columns[index] || `Column ${index + 1}`}</Text>
             {sort?.column === index && <Text style={{ color: theme.muted }}>{sort.direction === "asc" ? "Ascending ↑" : "Descending ↓"}</Text>}
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3 }}>
-              {control(`Narrow ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.max(MIN_WIDTH, (widths[index] ?? DEFAULT_WIDTH) - 40) }), (widths[index] ?? DEFAULT_WIDTH) <= MIN_WIDTH)}
-              {control(`Widen ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.min(MAX_WIDTH, (widths[index] ?? DEFAULT_WIDTH) + 40) }), (widths[index] ?? DEFAULT_WIDTH) >= MAX_WIDTH)}
-              {control(`Hide ${columns[index] || `Column ${index + 1}`}`, () => setHidden([...hidden, index]))}
+              {control(`Narrow ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.max(MIN_WIDTH, (widths[index] ?? DEFAULT_WIDTH) - 40) }), (widths[index] ?? DEFAULT_WIDTH) <= MIN_WIDTH, "−")}
+              {control(`Widen ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.min(MAX_WIDTH, (widths[index] ?? DEFAULT_WIDTH) + 40) }), (widths[index] ?? DEFAULT_WIDTH) >= MAX_WIDTH, "+")}
+              {control(`Hide ${columns[index] || `Column ${index + 1}`}`, () => setHidden([...hidden, index]), false, "Hide")}
               {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} ascending`, () => onSort(index, "asc"), sortBusy, "↑")}
               {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} descending`, () => onSort(index, "desc"), sortBusy, "↓")}
             </View>

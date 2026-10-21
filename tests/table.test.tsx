@@ -47,3 +47,23 @@ test("the viewer copies raw cells and selected visible columns in current row or
     Reflect.deleteProperty(globalThis, "navigator");
   }
 });
+
+test("long column names keep visible controls compact and full accessible labels", async () => {
+  const name = `payload${"_".repeat(93)}`;
+  let tree!: ReturnType<typeof create>;
+  await act(async () => { tree = create(<TableView columns={[name]} rows={[["value"]]}
+    sort={{ column: 0, direction: "desc", mode: "auto" }} onSort={() => {}} onSortMode={() => {}}
+    theme={{ foreground: "#fff", muted: "#aaa", border: "#777" }} />); });
+  try {
+    const caption = (label: string) => tree.root.findByProps({ accessibilityLabel: label }).findByType("div").children[0];
+    assert.equal(caption(`Narrow ${name}`), "−");
+    assert.equal(caption(`Widen ${name}`), "+");
+    assert.equal(caption(`Hide ${name}`), "Hide");
+    assert.equal(tree.root.findByProps({ accessibilityRole: "header", accessibilityLabel: name }).props.numberOfLines, 1);
+    assert.equal(tree.root.findByProps({ accessibilityLabel: `Sort ${name} descending · mode:` }).props.numberOfLines, 1);
+    await act(async () => { tree.root.findByProps({ accessibilityLabel: `Hide ${name}` }).props.onPress(); });
+    assert.equal(caption(`Reveal ${name}`), "Reveal");
+  } finally {
+    await act(async () => { tree.unmount(); });
+  }
+});

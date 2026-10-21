@@ -1,0 +1,11 @@
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+VERSION_ID="24.04"
+x86_64
+CPU(s):                                  2
+Model name:                              QEMU TCG CPU version 2.5+
+               total        used        free      shared  buff/cache   available
+Mem:      4105060352  1404284928   150044672    31186944  2877693952  2700775424
+Swap:              0           0           0
+v24.21.0
+07:14:11.396 › [desktop] app startup { version: '0.12.0', platform: 'linux', arch: 'x64', isPackaged: true }
+fixture_bytes=5000000000

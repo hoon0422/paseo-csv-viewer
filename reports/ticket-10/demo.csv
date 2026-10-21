@@ -1,0 +1,8 @@
+id,city,amount,note
+001,Toronto,12.50,"Late delivery, refunded"
+002,Halifax,9.25,On time
+003,Vancouver,104.00,"Contains a
+quoted line break"
+004,Ottawa,0.00,On time
+005,Montreal,18.75,Follow up
+006,Calgary,42.10,On time

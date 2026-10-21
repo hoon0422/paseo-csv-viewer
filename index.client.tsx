@@ -12,6 +12,7 @@ export default function contribute(client: PluginClientContext) {
   let stopped = false;
   let release: (() => Promise<void>) | undefined;
   const sync = (workspaces: readonly { id: string }[]) => {
+    if (stopped) return;
     const ids = new Set(workspaces.map((workspace) => workspace.id));
     for (const [id, button] of buttons) if (!ids.has(id)) { button.remove(); buttons.delete(id); }
     for (const { id } of workspaces) if (!buttons.has(id)) {
@@ -24,16 +25,16 @@ export default function contribute(client: PluginClientContext) {
   };
   void client.paseo.workspaces.list({ subscribe: {} }).then((result) => {
     release = () => result.subscription.release();
-    if (stopped) return void release();
+    if (stopped) return void release().catch((cause) => console.error("CSV Viewer workspace release failed:", cause));
     sync(result.entries);
     result.subscription.subscribe({
       snapshot: (snapshot: { entries: readonly { id: string }[] }) => sync(snapshot.entries),
-      update: () => { void client.paseo.workspaces.list().then((latest) => sync(latest.entries)); },
+      update: () => { void client.paseo.workspaces.list().then((latest) => sync(latest.entries)).catch((cause) => console.error("CSV Viewer workspace update failed:", cause)); },
     });
-  });
+  }).catch((cause) => console.error("CSV Viewer workspace subscription failed:", cause));
   return () => {
     stopped = true;
     for (const button of buttons.values()) button.remove();
-    void release?.();
+    void release?.().catch((cause) => console.error("CSV Viewer workspace release failed:", cause));
   };
 }

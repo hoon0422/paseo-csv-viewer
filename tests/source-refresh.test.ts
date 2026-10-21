@@ -91,6 +91,26 @@ test("an edit during preparation invalidates the preview instead of completing m
   }
 });
 
+test("a source replacement during search returns only the completed snapshot", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "csv-viewer-query-change-"));
+  const sessions = createSessions();
+  try {
+    const file = join(directory, "query.csv");
+    await writeFile(file, "id,value\n" + Array.from({ length: 100_000 }, (_, i) => `${i},${i === 99_999 ? "needle-old" : "ordinary"}\n`).join(""));
+    const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
+    assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
+    const pending = sessions.page(opened.sessionId, 0, 50, { search: "needle", requestId: 1 });
+    await writeFile(file, "id,value\n0,needle-new\n");
+    const result = await pending;
+    assert.deepEqual(result.rows, [["99999", "needle-old"]]);
+    assert.equal(result.totalRows, 1);
+    assert.equal(sessions.status(opened.sessionId).sourceChanged, true);
+  } finally {
+    await sessions.dispose();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("superseded opens and closes release session storage without reviving an old view", async () => {
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-replace-change-"));
   const storage = join(directory, "storage");

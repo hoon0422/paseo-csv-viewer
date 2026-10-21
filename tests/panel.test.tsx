@@ -21,6 +21,12 @@ class DropZone {
       dataTransfer: { getData: () => "", files: [{ path }] },
     });
   }
+  internal(payload: string) {
+    this.listeners.get("drop")?.({
+      preventDefault() {}, stopPropagation() {},
+      dataTransfer: { getData: () => payload, files: [] },
+    });
+  }
 }
 
 async function panelTest(run: (app: {
@@ -30,6 +36,9 @@ async function panelTest(run: (app: {
   opens: () => number;
   holdPage: (next: Promise<void>) => void;
   holdSearch: (next: Promise<void>) => void;
+  holdSort: (next: Promise<void>) => void;
+  pageCalls: () => { search?: string; sort?: unknown }[];
+  clipboard: () => string;
   press: (label: string) => Promise<void>; wait: (condition: () => boolean) => Promise<void>;
 }) => Promise<void>) {
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-panel-"));
@@ -39,6 +48,10 @@ async function panelTest(run: (app: {
   let status: () => Promise<unknown> = async () => ({ status: "running", serverId: "test-host" });
   let pageGate = Promise.resolve();
   let searchGate = Promise.resolve();
+  let sortGate = Promise.resolve();
+  const pageCalls: { search?: string; sort?: unknown }[] = [];
+  let clipboard = "";
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async (text: string) => { clipboard = text; } } } });
   let opens = 0;
   Object.defineProperty(globalThis, "window", { configurable: true, value: {
     paseoDesktop: { webUtils: { getPathForFile: (file: { path: string }) => file.path }, invoke: () => status() },
@@ -48,7 +61,8 @@ async function panelTest(run: (app: {
     if (name === "viewer.open") { opens++; return sessions.open(input); }
     if (name === "viewer.close") return { closed: sessions.close(input.sessionId, input.panelId, input.turn) };
     if (name === "viewer.status") return sessions.status(input.sessionId);
-    if (name === "viewer.page") { await pageGate; if (input.search) await searchGate; return sessions.page(input.sessionId, input.offset, input.limit, { search: input.search, requestId: input.requestId }); }
+    if (name === "viewer.query" && input.action === "start") { pageCalls.push(input); await pageGate; if (input.search) await searchGate; if (input.sort) await sortGate; return sessions.beginPage(input.sessionId, input.offset, input.limit, { search: input.search, requestId: input.requestId, sort: input.sort }); }
+    if (name === "viewer.query" && input.action === "poll") return sessions.pollPage(input.sessionId, input.requestId);
     throw new Error(`Unexpected RPC: ${name}`);
   };
   const props = { host: { id: "test-host" }, workspaceId: "workspace", layout: { compact: false }, theme: {
@@ -81,6 +95,9 @@ async function panelTest(run: (app: {
       opens: () => opens,
       holdPage: (next) => { pageGate = next; },
       holdSearch: (next) => { searchGate = next; },
+      holdSort: (next) => { sortGate = next; },
+      pageCalls: () => pageCalls,
+      clipboard: () => clipboard,
       press: async (label) => { await act(async () => { tree.root.findByProps({ accessibilityLabel: label }).props.onPress(); }); },
       wait,
     });
@@ -91,8 +108,51 @@ async function panelTest(run: (app: {
     Reflect.deleteProperty(globalThis, "HTMLElement");
     Reflect.deleteProperty(globalThis, "window");
     Reflect.deleteProperty(globalThis, "document");
+    Reflect.deleteProperty(globalThis, "navigator");
   }
 }
+
+test("cancelling an unfiltered sort restores source order and supersedes its page", async () => {
+  await panelTest(async ({ tree, zone, file, holdSort, pageCalls, press, wait }) => {
+    const source = await file("sort.csv", 120);
+    await act(async () => { zone.drop(source); });
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
+    let release!: () => void;
+    holdSort(new Promise<void>((resolve) => { release = resolve; }));
+    await press("Sort column 1 id descending");
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Cancel sort" }).length > 0);
+    await press("Cancel sort");
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
+    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, id" }).findByType("div").children[0], "0");
+    assert.equal(pageCalls().at(-1)?.sort, undefined);
+    await act(async () => { release(); });
+    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, id" }).findByType("div").children[0], "0");
+  });
+});
+
+test("filtered sorting and visible-column copy use the displayed order; clear keeps sorting", async () => {
+  await panelTest(async ({ tree, zone, write, clipboard, press, wait }) => {
+    const lines = Array.from({ length: 120 }, (_, i) => `${i},plain,other`);
+    lines[1] = "1,alpha,needle";
+    lines[70] = "70,gamma,needle";
+    lines[90] = "90,zeta,needle";
+    const source = await write("combined.csv", `id,visible,secret\n${lines.join("\n")}\n`);
+    await act(async () => { zone.drop(source); });
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
+    await press("Hide secret");
+    await act(async () => { tree.root.findByProps({ accessibilityLabel: "Search all columns" }).props.onChangeText("needle"); });
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "1"));
+    await press("Sort column 2 visible descending");
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "90"));
+    await press("Select row 1");
+    await press("Select row 2");
+    await press("Copy selected rows");
+    assert.equal(clipboard(), "90\tzeta\n70\tgamma");
+    await press("Clear search");
+    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "90"));
+    assert.ok(tree.root.findAllByProps({ accessibilityLabel: "✓ Auto" }).length > 0);
+  });
+});
 
 test("replacement clears an old page load and header switch applies to the next drop", async () => {
   await panelTest(async ({ tree, zone, file, holdPage, press, wait }) => {
@@ -132,6 +192,32 @@ test("two pending OS drops keep action order when locality checks resolve out of
     assert.equal(calls, 2);
     assert.equal(opens(), 1);
     assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "new.csv-0");
+  });
+});
+
+test("an OS drop resolving after panel unload cannot open a session", async () => {
+  await panelTest(async ({ tree, zone, file, bridgeStatus, opens }) => {
+    const source = await file("late.csv", 2);
+    let resolveStatus!: (value: unknown) => void;
+    bridgeStatus(() => new Promise((resolve) => { resolveStatus = resolve; }));
+    await act(async () => { zone.drop(source); });
+    await act(async () => { tree.unmount(); });
+    await act(async () => { resolveStatus({ status: "running", serverId: "test-host" }); });
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    assert.equal(opens(), 0);
+  });
+});
+
+test("cross-host and malformed Paseo Files drops explain rejection without opening a source", async () => {
+  await panelTest(async ({ tree, zone, opens, wait }) => {
+    const payload = { version: 1, serverId: "other-host", workspaceId: "workspace",
+      attachment: { kind: "workspace_file", path: "data.csv", selection: { kind: "whole_file" } } };
+    await act(async () => { zone.internal(JSON.stringify(payload)); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("another host or workspace"));
+    assert.equal(opens(), 0);
+    await act(async () => { zone.internal("{bad json"); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Expected property name"));
+    assert.equal(opens(), 0);
   });
 });
 

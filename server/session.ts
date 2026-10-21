@@ -14,12 +14,14 @@ type OpenInput = z.output<typeof openPreview.input>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Phase = "preview" | "scanning" | "preparing" | "complete" | "error" | "cancelled";
 type PageOptions = { search?: string; requestId?: number; sort?: Sort };
+type PageResult = { offset: number; rows: string[][]; totalRows: number; sortMode?: "numeric" | "text" };
 type Session = {
   id: string; panelId: string; turn: number; cancelled: boolean; phase: Phase; message: string;
   sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null;
   sourcePath?: string; revision?: string; sourceChanged?: boolean;
   directory?: string; db?: DuckDBInstance; connection?: DuckDBConnection; width?: number; queryRequestId: number;
   opening?: Promise<unknown>; operation?: Promise<unknown>; cleanup?: Promise<void>; pageBusy?: boolean;
+  query?: { requestId: number; result?: PageResult; error?: unknown };
   interruptTimer?: ReturnType<typeof setInterval>;
 };
 const LIMIT = 50;
@@ -270,7 +272,7 @@ export function createSessions() {
     }
     return { phase: session.phase, message: session.message, bytesScanned: session.bytesScanned, sourceBytes: session.sourceBytes, percent, rowCount: session.rowCount, sourceChanged: !!session.sourceChanged };
   }
-  async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<{ offset: number; rows: string[][]; totalRows: number; sortMode?: "numeric" | "text" }> {
+  async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<PageResult> {
     const session = find(id);
     if (!session || session.phase !== "complete" || !session.connection) throw new Error("Rows are not ready for this session");
     checkSource(session);
@@ -322,6 +324,20 @@ export function createSessions() {
     } catch (cause) { throw new Error(explain(cause)); }
     finally { if (session.operation === pending) session.pageBusy = false; }
   }
+  function beginPage(id: string, offset: number, limit: number, options: PageOptions & { requestId: number }) {
+    const session = find(id);
+    if (!session) throw new Error("Viewer session is closed");
+    const query = { requestId: options.requestId } as NonNullable<Session["query"]>;
+    session.query = query;
+    void page(id, offset, limit, options).then((result) => { query.result = result; }, (error) => { query.error = error; });
+    return { state: "pending" as const };
+  }
+  function pollPage(id: string, requestId: number) {
+    const query = find(id)?.query;
+    if (!query || query.requestId !== requestId) throw new Error("Query superseded");
+    if (query.error) throw query.error;
+    return query.result ? { state: "ready" as const, page: query.result } : { state: "pending" as const };
+  }
   function close(sessionId?: string, panelId?: string, turn?: number) {
     if (panelId && turn !== undefined) latestTurn.set(panelId, Math.max(turn, latestTurn.get(panelId) ?? 0));
     const session = sessionId ? find(sessionId) : panelId ? active.get(panelId) : undefined;
@@ -337,5 +353,5 @@ export function createSessions() {
     sessions.forEach(cancel);
     await Promise.allSettled(sessions.map(drain));
   }
-  return { open, status, page, close, dispose };
+  return { open, status, page, beginPage, pollPage, close, dispose };
 }

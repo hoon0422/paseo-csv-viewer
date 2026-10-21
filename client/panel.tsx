@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import type { z } from "zod";
-import { closePreview, openPreview, pageRows, sessionStatus, type source } from "../shared/session";
+import { closePreview, openPreview, pageQuery, pageRows, sessionStatus, type source } from "../shared/session";
 import { chooseLocalFile, listenForDrops } from "./drop";
 import { TableView } from "./table";
 
@@ -45,7 +45,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const openRpc = useRpc(openPreview);
   const closeRpc = useRpc(closePreview);
   const statusRpc = useRpc(sessionStatus);
-  const pageRpc = useRpc(pageRows);
+  const queryRpc = useRpc(pageQuery);
   const mutation = useMutation({ mutationFn: openRpc });
 
   async function open(file: Source, header = currentHeader.current) {
@@ -109,7 +109,21 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setQueryPending(!!next);
   }
 
-  async function navigate(nextOffset: number, nextSort = sort) {
+  function cancelQuery() {
+    ++queryRequest.current;
+    ++pageRequest.current;
+    queryDirty.current = false;
+    setSearch("");
+    setSort(null);
+    setSortMode(undefined);
+    setRows([]);
+    setOffset(0);
+    setTotalRows(null);
+    setPageBusy(false);
+    void navigate(0, null, "");
+  }
+
+  async function navigate(nextOffset: number, nextSort = sort, nextSearch = search) {
     if (!preview || status?.phase !== "complete") return;
     const turn = generation.current;
     const request = ++pageRequest.current;
@@ -117,7 +131,14 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setPageBusy(true);
     if (nextOffset === 0) setQueryPending(true);
     try {
-      const page = await pageRpc({ sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, search, requestId: query, sort: nextSort ?? undefined });
+      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, search: nextSearch, requestId: query, sort: nextSort ?? undefined });
+      let page: z.output<typeof pageRows.output>;
+      for (;;) {
+        if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;
+        const result = await queryRpc({ action: "poll", sessionId: preview.sessionId, requestId: query });
+        if (result.state === "ready") { page = result.page; break; }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
       if (!mounted.current || turn !== generation.current || request !== pageRequest.current || query !== queryRequest.current || session.current !== preview.sessionId) return;
       setRows(page.rows);
       setOffset(page.offset);
@@ -230,8 +251,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           {!!search && <Pressable accessibilityRole="button" accessibilityLabel="Clear search" onPress={() => changeSearch("")}>
             <Text style={{ color: foreground }}>Clear search</Text>
           </Pressable>}
-          {queryPending && status?.phase === "complete" && <Pressable accessibilityRole="button" accessibilityLabel="Cancel search" onPress={() => changeSearch("")}>
-            <Text style={{ color: foreground }}>Cancel search</Text>
+          {queryPending && status?.phase === "complete" && <Pressable accessibilityRole="button" accessibilityLabel={search ? "Cancel search" : "Cancel sort"} onPress={cancelQuery}>
+            <Text style={{ color: foreground }}>{search ? "Cancel search" : "Cancel sort"}</Text>
           </Pressable>}
         </View>}
         {!!search && status?.phase !== "complete" && status?.phase !== "error" && <Text style={{ color: muted }}>Search pending until the whole file is ready.</Text>}

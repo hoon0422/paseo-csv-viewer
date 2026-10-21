@@ -1,0 +1,36 @@
+✔ opens a real CSV as a bounded read-only viewer session and replaces it (2529.832509ms)
+✔ empty CSV has an honest empty preview (36.774267ms)
+✔ workspace selection stays inside its workspace and rejects other file kinds (248.055807ms)
+✔ preview response stays at 50 data rows (237.143727ms)
+✔ prepares a file-backed session and pages beyond the preview in source order (594.221325ms)
+✖ a page query starts promptly and can be polled through completion (1070.387771ms)
+✔ searches all prepared columns beyond preview as literal Unicode text and clears to source order (1129.506177ms)
+✔ new query, file replacement and cancellation supersede in-flight search (875.042319ms)
+✔ closing a pending open and cancelling preparation cannot revive that panel (268.374935ms)
+✔ a delayed open or close cannot supersede a newer panel request (298.858155ms)
+✔ a source removed after preview ends in an actionable error, never complete (789.461679ms)
+✔ unavailable temporary storage reports how to recover (27.529198ms)
+✔ preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes (480.872455ms)
+✔ keeps duplicate and blank headers by position and handles header-only TSV (565.649056ms)
+✔ opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF (210.64551ms)
+✔ a quoted multiline first record still defines column positions (198.343421ms)
+✔ blank and quoted-empty first records remain headers or data by position (955.857835ms)
+✔ a blank physical record in a two-column file cannot disappear (1060.225561ms)
+✔ rejects malformed quoting, width and UTF-8 with locations, including after 50 rows (847.696032ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16362.897713
+
+✖ failing tests:
+
+test at tests/session.test.ts:3:959
+✖ a page query starts promptly and can be polled through completion (1070.387771ms)
+  TypeError: sessions.beginPage is not a function
+      at TestContext.<anonymous> (/home/cua/ticket-10/tests/session.test.ts:137:31)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

@@ -1,0 +1,2 @@
+PLUGIN                STATUS      ENABLED   SOURCE                                    REVISION          DIRECTORY                                 ERROR
+csv-viewer            running     yes       /home/cua/ticket-10/artifact-final        -                 /home/cua/ticket-10/artifact-final

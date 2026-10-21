@@ -1,0 +1,9 @@
+{"event":"preview","ms":2055.8636130000004,"rows":50,"phase":"scanning"}
+{"event":"phase","ms":2061.3176599999997,"phase":"scanning","message":"Checking records for skipped blanks","bytesScanned":0,"sourceBytes":5000000000,"percent":0,"rowCount":null,"sourceChanged":false}
+{"event":"phase","ms":392927.43062,"phase":"preparing","message":"Preparing disk-backed rows","bytesScanned":5000000000,"sourceBytes":5000000000,"percent":null,"rowCount":null,"sourceChanged":false}
+{"event":"phase","ms":694365.709206,"phase":"complete","message":"All rows ready","bytesScanned":5000000000,"sourceBytes":5000000000,"percent":100,"rowCount":49999999,"sourceChanged":false}
+{"event":"full-search","ms":738456.730847,"totalRows":5,"rows":[["00009994","query-tail-alpha...."],["00009995","query-tail-bravo...."],["00009996","query-tail-charlie.."],["00009997","query-tail-delta...."],["00009998","query-tail-echo....."]]}
+{"event":"search-sort","ms":782009.658497,"totalRows":5,"sortMode":"text","rows":[["00009998","query-tail-echo....."],["00009997","query-tail-delta...."],["00009996","query-tail-charlie.."],["00009995","query-tail-bravo...."],["00009994","query-tail-alpha...."]]}
+{"event":"unfiltered-global-sort","ms":899714.5699840001,"totalRows":49999999,"sortMode":"text","rows":[["00009998","query-tail-echo....."],["00009997","query-tail-delta...."],["00009996","query-tail-charlie.."],["00009995","query-tail-bravo...."],["00009994","query-tail-alpha...."]]}
+{"event":"done","ms":899718.517816,"sourceBytesAfter":5000000000}
+{"event":"cleanup","ms":900446.832767,"remainingDirs":["csv-viewer-session-VkAvPL"]}
