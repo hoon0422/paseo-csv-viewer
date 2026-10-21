@@ -4,9 +4,20 @@ import { createSessions } from "./session";
 import type { Request, Response } from "./proxy";
 
 const sessions = createSessions();
+const methods = ["open", "status", "page", "beginPage", "pollPage", "close", "dispose"];
+let lookupSequence = 0;
 const lookups = new Map<number, { resolve: (workspace: any) => void; reject: (error: Error) => void }>();
-function send(message: Response) { if (process.connected) process.send?.(message, () => {}); }
+function send(message: Response) {
+  const failed = (cause: unknown) => {
+    console.error("CSV Viewer child IPC send failed:", cause);
+    if (process.connected) process.disconnect();
+  };
+  if (!process.connected || !process.send) { failed(new Error("IPC channel is closed")); return; }
+  try { process.send(message, (error) => { if (error) failed(error); }); }
+  catch (cause) { failed(cause); }
+}
 process.on("message", async (message: Request | { workspace: number; value?: unknown; error?: string }) => {
+  if (!message || typeof message !== "object") { console.error("CSV Viewer child received an invalid IPC message"); return; }
   if ("workspace" in message) {
     const pending = lookups.get(message.workspace);
     lookups.delete(message.workspace);
@@ -15,12 +26,13 @@ process.on("message", async (message: Request | { workspace: number; value?: unk
   }
   const { id, method, args } = message;
   try {
+    if (!Number.isSafeInteger(id) || !methods.includes(method) || !Array.isArray(args)) throw new Error("Unknown viewer child method or invalid request");
     const paseo = { workspaces: { ref: (workspaceId: string) => ({ refresh: () => new Promise((resolve, reject) => {
-      lookups.set(id, { resolve, reject });
-      send({ workspace: id, workspaceId });
+      const lookupId = ++lookupSequence;
+      lookups.set(lookupId, { resolve, reject });
+      send({ workspace: lookupId, requestId: id, workspaceId });
     }) }) } } as PluginHandlerContext["paseo"];
     const value = method === "open" ? await sessions.open(args[0], paseo)
-
       : await (sessions[method] as (...args: any[]) => unknown)(...args);
     send({ id, value });
     if (method === "dispose") process.disconnect();
