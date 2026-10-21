@@ -3,7 +3,7 @@ import { strict as assert } from "node:assert";
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createSessions } from "../server/session";
+import { createSessionProxy as createSessions } from "../server/proxy";
 import { anyColumnFilter } from "./filter-input";
 import { pageRows } from "../shared/session";
 
@@ -15,12 +15,12 @@ async function fixture(body: string, check: (session: ReturnType<typeof createSe
     await writeFile(path, body);
     const panelId = crypto.randomUUID();
     const opened = await session.open({ panelId, workspaceId: "workspace", source: { kind: "local", path } });
-    for (let i = 0; i < 200 && session.status(opened.sessionId).phase !== "complete"; i++) {
-      const status = session.status(opened.sessionId);
+    for (let i = 0; i < 200 && (await session.status(opened.sessionId)).phase !== "complete"; i++) {
+      const status = await session.status(opened.sessionId);
       assert.notEqual(status.phase, "error", status.message);
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
-    assert.equal(session.status(opened.sessionId).phase, "complete");
+    assert.equal((await session.status(opened.sessionId)).phase, "complete");
     await check(session, opened.sessionId, path, panelId);
   } finally { await session.dispose(); await rm(dir, { recursive: true, force: true }); }
 }
@@ -89,10 +89,10 @@ test("closing a sorted session removes its temporary storage and leaves the sour
     await writeFile(path, body);
     process.env.TMPDIR = storage;
     const opened = await s.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path } });
-    for (let i = 0; i < 200 && s.status(opened.sessionId).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
+    for (let i = 0; i < 200 && (await s.status(opened.sessionId)).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
     assert.deepEqual((await s.page(opened.sessionId, 0, 200, { sort: { column: 0, direction: "asc", mode: "auto" } })).rows, [["1"], ["2"]]);
     assert.equal((await readdir(storage)).length, 1);
-    assert.equal(s.close(opened.sessionId), true);
+    assert.equal(await s.close(opened.sessionId), true);
     for (let i = 0; i < 200 && (await readdir(storage)).length; i++) await new Promise((resolve) => setTimeout(resolve, 25));
     assert.deepEqual(await readdir(storage), []);
     assert.equal(await readFile(path, "utf8"), body);
@@ -228,13 +228,13 @@ test("sorted filter keeps the completed snapshot stale until Refresh creates a n
     assert.deepEqual(old.rows.map((row) => row[0]), ["1", "2"]);
     assert.equal(old.sortMode, "text");
     await writeFile(path, "id,value,tag\n1,10,hit\n2,2,hit\n3,1,miss\n4,100,hit\n");
-    assert.equal(s.status(id).sourceChanged, true);
+    assert.equal((await s.status(id)).sourceChanged, true);
     const stale = await s.page(id, 0, 50, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 2, sort });
     assert.deepEqual(stale.rows, old.rows);
     assert.equal(stale.totalRows, 2);
     const refreshed = await s.open({ panelId, workspaceId: "workspace", source: { kind: "local", path }, turn: 1 });
-    for (let i = 0; i < 200 && s.status(refreshed.sessionId).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
-    assert.equal(s.status(refreshed.sessionId).sourceChanged, false);
+    for (let i = 0; i < 200 && (await s.status(refreshed.sessionId)).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
+    assert.equal((await s.status(refreshed.sessionId)).sourceChanged, false);
     const current = await s.page(refreshed.sessionId, 0, 50, { filter: anyColumnFilter("hit", [0, 1, 2]), requestId: 1, sort });
     assert.deepEqual(current.rows.map((row) => row[0]), ["2", "1", "4"]);
     assert.equal(current.totalRows, 3);

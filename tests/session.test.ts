@@ -4,13 +4,13 @@ import { mkdtemp, writeFile, rm, stat, readFile, mkdir, readdir, truncate } from
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PaseoApi } from "@getpaseo/client";
-import { createSessions } from "../server/session";
+import { createSessionProxy as createSessions } from "../server/proxy";
 import { anyColumnFilter } from "./filter-input";
 
 async function settled(sessions: ReturnType<typeof createSessions>, sessionId: string, timeoutMs = 5_000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    const status = sessions.status(sessionId);
+    const status = await sessions.status(sessionId);
     if (status.phase === "complete" || status.phase === "error") return status;
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
@@ -35,8 +35,8 @@ test("opens a real CSV as a bounded read-only viewer session and replaces it", a
     const replaced = await sessions.open({ panelId, workspaceId: "workspace", source: { kind: "local", path: second } });
     assert.deepEqual(replaced.rows, [["A", "three"]]);
     assert.notEqual(replaced.sessionId, opened.sessionId);
-    assert.equal(sessions.close(opened.sessionId), false);
-    assert.equal(sessions.close(replaced.sessionId), true);
+    assert.equal(await sessions.close(opened.sessionId), false);
+    assert.equal(await sessions.close(replaced.sessionId), true);
     await sessions.dispose();
   } finally {
     await rm(dir, { recursive: true, force: true });
@@ -167,13 +167,13 @@ test("scrolls beyond the preview during preparation without interrupting the loa
     await writeFile(file, "id,payload\n" + Array.from({ length: 100 }, (_, i) => `${i},keep\n`).join("") + "001,keep\n".repeat(4_999_900));
     for (const hasHeader of [true, false]) {
       const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file }, hasHeader });
-      assert.equal(sessions.status(opened.sessionId).phase, "preparing");
+      assert.equal((await sessions.status(opened.sessionId)).phase, "preparing");
       await assert.rejects(sessions.page(opened.sessionId, 0, 50, { sort: { column: 0, direction: "asc", mode: "text" } }), /sort.*preparation/i);
-      assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("keep", [0, 1]), requestId: 1 }), /filter.*preparation/i);
-      assert.deepEqual(sessions.beginPage(opened.sessionId, 50, 50, { requestId: 1 }), { state: "pending" });
-      let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
+      await assert.rejects(sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("keep", [0, 1]), requestId: 1 }), /filter.*preparation/i);
+      assert.deepEqual(await sessions.beginPage(opened.sessionId, 50, 50, { requestId: 1 }), { state: "pending" });
+      let result: Awaited<ReturnType<typeof sessions.pollPage>> = { state: "pending" };
       for (let i = 0; i < 200; i++) {
-        result = sessions.pollPage(opened.sessionId, 1);
+        result = await sessions.pollPage(opened.sessionId, 1);
         if (result.state === "ready") break;
         await new Promise((resolve) => setTimeout(resolve, 5));
       }
@@ -187,7 +187,7 @@ test("scrolls beyond the preview during preparation without interrupting the loa
         assert.equal(continued.rows.length, 200);
         assert.deepEqual(continued.rows[0], [hasHeader ? "001" : "99", "keep"]);
       }
-      const progress = sessions.status(opened.sessionId);
+      const progress = await sessions.status(opened.sessionId);
       assert.equal(progress.phase, "preparing");
       assert.equal(typeof progress.percent, "number");
       assert.equal(progress.percent! >= 0 && progress.percent! <= 100, true);
@@ -218,10 +218,10 @@ test("superseding direct CSV pages leaves preparation running and cancellation r
     const next = sessions.page(opened.sessionId, 100, 50, { requestId: 2 });
     await rejected;
     assert.deepEqual((await next).rows, Array(50).fill(["001", "keep"]));
-    assert.equal(sessions.status(opened.sessionId).phase, "preparing");
+    assert.equal((await sessions.status(opened.sessionId)).phase, "preparing");
     const cancelled = sessions.page(opened.sessionId, 2_000_000, 50, { requestId: 3 });
     const cancelledRejected = assert.rejects(cancelled, /superseded|interrupt|cancelled|closed/i);
-    assert.equal(sessions.close(opened.sessionId), true);
+    assert.equal(await sessions.close(opened.sessionId), true);
     await cancelledRejected;
     await sessions.dispose();
     assert.deepEqual(await readdir(storage), []);
@@ -242,17 +242,17 @@ test("a filtered page starts promptly and can be polled through completion", asy
     await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     await settled(sessions, opened.sessionId);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 1 }), { state: "pending" });
-    let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
+    assert.deepEqual(await sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 1 }), { state: "pending" });
+    let result: Awaited<ReturnType<typeof sessions.pollPage>> = { state: "pending" };
     for (let i = 0; i < 100; i++) {
-      result = sessions.pollPage(opened.sessionId, 1);
+      result = await sessions.pollPage(opened.sessionId, 1);
       if (result.state === "ready") break;
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
     assert.equal(result.state, "ready");
     if (result.state === "ready") assert.deepEqual(result.page?.rows, [["9999", "needle"]]);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { requestId: 2 }), { state: "pending" });
-    assert.throws(() => sessions.pollPage(opened.sessionId, 1), /superseded/i);
+    assert.deepEqual(await sessions.beginPage(opened.sessionId, 0, 50, { requestId: 2 }), { state: "pending" });
+    await assert.rejects(sessions.pollPage(opened.sessionId, 1), /superseded/i);
   } finally {
     await sessions.dispose();
     await rm(dir, { recursive: true, force: true });
@@ -267,20 +267,20 @@ test("rejected stale and duplicate starts leave the active filtered page pollabl
     await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     await settled(sessions, opened.sessionId);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 }), { state: "pending" });
-    assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { requestId: 1 }), /superseded/i);
-    assert.throws(() => sessions.beginPage(opened.sessionId, 0, 50, { requestId: 2 }), /already loading/i);
-    let result: ReturnType<typeof sessions.pollPage> = { state: "pending" };
+    assert.deepEqual(await sessions.beginPage(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 }), { state: "pending" });
+    await assert.rejects(sessions.beginPage(opened.sessionId, 0, 50, { requestId: 1 }), /superseded/i);
+    await assert.rejects(sessions.beginPage(opened.sessionId, 0, 50, { requestId: 2 }), /already loading/i);
+    let result: Awaited<ReturnType<typeof sessions.pollPage>> = { state: "pending" };
     for (let i = 0; i < 100; i++) {
-      result = sessions.pollPage(opened.sessionId, 2);
+      result = await sessions.pollPage(opened.sessionId, 2);
       if (result.state === "ready") break;
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
     assert.equal(result.state, "ready");
     if (result.state === "ready") assert.deepEqual(result.page.rows, [["9999", "needle"]]);
-    assert.deepEqual(sessions.beginPage(opened.sessionId, 1, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 }), { state: "pending" });
+    assert.deepEqual(await sessions.beginPage(opened.sessionId, 1, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 }), { state: "pending" });
     for (let i = 0; i < 100; i++) {
-      result = sessions.pollPage(opened.sessionId, 2);
+      result = await sessions.pollPage(opened.sessionId, 2);
       if (result.state === "ready") break;
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
@@ -347,7 +347,7 @@ test("new filter, source replacement and cancellation supersede an in-flight fil
     assert.deepEqual((await sessions.page(replaced.sessionId, 0, 50, { filter: anyColumnFilter("NEEDLE", [0, 1]), requestId: 1 })).rows, [["new", "needle"]]);
     const cancelledSearch = sessions.page(replaced.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 2 });
     const cancelledRejected = assert.rejects(cancelledSearch, /superseded|interrupt|cancelled|closed/i);
-    assert.equal(sessions.close(replaced.sessionId), true);
+    assert.equal(await sessions.close(replaced.sessionId), true);
     await cancelledRejected;
   } finally {
     await sessions.dispose();
@@ -363,12 +363,13 @@ test("closing a pending open and cancelling preparation cannot revive that panel
     const file = join(dir, "large.csv");
     await writeFile(file, "id,payload\n" + "001,keep\n".repeat(100_000));
     const pending = sessions.open({ panelId, workspaceId: "workspace", source: { kind: "local", path: file } });
-    assert.equal(sessions.close(undefined, panelId), true);
-    await assert.rejects(pending, /cancelled/i);
+    const rejected = assert.rejects(pending, /cancelled/i);
+    assert.equal(await sessions.close(undefined, panelId), true);
+    await rejected;
     const opened = await sessions.open({ panelId, workspaceId: "workspace", source: { kind: "local", path: file } });
     assert.equal(opened.rows.length, 50);
-    assert.equal(sessions.close(opened.sessionId), true);
-    assert.throws(() => sessions.status(opened.sessionId), /closed/);
+    assert.equal(await sessions.close(opened.sessionId), true);
+    await assert.rejects(sessions.status(opened.sessionId), /closed/);
     await assert.rejects(sessions.page(opened.sessionId, 50, 50), /not ready/);
     assert.equal((await readFile(file, "utf8")).startsWith("id,payload\n001,keep\n"), true);
   } finally {
@@ -385,10 +386,10 @@ test("a delayed open or close cannot supersede a newer panel request", async () 
     const file = join(dir, "ordered.csv");
     await writeFile(file, "id\n001\n");
     const base = { panelId, workspaceId: "workspace", source: { kind: "local" as const, path: file } };
-    assert.equal(sessions.close(undefined, panelId, 2), false);
+    assert.equal(await sessions.close(undefined, panelId, 2), false);
     await assert.rejects(sessions.open({ ...base, turn: 1 }), /newer file or closed panel/);
     const opened = await sessions.open({ ...base, turn: 3 });
-    assert.equal(sessions.close(undefined, panelId, 2), false);
+    assert.equal(await sessions.close(undefined, panelId, 2), false);
     assert.deepEqual(opened.rows, [["001"]]);
     assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
   } finally {
@@ -531,7 +532,7 @@ test("skips leading and single-column blank lines but keeps quoted empty values"
     const empty = await sessions.open(input);
     assert.deepEqual(empty.columns, []);
     assert.deepEqual(empty.rows, []);
-    assert.equal(sessions.status(empty.sessionId).rowCount, 0);
+    assert.equal((await sessions.status(empty.sessionId)).rowCount, 0);
   } finally {
     await sessions.dispose();
     await rm(dir, { recursive: true, force: true });

@@ -8,7 +8,7 @@ import { act, create, type ReactTestRenderer } from "react-test-renderer";
 import { PluginRpcProvider } from "../node_modules/@getpaseo/plugin/dist/client/rpc-context.js";
 import { PluginClientStateProvider } from "../node_modules/@getpaseo/plugin/dist/client/client-state.js";
 import { ViewerPanel } from "../client/panel";
-import { createSessions } from "../server/session";
+import { createSessionProxy as createSessions } from "../server/proxy";
 import { TableView } from "../client/table";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -315,7 +315,7 @@ async function panelTest(run: (app: {
       return { ...info, sourceBytes: sourceBytes(input.source.path) ?? info.sourceBytes };
     }
     if (name === "viewer.open") { opens++; return sessions.open(input, { workspaces: { ref: () => ({ refresh: async () => ({ id: "workspace", workspaceDirectory: directory }) }) } } as any); }
-    if (name === "viewer.close") return { closed: sessions.close(input.sessionId, input.panelId, input.turn) };
+    if (name === "viewer.close") return { closed: await sessions.close(input.sessionId, input.panelId, input.turn) };
     if (name === "viewer.status") { await statusGate; return { ...await sessions.status(input.sessionId), ...(preparing ? { phase: "preparing", percent: 45, rowCount: null } : {}) }; }
     if (name === "viewer.query" && input.action === "start") { pageCalls.push(input); await pageGate; if (input.filter) await filterGate; if (input.sort) await sortGate; return sessions.beginPage(input.sessionId, input.offset, input.limit, input); }
     if (name === "viewer.query" && input.action === "poll") return sessions.pollPage(input.sessionId, input.requestId);
