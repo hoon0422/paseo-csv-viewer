@@ -1,0 +1,106 @@
+[
+  {
+    "id": "paseo-csv-viewer@0.1.0",
+    "name": "paseo-csv-viewer",
+    "version": "0.1.0",
+    "size": 180471,
+    "unpackedSize": 387141,
+    "shasum": "9252df7ec5ead4342f801ba9c89c04ccecd32a30",
+    "integrity": "sha512-dsnbczVTEmftdQCXQURo/1KlfT3NaLDGV820KmIK57oMuNRG2MDtuKjbEvcBc6siZz9sgNuFPyeHJ7YXuqyXVw==",
+    "filename": "paseo-csv-viewer-0.1.0.tgz",
+    "files": [
+      {
+        "path": "OVERVIEW.md",
+        "size": 1733,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 2695,
+        "mode": 420
+      },
+      {
+        "path": "assets/screenshot.png",
+        "size": 113703,
+        "mode": 420
+      },
+      {
+        "path": "client/columns.tsx",
+        "size": 9825,
+        "mode": 420
+      },
+      {
+        "path": "client/drop.ts",
+        "size": 4401,
+        "mode": 420
+      },
+      {
+        "path": "client/filter.tsx",
+        "size": 5687,
+        "mode": 420
+      },
+      {
+        "path": "client/panel.tsx",
+        "size": 26977,
+        "mode": 420
+      },
+      {
+        "path": "client/table.tsx",
+        "size": 6525,
+        "mode": 420
+      },
+      {
+        "path": "index.client.tsx",
+        "size": 2114,
+        "mode": 420
+      },
+      {
+        "path": "index.server.ts",
+        "size": 961,
+        "mode": 420
+      },
+      {
+        "path": "npm-shrinkwrap.json",
+        "size": 177836,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 962,
+        "mode": 420
+      },
+      {
+        "path": "paseo-plugin.json",
+        "size": 265,
+        "mode": 420
+      },
+      {
+        "path": "server/filter.ts",
+        "size": 2793,
+        "mode": 420
+      },
+      {
+        "path": "server/native.ts",
+        "size": 654,
+        "mode": 420
+      },
+      {
+        "path": "server/session.ts",
+        "size": 23540,
+        "mode": 420
+      },
+      {
+        "path": "server/sort.ts",
+        "size": 2182,
+        "mode": 420
+      },
+      {
+        "path": "shared/session.ts",
+        "size": 4288,
+        "mode": 420
+      }
+    ],
+    "entryCount": 18,
+    "bundled": []
+  }
+]
