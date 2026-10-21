@@ -23,9 +23,15 @@ export function ColumnHeader({ name, width, theme, direction, rows, column, onWi
     context.font = `700 ${font.fontSize} ${font.fontFamily}`;
     let widest = context.measureText(name.replace(/[\r\n\t]/g, " ")).width + 48;
     context.font = `400 ${font.fontSize} ${font.fontFamily}`;
+    const tabWidth = context.measureText(" ").width * 8;
     for (const row of rows) {
       for (const line of (row[column] ?? "").split(/\r\n|\r|\n/)) {
-        widest = Math.max(widest, context.measureText(line.replace(/\t/g, "        ")).width + 12);
+        let measured = 0;
+        for (const [index, part] of line.split("\t").entries()) {
+          if (index) measured = (Math.floor(measured / tabWidth) + 1) * tabWidth;
+          measured += context.measureText(part).width;
+        }
+        widest = Math.max(widest, measured + 12);
       }
       if (widest >= 600) break;
     }

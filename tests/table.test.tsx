@@ -184,6 +184,9 @@ test("double-click fit measures loaded cells outside the render window, multilin
     assert.equal(tree.root.findAllByProps({ title: rows[299][0] }).length, 0);
     await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); });
     assert.equal(edge().props["aria-valuenow"], 112);
+    await act(async () => { tree.update(render("id", [["a\tb"]])); });
+    await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); });
+    assert.equal(edge().props["aria-valuenow"], 102);
     await act(async () => { tree.update(render("id", [["x".repeat(100)]])); });
     await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); });
     assert.equal(edge().props["aria-valuenow"], 600);

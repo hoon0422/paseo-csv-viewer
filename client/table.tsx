@@ -79,7 +79,7 @@ export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presen
                   background: "transparent", textAlign: "left",
                   fontSize: 14, fontFamily: "system-ui, sans-serif" }}>
                 <div title={value} style={{ color: theme.foreground, overflow: "hidden", textOverflow: "ellipsis",
-                  whiteSpace: expanded.has(rowIndex) ? "pre-wrap" : "nowrap", overflowWrap: "anywhere", lineHeight: "18px" }}>{value}</div>
+                  whiteSpace: expanded.has(rowIndex) ? "pre-wrap" : "nowrap", overflowWrap: "anywhere", lineHeight: "18px", tabSize: 8 }}>{value}</div>
               </button>;
             })}
             <button type="button" aria-label={`Toggle row ${rowIndex + 1} expansion`} aria-expanded={expanded.has(rowIndex)}
