@@ -19,7 +19,6 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [preview, setPreview] = useState<Preview | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const [rows, setRows] = useState<string[][]>([]);
-  const [offset, setOffset] = useState(0);
   const [totalRows, setTotalRows] = useState<number | null>(null);
   const [pageBusy, setPageBusy] = useState(false);
   const [sort, setSort] = useState<Sort | null>(null);
@@ -44,6 +43,9 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const pageRequest = useRef(0);
   const queryRequest = useRef(0);
   const queryDirty = useRef(false);
+  const pageInFlight = useRef(false);
+  const nextPosition = useRef<number | undefined>(undefined);
+  const moreRows = useRef(false);
   const mounted = useRef(true);
   const session = useRef<string | null>(null);
   const selectedSource = useRef<Source | null>(null);
@@ -69,6 +71,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     ++selection.current;
     ++pageRequest.current;
     ++queryRequest.current;
+    pageInFlight.current = false;
     setBusy(true);
     setMessage("");
     if (pendingPanel.current) void closeRpc({ panelId: pendingPanel.current, turn });
@@ -90,7 +93,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       setPageBusy(false);
       setQueryPending(false);
       setTotalRows(null);
-      setOffset(0);
+      nextPosition.current = next.rows.length ? next.rows.length - 1 : undefined;
+      moreRows.current = next.rows.length === next.limit;
       queryDirty.current = refresh && !!(sort || filter);
       setTableKey((key) => key + 1);
       if (!refresh) {
@@ -134,14 +138,22 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     ++pageRequest.current;
     const applied = next?.rules.some(activeRule) ? next : undefined;
     setFilter(applied);
-    setTableKey((key) => key + 1);
-    setRows([]);
-    setOffset(0);
-    setTotalRows(null);
-    setPageBusy(false);
+    resetRows();
     setQueryPending(true);
     setMessage("");
-    void navigate(0, sort, applied ?? null);
+    void navigate(false, sort, applied ?? null);
+  }
+
+  function resetRows() {
+    setRows([]);
+    setTotalRows(null);
+    setPageBusy(false);
+    pageInFlight.current = false;
+    nextPosition.current = undefined;
+    moreRows.current = true;
+    setTable((current) => ({ ...current, selected: [] }));
+    // A query/source generation owns scroll position and expanded rows.
+    setTableKey((key) => key + 1);
   }
 
   function openFilter() {
@@ -167,54 +179,59 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setFilterDraft(emptyFilter());
     setSort(null);
     setSortMode(undefined);
-    setRows([]);
-    setOffset(0);
-    setTotalRows(null);
-    setPageBusy(false);
-    void navigate(0, null, null);
+    resetRows();
+    void navigate(false, null, null);
   }
 
   function changeSort(next: Sort) {
     ++queryRequest.current;
-    setRows([]);
-    setOffset(0);
-    setTotalRows(null);
+    resetRows();
     setSortMode(undefined);
     setSort(next);
-    void navigate(0, next);
+    void navigate(false, next);
   }
 
-  async function navigate(nextOffset: number, nextSort = sort, nextFilter: Filter | null | undefined = filter) {
-    if (!preview || status?.phase !== "complete") return;
+  async function navigate(append = false, nextSort = sort, nextFilter: Filter | null | undefined = filter) {
+    // Preparation already runs when open returns, before the first status poll.
+    if (!preview || busy || (status && status.phase !== "complete" && status.phase !== "preparing")) return;
+    if (status?.phase !== "complete" && (nextSort || nextFilter)) return;
+    if (append && (pageInFlight.current || !moreRows.current || queryDirty.current)) return;
     const turn = generation.current;
     const request = ++pageRequest.current;
-    const query = queryRequest.current;
+    const query = ++queryRequest.current;
+    const nextOffset = append ? rows.length : 0;
+    pageInFlight.current = true;
+    queryDirty.current = false;
     setPageBusy(true);
-    if (nextOffset === 0) setQueryPending(true);
+    if (!append) setQueryPending(true);
     try {
-      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, filter: nextFilter ? { ...nextFilter, visibleColumns: preview.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) } : undefined, requestId: query, sort: nextSort ?? undefined });
+      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: 200,
+        afterPosition: append ? nextPosition.current : undefined,
+        filter: nextFilter ? { ...nextFilter, visibleColumns: preview.columns.map((_, index) => index).filter((index) => !table.hidden.includes(index)) } : undefined,
+        requestId: query, sort: nextSort ?? undefined });
       let page: z.output<typeof pageRows.output>;
       for (;;) {
         if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;
         const result = await queryRpc({ action: "poll", sessionId: preview.sessionId, requestId: query });
         if (result.state === "ready") { page = result.page; break; }
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
       if (!mounted.current || turn !== generation.current || request !== pageRequest.current || query !== queryRequest.current || session.current !== preview.sessionId) return;
-      setRows(page.rows);
-      setOffset(page.offset);
+      setRows((current) => append ? [...current, ...page.rows] : page.rows);
+      nextPosition.current = page.nextPosition ?? undefined;
+      moreRows.current = page.rows.length === 200 && (page.totalRows === null || nextOffset + page.rows.length < page.totalRows);
       setTotalRows(page.totalRows);
       setSortMode(page.sortMode);
     } catch (cause) {
       if (mounted.current && turn === generation.current && request === pageRequest.current) setMessage(cause instanceof Error ? cause.message : String(cause));
     } finally {
-      if (mounted.current && turn === generation.current && request === pageRequest.current) { setPageBusy(false); setQueryPending(false); }
+      if (mounted.current && turn === generation.current && request === pageRequest.current) { pageInFlight.current = false; setPageBusy(false); setQueryPending(false); }
     }
   }
 
   useEffect(() => {
     if (!preview || status?.phase !== "complete" || busy || !preview.columns.length) return;
-    if (queryDirty.current) void navigate(0);
+    if (queryDirty.current) void navigate();
     else setTotalRows(status.rowCount);
   }, [preview?.sessionId, status?.phase, busy]);
 
@@ -251,7 +268,9 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setPreview(null);
     setStatus(null);
     setRows([]);
-    setOffset(0);
+    nextPosition.current = undefined;
+    moreRows.current = false;
+    pageInFlight.current = false;
     setSort(null);
     setSortMode(undefined);
     setTotalRows(null);
@@ -277,7 +296,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
 
   useEffect(() => {
     setTable((current) => current.selected.length ? { ...current, selected: [] } : current);
-  }, [rows]);
+  }, [tableKey]);
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(null), 2000);
@@ -322,7 +341,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const rowSummary = filter && totalRows !== null && status?.rowCount !== null && status?.rowCount !== undefined
     ? `${count(totalRows)} of ${count(status.rowCount)} rows`
     : rowCount == null ? `Showing ${count(rows.length)} rows`
-    : rows.length < rowCount ? `Showing ${count(offset + rows.length)} of ${count(rowCount)} rows` : `${count(rowCount)} rows`;
+    : rows.length < rowCount ? `Showing ${count(rows.length)} of ${count(rowCount)} rows` : `${count(rowCount)} rows`;
   const bytes = preview?.sourceBytes ?? 0;
   const unit = Math.min(4, Math.floor(Math.log10(Math.max(1, bytes)) / 3));
   const size = `${(bytes / 1000 ** unit).toFixed(1)} ${["B", "kB", "MB", "GB", "TB"][unit]}`;
@@ -333,7 +352,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const sortTitle = sort?.mode === "auto" ? `Auto${sortMode ? ` — ${sortMode === "numeric" ? "Numeric" : "Text"} detected` : " — detection pending"}` : "Sort mode";
 
   return (
-    <div ref={zone} tabIndex={0}
+    <div ref={zone} tabIndex={0} aria-label="CSV viewer"
       onPointerDown={(event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
@@ -390,16 +409,11 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           {filter && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
           {!filter && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={tableKey} columns={preview.columns} rows={rows} sort={sort} sortBusy={pageBusy || !ready}
+            onEndReached={() => void navigate(true)}
             presentation={table} onPresentation={setTable} onCopy={(value, label) => void copy(value, label)}
             onSort={(column, direction) => changeSort({ column, direction, mode: sort?.column === column ? sort.mode : "auto" })}
             theme={{ foreground, muted, border: colors.border }} />
         </>)}
-        {ready && totalRows !== null && totalRows > 0 && !queryPending && <div style={{ display: "flex", gap: 12, padding: 4 }}>
-          <button type="button" style={textButtonStyle} aria-label="Previous rows" disabled={pageBusy || offset === 0}
-            onClick={() => void navigate(Math.max(0, offset - (preview?.limit ?? 50)))}>Previous</button>
-          <button type="button" style={textButtonStyle} aria-label="Next rows" disabled={pageBusy || offset + rows.length >= totalRows}
-            onClick={() => void navigate(offset + (preview?.limit ?? 50))}>Next</button>
-        </div>}
       </div>
       <div role="status" aria-label="Source status" aria-live="polite" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12,
         padding: "5px 8px", fontSize: 12, color: muted, borderTop: `1px solid ${colors.border}` }}>

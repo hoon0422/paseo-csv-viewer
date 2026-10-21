@@ -9,6 +9,7 @@ import { PluginRpcProvider } from "../node_modules/@getpaseo/plugin/dist/client/
 import { PluginClientStateProvider } from "../node_modules/@getpaseo/plugin/dist/client/client-state.js";
 import { ViewerPanel } from "../client/panel";
 import { createSessions } from "../server/session";
+import { TableView } from "../client/table";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -120,7 +121,7 @@ test("panel-local Filter shortcuts focus the value, Enter applies, and Escape cl
   await panelTest(async ({ tree, zone, write, press, wait }) => {
     await act(async () => { zone.drop(await write("keys.csv", "id,value\n1,keep\n2,skip\n")); });
     await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
-    const panel = () => tree.root.findByProps({ tabIndex: 0 });
+    const panel = () => tree.root.findByProps({ "aria-label": "CSV viewer" });
     const key = async (key: string, target = zone, modifiers = {}) => {
       let prevented = false;
       await act(async () => { panel().props.onKeyDown({ key, target, ctrlKey: true, ...modifiers,
@@ -243,6 +244,7 @@ async function panelTest(run: (app: {
   holdFilter: (next: Promise<void>) => void;
   holdSort: (next: Promise<void>) => void;
   preparing: (next: boolean) => void;
+  holdStatus: (next: Promise<void>) => void;
   pageCalls: () => { filter?: unknown; sort?: unknown }[];
   clipboard: () => string;
   press: (label: string) => Promise<void>; wait: (condition: () => boolean) => Promise<void>;
@@ -256,6 +258,7 @@ async function panelTest(run: (app: {
   let filterGate = Promise.resolve();
   let sortGate = Promise.resolve();
   let preparing = false;
+  let statusGate = Promise.resolve();
   const pageCalls: { filter?: unknown; sort?: unknown }[] = [];
   let clipboard = "";
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async (text: string) => { clipboard = text; } } } });
@@ -267,8 +270,8 @@ async function panelTest(run: (app: {
   const invoke = async (name: string, input: any): Promise<unknown> => {
     if (name === "viewer.open") { opens++; return sessions.open(input, { workspaces: { ref: () => ({ refresh: async () => ({ id: "workspace", workspaceDirectory: directory }) }) } } as any); }
     if (name === "viewer.close") return { closed: sessions.close(input.sessionId, input.panelId, input.turn) };
-    if (name === "viewer.status") return { ...await sessions.status(input.sessionId), ...(preparing ? { phase: "preparing", percent: 45, rowCount: null } : {}) };
-    if (name === "viewer.query" && input.action === "start") { pageCalls.push(input); await pageGate; if (input.filter) await filterGate; if (input.sort) await sortGate; return sessions.beginPage(input.sessionId, input.offset, input.limit, { filter: input.filter, requestId: input.requestId, sort: input.sort }); }
+    if (name === "viewer.status") { await statusGate; return { ...await sessions.status(input.sessionId), ...(preparing ? { phase: "preparing", percent: 45, rowCount: null } : {}) }; }
+    if (name === "viewer.query" && input.action === "start") { pageCalls.push(input); await pageGate; if (input.filter) await filterGate; if (input.sort) await sortGate; return sessions.beginPage(input.sessionId, input.offset, input.limit, input); }
     if (name === "viewer.query" && input.action === "poll") return sessions.pollPage(input.sessionId, input.requestId);
     throw new Error(`Unexpected RPC: ${name}`);
   };
@@ -284,7 +287,9 @@ async function panelTest(run: (app: {
             <ViewerPanel {...props} />
           </PluginClientStateProvider>
         </PluginRpcProvider>
-      </QueryClientProvider>, { createNodeMock: () => zone });
+      </QueryClientProvider>, { createNodeMock: (element) => (element.props as { "aria-label"?: string })["aria-label"] === "CSV viewer"
+        ? zone : element.type === "form" ? { querySelector: (selector: string) => zone.querySelector(selector) }
+        : { addEventListener() {}, removeEventListener() {} } });
     });
     const wait = async (condition: () => boolean) => {
       for (let i = 0; i < 100; i++) {
@@ -306,6 +311,7 @@ async function panelTest(run: (app: {
       holdFilter: (next) => { filterGate = next; },
       holdSort: (next) => { sortGate = next; },
       preparing: (next) => { preparing = next; },
+      holdStatus: (next) => { statusGate = next; },
       pageCalls: () => pageCalls,
       clipboard: () => clipboard,
       press: async (label) => { await act(async () => {
@@ -329,21 +335,133 @@ async function panelTest(run: (app: {
   }
 }
 
+test("scrolling appends 200 rows once, preserves selection and stops at the end", async () => {
+  await panelTest(async ({ tree, zone, file, press, wait, pageCalls }) => {
+    await act(async () => { zone.drop(await file("scroll.csv", 455)); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    const table = () => tree.root.findByType(TableView);
+    assert.equal(tree.root.findAllByProps({ "aria-label": "Next rows" }).length, 0);
+    assert.equal(tree.root.findAllByProps({ "aria-label": "Previous rows" }).length, 0);
+    await press("Select row 1");
+    await act(async () => { table().props.onEndReached(); table().props.onEndReached(); });
+    await wait(() => table().props.rows.length === 250);
+    assert.deepEqual(table().props.rows.slice(49, 52).map((row: string[]) => row[0]), ["49", "50", "51"]);
+    assert.deepEqual(table().props.presentation.selected, [0]);
+    assert.equal(pageCalls().length, 1);
+    await act(async () => { table().props.onEndReached(); });
+    await wait(() => table().props.rows.length === 450);
+    await act(async () => { table().props.onEndReached(); });
+    await wait(() => table().props.rows.length === 455);
+    await act(async () => { table().props.onEndReached(); });
+    assert.equal(pageCalls().length, 3);
+    assert.equal(table().props.rows.at(-1)[0], "454");
+  });
+});
+
 test("cancelling an unfiltered sort restores source order and supersedes its page", async () => {
   await panelTest(async ({ tree, zone, file, holdSort, pageCalls, press, wait }) => {
     const source = await file("sort.csv", 120);
     await act(async () => { zone.drop(source); });
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => tree.root.findByProps({ "aria-label": "Filter" }).props.disabled === false);
     let release!: () => void;
     holdSort(new Promise<void>((resolve) => { release = resolve; }));
     await press("Sort column 1 id descending");
     await wait(() => tree.root.findAllByProps({ "aria-label": "Cancel sort" }).length > 0);
     await press("Cancel sort");
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "0"));
     assert.equal(cell(tree, "id").findByType("div").children[0], "0");
     assert.equal(pageCalls().at(-1)?.sort, undefined);
     await act(async () => { release(); });
     assert.equal(cell(tree, "id").findByType("div").children[0], "0");
+  });
+});
+
+test("filtered cursor pages append across gaps and query changes collapse expanded rows", async () => {
+  await panelTest(async ({ tree, zone, write, press, wait }) => {
+    await act(async () => { zone.drop(await write("gaps.csv", "id,value\n" + Array.from({ length: 640 }, (_, i) =>
+      `${i},${i % 2 === 0 ? "keep" : "skip"}\n`).join(""))); });
+    await wait(() => tree.root.findByProps({ "aria-label": "Filter" }).props.disabled === false);
+    const table = () => tree.root.findByType(TableView);
+    const edge = () => tree.root.findByProps({ "aria-label": "Toggle row 1 expansion" });
+    await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); });
+    await press("Select row 1");
+    await press("Filter");
+    await applyValue(tree, "keep");
+    await wait(() => table().props.rows.length === 200);
+    assert.equal(edge().props["aria-expanded"], false);
+    assert.deepEqual(table().props.presentation.selected, []);
+    await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); table().props.onEndReached(); });
+    await wait(() => table().props.rows.length === 320);
+    assert.equal(table().props.rows[200][0], "400");
+    assert.equal(table().props.rows.at(-1)[0], "638");
+    assert.equal(new Set(table().props.rows.map((row: string[]) => row[0])).size, 320);
+    assert.equal(edge().props["aria-expanded"], true);
+    await press("Sort column 1 id descending");
+    await wait(() => table().props.rows[0]?.[0] === "638");
+    assert.equal(edge().props["aria-expanded"], false);
+    await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); });
+    const beforeRefresh = table();
+    await press("Refresh source");
+    await wait(() => table() !== beforeRefresh && table().props.rows[0]?.[0] === "638");
+    assert.equal(edge().props["aria-expanded"], false);
+    await act(async () => { edge().props.onDoubleClick({ stopPropagation() {} }); zone.drop(await write("replacement.csv", "id,value\nnew,source\n")); });
+    await wait(() => table().props.rows[0]?.[0] === "new");
+    assert.equal(edge().props["aria-expanded"], false);
+  });
+});
+
+test("a pending append cannot mix into a new sort or filter", async () => {
+  await panelTest(async ({ tree, zone, file, press, wait, holdPage }) => {
+    await act(async () => { zone.drop(await file("stale.csv", 700)); });
+    await wait(() => tree.root.findByProps({ "aria-label": "Filter" }).props.disabled === false);
+    const table = () => tree.root.findByType(TableView);
+    for (const change of ["sort", "filter"]) {
+      let release!: () => void;
+      holdPage(new Promise<void>((resolve) => { release = resolve; }));
+      await act(async () => { table().props.onEndReached(); });
+      holdPage(Promise.resolve());
+      if (change === "sort") await press("Sort column 1 id descending");
+      else {
+        await press("Filter");
+        await applyValue(tree, "stale.csv-69");
+      }
+      await wait(() => table().props.rows[0]?.[0] === "699");
+      const expected = table().props.rows;
+      await act(async () => { release(); });
+      await act(async () => { await new Promise((resolve) => setTimeout(resolve, 100)); });
+      assert.deepEqual(table().props.rows, expected);
+    }
+  });
+});
+
+test("scrolling during preparation continues from the same rows when ready", async () => {
+  await panelTest(async ({ tree, zone, file, wait }) => {
+    await act(async () => { zone.drop(await file("preparing.csv", 300_000)); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Preparing"));
+    const table = () => tree.root.findByType(TableView);
+    await act(async () => { table().props.onEndReached(); });
+    await wait(() => table().props.rows.length === 250);
+    assert.equal(table().props.rows[50][0], "50");
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    await act(async () => { table().props.onEndReached(); });
+    await wait(() => table().props.rows.length === 450);
+    assert.equal(table().props.rows[250][0], "250");
+  });
+});
+
+test("preview scrolling does not wait for the first preparation status response", async () => {
+  await panelTest(async ({ tree, zone, file, wait, holdStatus }) => {
+    let release!: () => void;
+    holdStatus(new Promise<void>((resolve) => { release = resolve; }));
+    try {
+      await act(async () => { zone.drop(await file("status.csv", 500)); });
+      await wait(() => tree.root.findAllByType(TableView).length > 0);
+      assert.equal(tree.root.findByProps({ "aria-label": "Filter" }).props.disabled, true);
+      await act(async () => { tree.root.findByType(TableView).props.onEndReached(); });
+      await wait(() => tree.root.findByType(TableView).props.rows.length === 250);
+    } finally { await act(async () => { release(); }); }
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    assert.equal(tree.root.findByType(TableView).props.rows[50][0], "50");
   });
 });
 
@@ -355,7 +473,7 @@ test("filtered sorting and visible-column copy use the displayed order; clear ke
     lines[90] = "90,zeta,needle";
     const source = await write("combined.csv", `id,visible,secret\n${lines.join("\n")}\n`);
     await act(async () => { zone.drop(source); });
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => tree.root.findByProps({ "aria-label": "Filter" }).props.disabled === false);
     await press("Hide secret");
     await press("Filter");
     await applyValue(tree, "needle", "2");
@@ -377,16 +495,16 @@ test("replacement clears an old page load and header switch applies to the next 
     const first = await file("first.csv", 120);
     const second = await file("second.csv", 120);
     await act(async () => { zone.drop(first); });
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => tree.root.findByProps({ "aria-label": "Filter" }).props.disabled === false);
     let release!: () => void;
     holdPage(new Promise<void>((resolve) => { release = resolve; }));
-    await press("Next rows");
-    assert.equal(tree.root.findByProps({ "aria-label": "Next rows" }).props.disabled, true);
+    await act(async () => { tree.root.findByType(TableView).props.onEndReached(); });
+    assert.ok(JSON.stringify(tree.toJSON()).includes("Loading rows…"));
     await act(async () => { zone.drop(second); });
     await wait(() => tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value.endsWith("second.csv"));
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).length > 0);
+    await wait(() => tree.root.findAllByType(TableView).length > 0);
     await act(async () => { release(); });
-    await wait(() => !tree.root.findByProps({ "aria-label": "Next rows" }).props.disabled);
+    await wait(() => !JSON.stringify(tree.toJSON()).includes("Loading rows…"));
     await press("First record is header");
     await wait(() => tree.root.findByProps({ "aria-label": "First record is header" }).props["aria-pressed"] === false);
     await act(async () => { zone.drop(first); });
@@ -479,7 +597,7 @@ test("filter shows pending, hidden-column matches and no results; stale filter c
     const file = await write("search.csv", "id,visible,secret\n" + Array.from({ length: 120 }, (_, i) =>
       `${i},plain,${i === 90 ? "café [X]%_" : "ordinary"}\n`).join(""));
     await act(async () => { zone.drop(file); });
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => tree.root.findByProps({ "aria-label": "Filter" }).props.disabled === false);
     await press("Hide secret");
     await press("Filter");
     let release!: () => void;
@@ -487,7 +605,7 @@ test("filter shows pending, hidden-column matches and no results; stale filter c
     await applyValue(tree, "CAFÉ [x]%_", "2");
     await wait(() => JSON.stringify(tree.toJSON()).includes("Filtering…"));
     await clearFilter(tree);
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "0"));
     await act(async () => { release(); });
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 50)); });
     assert.equal(cell(tree, "id").findByType("div").children[0], "0");
@@ -504,7 +622,7 @@ test("filter shows pending, hidden-column matches and no results; stale filter c
     await applyValue(tree, "café", "2");
     await wait(() => tree.root.findAllByProps({ "aria-label": "Cancel filter" }).length > 0);
     await press("Cancel filter");
-    await wait(() => tree.root.findAllByProps({ "aria-label": "Next rows" }).some((node) => !node.props.disabled));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "0"));
     await act(async () => { releaseCancel(); });
     assert.equal(cell(tree, "id").findByType("div").children[0], "0");
 

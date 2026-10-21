@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { FlatList, Pressable, ScrollView, Text, View, type ViewToken } from "react-native";
 
 export type TablePresentation = { hidden: number[]; widths: Record<number, number>; selected: number[] };
 
@@ -12,18 +13,32 @@ type Props = {
   sort?: { column: number; direction: "asc" | "desc"; mode: "auto" | "numeric" | "text" } | null;
   sortBusy?: boolean;
   onSort?: (column: number, direction: "asc" | "desc") => void;
+  onEndReached?: () => void;
+  onVisibleRowsChange?: (indices: number[]) => void;
 };
 
 const DEFAULT_WIDTH = 160;
 const MIN_WIDTH = 80;
 const MAX_WIDTH = 480;
 
-export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presentation, onPresentation, onCopy }: Props) {
+export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presentation, onPresentation, onCopy, onEndReached, onVisibleRowsChange }: Props) {
+  const [expanded, setExpanded] = useState<Set<number>>(() => new Set());
+  const visibleRows = useRef(onVisibleRowsChange);
+  visibleRows.current = onVisibleRowsChange;
+  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 0 });
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    visibleRows.current?.(viewableItems.flatMap((item) => item.index === null ? [] : [item.index]));
+  }, []);
   const { hidden, widths, selected } = presentation;
   const setHidden = (hidden: number[]) => onPresentation({ ...presentation, hidden });
   const setWidths = (widths: Record<number, number>) => onPresentation({ ...presentation, widths });
   const setSelected = (selected: number[]) => onPresentation({ ...presentation, selected });
   const visible = columns.map((_, index) => index).filter((index) => !hidden.includes(index));
+  const toggleExpanded = (index: number) => setExpanded((current) => {
+    const next = new Set(current);
+    if (next.has(index)) next.delete(index); else next.add(index);
+    return next;
+  });
 
   const control = (label: string, onPress: () => void, disabled = false, caption = label) => (
     <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled }}
@@ -51,8 +66,12 @@ export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presen
             </View>
           </View>)}
         </View>
-        <ScrollView style={{ flex: 1 }}>
-          {rows.map((row, rowIndex) => <View key={rowIndex} style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: theme.border }}>
+        <FlatList data={rows} style={{ flex: 1 }} keyExtractor={(_, index) => String(index)}
+          initialNumToRender={20} maxToRenderPerBatch={20} windowSize={5}
+          onEndReached={onEndReached} onEndReachedThreshold={1}
+          viewabilityConfig={viewabilityConfig.current} onViewableItemsChanged={onViewableItemsChanged}
+          renderItem={({ item: row, index: rowIndex }) => <div style={{ display: "flex", position: "relative",
+            minHeight: 30, boxSizing: "border-box", borderBottom: `1px solid ${theme.border}` }}>
             <Pressable accessibilityRole="checkbox" accessibilityLabel={`Select row ${rowIndex + 1}`}
               accessibilityState={{ checked: selected.includes(rowIndex) }}
               onPress={() => setSelected(selected.includes(rowIndex) ? selected.filter((index) => index !== rowIndex) : [...selected, rowIndex])}
@@ -65,11 +84,17 @@ export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presen
                 accessibilityLabel={`Copy cell row ${rowIndex + 1}, ${columns[index] || `Column ${index + 1}`}, ${value === "" ? "empty cell" : `value: ${value}`}`}
                 onPress={() => onCopy(value, "Copied cell")}
                 style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 6 }}>
-                <Text style={{ color: theme.foreground }}>{value}</Text>
+                <div title={value} style={{ color: theme.foreground, overflow: "hidden", textOverflow: "ellipsis",
+                  whiteSpace: expanded.has(rowIndex) ? "pre-wrap" : "nowrap", overflowWrap: "anywhere", lineHeight: "18px" }}>{value}</div>
               </Pressable>;
             })}
-          </View>)}
-        </ScrollView>
+            <button type="button" aria-label={`Toggle row ${rowIndex + 1} expansion`} aria-expanded={expanded.has(rowIndex)}
+              title="Double-click to expand or collapse row"
+              onDoubleClick={(event) => { event.stopPropagation(); toggleExpanded(rowIndex); }}
+              onClick={(event) => { event.stopPropagation(); if (event.detail === 0) toggleExpanded(rowIndex); }}
+              style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 5, padding: 0,
+                border: 0, background: "transparent", cursor: "row-resize" }} />
+          </div>} />
       </View>
     </ScrollView>
   </View>;
