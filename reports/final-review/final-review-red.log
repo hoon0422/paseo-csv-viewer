@@ -1,0 +1,25 @@
+✖ rejected stale and duplicate starts leave the active query pollable (1970.956706ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5149.170316
+
+✖ failing tests:
+
+test at tests/session.test.ts:4:960
+✖ rejected stale and duplicate starts leave the active query pollable (1970.956706ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/home/cua/final-review-source/tests/session.test.ts:163:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /superseded/i,
+    operator: 'throws',
+    diff: 'simple'
+  }

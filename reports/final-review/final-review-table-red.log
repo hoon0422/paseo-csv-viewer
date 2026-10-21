@@ -1,0 +1,21 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✖ the viewer copies raw cells and selected visible columns in current row order (1428.980142ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6574.591497
+
+✖ failing tests:
+
+test at tests/table.test.tsx:2:633
+✖ the viewer copies raw cells and selected visible columns in current row order (1428.980142ms)
+  Error: No instances found with props: {"accessibilityLabel":"Copy cell row 2, id, value: 001"}
+      at expectOne (/home/cua/ticket-5/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:12559:13)
+      at process.env.NODE_ENV._proto.findByProps (/home/cua/ticket-5/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14481:18)
+      at TestContext.<anonymous> (/home/cua/final-review-source/tests/table.test.tsx:28:25)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)

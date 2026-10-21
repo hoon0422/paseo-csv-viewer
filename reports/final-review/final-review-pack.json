@@ -1,0 +1,91 @@
+[
+  {
+    "id": "paseo-csv-viewer@0.1.0",
+    "name": "paseo-csv-viewer",
+    "version": "0.1.0",
+    "size": 170876,
+    "unpackedSize": 353505,
+    "shasum": "f75b7209ec9fbb9ee0789c7badda1231bf2ca3d0",
+    "integrity": "sha512-MgIkcrH3ovAxrnyqYFBjbiP8iUBACjKzxSphtxQUhZKZp56Tk8jk4+QyClvn2odgNwenKL2RLCUGkOXr0Z1EOA==",
+    "filename": "paseo-csv-viewer-0.1.0.tgz",
+    "files": [
+      {
+        "path": "OVERVIEW.md",
+        "size": 1733,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 2695,
+        "mode": 420
+      },
+      {
+        "path": "assets/screenshot.png",
+        "size": 113703,
+        "mode": 420
+      },
+      {
+        "path": "client/drop.ts",
+        "size": 3694,
+        "mode": 420
+      },
+      {
+        "path": "client/panel.tsx",
+        "size": 15716,
+        "mode": 420
+      },
+      {
+        "path": "client/table.tsx",
+        "size": 6913,
+        "mode": 420
+      },
+      {
+        "path": "index.client.tsx",
+        "size": 2114,
+        "mode": 420
+      },
+      {
+        "path": "index.server.ts",
+        "size": 994,
+        "mode": 420
+      },
+      {
+        "path": "npm-shrinkwrap.json",
+        "size": 177836,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 962,
+        "mode": 420
+      },
+      {
+        "path": "paseo-plugin.json",
+        "size": 265,
+        "mode": 420
+      },
+      {
+        "path": "server/native.ts",
+        "size": 654,
+        "mode": 420
+      },
+      {
+        "path": "server/session.ts",
+        "size": 19790,
+        "mode": 420
+      },
+      {
+        "path": "server/sort.ts",
+        "size": 3471,
+        "mode": 420
+      },
+      {
+        "path": "shared/session.ts",
+        "size": 2965,
+        "mode": 420
+      }
+    ],
+    "entryCount": 15,
+    "bundled": []
+  }
+]
