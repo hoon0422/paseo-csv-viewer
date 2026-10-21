@@ -6,14 +6,15 @@ import { basename, extname, isAbsolute, join, relative, resolve, sep } from "nod
 import type { DuckDBConnection, DuckDBInstance } from "@duckdb/node-api";
 import type { PluginHandlerContext } from "@getpaseo/plugin/server";
 import type { z } from "zod";
-import { openPreview } from "../shared/session";
+import { openPreview, type Filter } from "../shared/session";
 import { duckdb } from "./native";
 import { buildSortOrder, type Sort } from "./sort";
+import { buildFilter } from "./filter";
 
 type OpenInput = z.output<typeof openPreview.input>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Phase = "preview" | "preparing" | "complete" | "error" | "cancelled";
-type PageOptions = { search?: string; requestId?: number; sort?: Sort; afterPosition?: number };
+type PageOptions = { filter?: Filter; requestId?: number; sort?: Sort; afterPosition?: number };
 type PageResult = { offset: number; nextPosition: number | null; rows: string[][]; totalRows: number | null; sortMode?: "numeric" | "text" };
 type Session = {
   id: string; panelId: string; turn: number; cancelled: boolean; phase: Phase; message: string;
@@ -25,6 +26,7 @@ type Session = {
   opening?: Promise<unknown>; operation?: Promise<unknown>; cleanup?: Promise<void>; pageBusy?: boolean;
   query?: { requestId: number; result?: PageResult; error?: unknown };
   order?: { key: string; mode?: "numeric" | "text" };
+  filterOrder?: { key: string; totalRows?: number };
   interruptTimer?: ReturnType<typeof setInterval>;
 };
 const LIMIT = 50;
@@ -276,18 +278,18 @@ export function createSessions() {
     const session = find(id);
     if (session) checkSource(session);
     if (!session || (session.phase !== "complete" && session.phase !== "preparing") || !session.connection) throw new Error("Rows are not ready for this session");
-    if (session.phase === "preparing" && (options?.sort || options?.search)) throw new Error("Sort and filter are unavailable until preparation completes");
+    if (session.phase === "preparing" && (options?.sort || options?.filter)) throw new Error("Sort and filter are unavailable until preparation completes");
     if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > 200) throw new Error("Invalid page range");
     if (options?.afterPosition !== undefined && (!Number.isSafeInteger(options.afterPosition) || options.afterPosition < 0 || options.afterPosition >= Number.MAX_SAFE_INTEGER)) throw new Error("Invalid page position");
-    const search = options?.search ?? "";
     const requestId = options?.requestId ?? 0;
-    if (search.length > 2048 || !Number.isSafeInteger(requestId) || requestId < 0) throw new Error("Invalid page query");
+    if (!Number.isSafeInteger(requestId) || requestId < 0) throw new Error("Invalid page query");
     if (requestId < session.queryRequestId) throw new Error("Query superseded");
     if (session.pageBusy && requestId === session.queryRequestId) throw new Error("A page is already loading");
-    return { session, search, requestId };
+    const compiled = buildFilter(options?.filter, session.width ?? 0);
+    return { session, requestId, compiled };
   }
   async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<PageResult> {
-    const { session, search, requestId } = admitPage(id, offset, limit, options);
+    const { session, requestId, compiled } = admitPage(id, offset, limit, options);
     const previous = session.pageBusy ? session.pageOperation : undefined;
     if (previous) {
       session.queryRequestId = requestId;
@@ -315,11 +317,21 @@ export function createSessions() {
           return { offset, nextPosition: rows.length ? start + rows.length - 1 : null, rows, totalRows: null };
         } finally { reader.closeSync(); }
       }
-      const where = search ? Array.from({ length: session.width ?? 0 }, (_, index) => `contains(lower(coalesce(column${index}, '')), lower(?))`).join(" OR ") : "";
-      const searchParams = search ? Array.from({ length: session.width ?? 0 }, () => search) : [];
+      const { where, params: filterParams } = compiled;
+      const filtered = !!where;
       const checkCurrent = () => {
         if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
       };
+      for (const pattern of compiled.regexes) {
+        try {
+          const checked = await connection.runAndReadAll("SELECT regexp_matches('', ?)", [pattern]);
+          checked.closeSync();
+        } catch (cause) {
+          checkCurrent();
+          throw new Error(`Invalid regular expression: ${explain(cause)}`);
+        }
+        checkCurrent();
+      }
       const key = options?.sort ? JSON.stringify([options.sort.column, options.sort.direction, options.sort.mode]) : undefined;
       if (session.order?.key !== key || (options?.sort && !session.order?.mode)) {
         const dropped = await session.connection!.run("DROP TABLE IF EXISTS sort_order");
@@ -334,20 +346,37 @@ export function createSessions() {
           session.order = { key: key!, mode };
         }
       }
-      let totalRows = session.rowCount ?? 0;
-      if (search) {
-        const count = await session.connection!.runAndReadAll(`SELECT COUNT(*) FROM rows WHERE ${where}`, searchParams);
-        try { totalRows = Number(count.getRows()[0][0]); } finally { count.closeSync(); }
+      const sortPosition = session.order ? "ord.pos" : "rows.rowid";
+      const sortFrom = session.order ? "sort_order ord JOIN rows ON rows.rowid = ord.src" : "rows";
+      const filterKey = filtered ? JSON.stringify([key, where, filterParams]) : undefined;
+      if (session.filterOrder?.key !== filterKey || (filtered && session.filterOrder?.totalRows === undefined)) {
+        const dropped = await connection.run("DROP TABLE IF EXISTS filter_order");
+        dropped.closeSync();
+        session.filterOrder = undefined;
+        checkCurrent();
+        if (filtered) {
+          session.filterOrder = { key: filterKey! };
+          const built = await connection.run(`CREATE TABLE filter_order AS
+            SELECT ${sortPosition} AS pos, rows.rowid AS src FROM ${sortFrom} WHERE ${where} ORDER BY ${sortPosition}`, filterParams);
+          built.closeSync();
+          checkCurrent();
+          const count = await connection.runAndReadAll("SELECT COUNT(*) FROM filter_order");
+          try {
+            checkCurrent();
+            session.filterOrder.totalRows = Number(count.getRows()[0][0]);
+          } finally { count.closeSync(); }
+        }
       }
       checkCurrent();
-      const position = session.order ? "ord.pos" : "rows.rowid";
-      const from = session.order ? "sort_order ord JOIN rows ON rows.rowid = ord.src" : "rows";
-      const start = options?.afterPosition !== undefined ? options.afterPosition + 1 : search ? 0 : offset;
-      const range = search ? `${position} >= ?` : `${position} >= ? AND ${position} < ?`;
-      const params = search ? [start, ...searchParams, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit];
+      const totalRows = session.filterOrder?.totalRows ?? session.rowCount ?? 0;
+      const position = filtered ? "filtered.pos" : sortPosition;
+      const from = filtered ? "filter_order filtered JOIN rows ON rows.rowid = filtered.src" : sortFrom;
+      const start = options?.afterPosition !== undefined ? options.afterPosition + 1 : filtered ? 0 : offset;
+      const range = filtered ? `${position} >= ?` : `${position} >= ? AND ${position} < ?`;
+      const params = filtered ? [start, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit];
       const reader = await session.connection!.runAndReadAll(
-        `SELECT rows.*, ${position} FROM ${from} WHERE ${range}${search ? ` AND (${where})` : ""}
-          ORDER BY ${position} LIMIT ?${search ? " OFFSET ?" : ""}`, params);
+        `SELECT rows.*, ${position} FROM ${from} WHERE ${range}
+          ORDER BY ${position} LIMIT ?${filtered ? " OFFSET ?" : ""}`, params);
       try {
         checkCurrent();
         checkSource(session);

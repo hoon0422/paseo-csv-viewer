@@ -167,7 +167,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setPageBusy(true);
     if (nextOffset === 0) setQueryPending(true);
     try {
-      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, search: nextSearch, requestId: query, sort: nextSort ?? undefined });
+      await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit, filter: nextSearch ? { rules: [{ enabled: true, column: "any", operator: "contains", value: nextSearch }], match: "all", caseSensitive: false, visibleColumns: preview.columns.map((_, index) => index) } : undefined, requestId: query, sort: nextSort ?? undefined });
       let page: z.output<typeof pageRows.output>;
       for (;;) {
         if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;

@@ -4,6 +4,7 @@ import { appendFile, chmod, mkdtemp, readFile, readdir, rename, rm, writeFile } 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createSessions } from "../server/session";
+import { anyColumnFilter } from "./filter-input";
 
 async function settled(sessions: ReturnType<typeof createSessions>, id: string) {
   for (let attempt = 0; attempt < 200; attempt++) {
@@ -91,7 +92,7 @@ test("an edit during preparation invalidates the preview instead of completing m
   }
 });
 
-test("a source replacement during search returns only the completed snapshot", async () => {
+test("a source replacement during filtering returns only the completed snapshot", async () => {
   const directory = await mkdtemp(join(tmpdir(), "csv-viewer-query-change-"));
   const sessions = createSessions();
   try {
@@ -99,7 +100,7 @@ test("a source replacement during search returns only the completed snapshot", a
     await writeFile(file, "id,value\n" + Array.from({ length: 100_000 }, (_, i) => `${i},${i === 99_999 ? "needle-old" : "ordinary"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
-    const pending = sessions.page(opened.sessionId, 0, 50, { search: "needle", requestId: 1 });
+    const pending = sessions.page(opened.sessionId, 0, 50, { filter: anyColumnFilter("needle", [0, 1]), requestId: 1 });
     await writeFile(file, "id,value\n0,needle-new\n");
     const result = await pending;
     assert.deepEqual(result.rows, [["99999", "needle-old"]]);
