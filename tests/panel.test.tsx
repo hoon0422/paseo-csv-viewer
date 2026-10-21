@@ -187,7 +187,9 @@ test("preparation disables sort and filter controls; Escape still clears the ret
     assert.equal(tree.root.findByProps({ "aria-label": "Filter" }).props.disabled, true);
     assert.equal(tree.root.findByProps({ "aria-label": "Sort mode" }).props.disabled, true);
     assert.equal(tree.root.findByType("fieldset").props.disabled, true);
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Sort column 1 id ascending" }).props.disabled, true);
+    await press("Column menu id");
+    assert.equal(tree.root.findByProps({ "aria-label": "Sort column 1 id ascending" }).props.disabled, true);
+    await press("Column menu id");
     const calls = pageCalls().length;
     await press("Apply filter");
     assert.equal(pageCalls().length, calls);
@@ -202,11 +204,18 @@ test("preparation disables sort and filter controls; Escape still clears the ret
 });
 
 const cells = (tree: ReactTestRenderer, column: string) => tree.root.findAll((node) =>
-  typeof node.props.accessibilityLabel === "string" && node.props.accessibilityLabel.startsWith(`Copy cell row 1, ${column}, `));
+  typeof node.props["aria-label"] === "string" && node.props["aria-label"].startsWith(`Copy cell row 1, ${column}, `));
 const cell = (tree: ReactTestRenderer, column: string) => {
   const found = cells(tree, column)[0];
   assert.ok(found, `Cell in ${column} is visible`);
   return found;
+};
+
+const menuNode = {
+  addEventListener() {}, removeEventListener() {}, contains: () => false, closest: () => null,
+  getBoundingClientRect: () => ({ left: 0, top: 0, right: 640, bottom: 480, width: 640, height: 480 }),
+  querySelector: () => null, focus() {}, isConnected: false,
+  ownerDocument: { addEventListener() {}, removeEventListener() {}, defaultView: { addEventListener() {}, removeEventListener() {} } },
 };
 
 class DropZone {
@@ -302,7 +311,7 @@ async function panelTest(run: (app: {
         </PluginRpcProvider>
       </QueryClientProvider>, { createNodeMock: (element) => (element.props as { "aria-label"?: string })["aria-label"] === "CSV viewer"
         ? zone : element.type === "form" ? { querySelector: (selector: string) => zone.querySelector(selector) }
-        : { addEventListener() {}, removeEventListener() {} } });
+        : { ...menuNode } });
     });
     const wait = async (condition: () => boolean) => {
       for (let i = 0; i < 100; i++) {
@@ -327,14 +336,20 @@ async function panelTest(run: (app: {
       holdStatus: (next) => { statusGate = next; },
       pageCalls: () => pageCalls,
       clipboard: () => clipboard,
-      press: async (label, modifiers = {}) => { await act(async () => {
-        const node = tree.root.findAll((node) => node.props["aria-label"] === label || node.props.accessibilityLabel === label)[0];
-        if (node.props.type === "submit") {
-          let form = node.parent;
-          while (form && form.type !== "form") form = form.parent;
-          form?.props.onSubmit({ preventDefault() {} });
-        } else (node.props.onClick ?? node.props.onPress)(modifiers);
-      }); },
+      press: async (label, modifiers = {}) => {
+        const menuName = label.startsWith("Hide ") ? label.slice(5) : /^Sort column \d+ (.*) (?:ascending|descending)$/.exec(label)?.[1];
+        if (menuName) await act(async () => {
+          tree.root.findByProps({ "aria-label": `Column menu ${menuName}` }).props.onClick({ currentTarget: menuNode, stopPropagation() {} });
+        });
+        await act(async () => {
+          const node = tree.root.findAll((node) => node.props["aria-label"] === label || node.props.accessibilityLabel === label)[0];
+          if (node.props.type === "submit") {
+            let form = node.parent;
+            while (form && form.type !== "form") form = form.parent;
+            form?.props.onSubmit({ preventDefault() {} });
+          } else (label.startsWith("Copy cell ") ? node.props.onDoubleClick : node.props.onClick ?? node.props.onPress)({ currentTarget: menuNode, ...modifiers, stopPropagation() {} });
+        });
+      },
       wait,
     });
   } finally {
@@ -887,7 +902,7 @@ test("Refresh preserves sort, filter, hidden columns and widths; header and sour
     await wait(ready);
     assert.equal(tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value, "preserve.csv");
     await press("Hide secret");
-    await press("Widen value");
+    for (let i = 0; i < 4; i++) await act(async () => { tree.root.findByProps({ "aria-label": "Resize value" }).props.onKeyDown({ key: "ArrowRight", preventDefault() {}, stopPropagation() {} }); });
     await press("Filter");
     await applyValue(tree, "keep");
     await wait(() => JSON.stringify(tree.toJSON()).includes("2 of 3 rows"));
@@ -911,7 +926,7 @@ test("Refresh preserves sort, filter, hidden columns and widths; header and sour
     assert.equal(cell(tree, "Column 2").props.style.width, 160);
     assert.equal(tree.root.findAllByProps({ "aria-label": "Filter value 1" }).length, 0);
     await press("Hide Column 3");
-    await press("Widen Column 2");
+    for (let i = 0; i < 4; i++) await act(async () => { tree.root.findByProps({ "aria-label": "Resize Column 2" }).props.onKeyDown({ key: "ArrowRight", preventDefault() {}, stopPropagation() {} }); });
     await act(async () => { zone.drop(await write("new-source.csv", "a,b,c\n1,2,3\n")); });
     await wait(() => tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value === "new-source.csv");
     assert.equal(cell(tree, "Column 2").props.style.width, 160);
@@ -959,4 +974,49 @@ test("the path bar keeps an outside source absolute and working after a rejected
       assert.equal(input().props.value, source);
     });
   } finally { await rm(outside, { recursive: true, force: true }); }
+});
+
+
+test("Clear sort from a column menu keeps the applied filter and resets selection and expansion", async () => {
+  await panelTest(async ({ tree, zone, write, press, wait, pageCalls }) => {
+    await act(async () => { zone.drop(await write("clear-sort.csv", "id,note\n3,keep\n1,skip\n2,keep\n")); });
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    await applyValue(tree, "keep", "1");
+    const table = () => tree.root.findByType(TableView);
+    await wait(() => table().props.rows.length === 2);
+    await press("Sort column 1 id ascending");
+    await wait(() => table().props.rows[0]?.[0] === "2");
+    await press("Select row 1");
+    await act(async () => { tree.root.findByProps({ "aria-label": "Toggle row 1 expansion" }).props.onDoubleClick({ stopPropagation() {} }); });
+    await press("Column menu id");
+    await press("Clear sort");
+    await wait(() => table().props.rows[0]?.[0] === "3" && table().props.rows.length === 2);
+    assert.equal(table().props.sort, null);
+    assert.deepEqual(table().props.presentation.selected, []);
+    assert.equal(tree.root.findByProps({ "aria-label": "Toggle row 1 expansion" }).props["aria-expanded"], false);
+    assert.equal(tree.root.findByProps({ "aria-label": "Sort mode" }).props.disabled, true);
+    assert.equal(tree.root.findByProps({ "aria-label": "Filter value 1" }).props.value, "keep");
+    assert.equal(pageCalls().at(-1)?.sort, undefined);
+    assert.equal((pageCalls().at(-1)?.filter as any).rules[0].column, 1);
+  });
+});
+
+test("choosing another column sort supersedes one still being prepared", async () => {
+  await panelTest(async ({ tree, zone, write, press, wait, holdSort }) => {
+    await act(async () => { zone.drop(await write("replace-sort.csv", "id,note\n3,c\n1,a\n2,b\n")); });
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    let release!: () => void;
+    holdSort(new Promise<void>((resolve) => { release = resolve; }));
+    await press("Sort column 1 id descending");
+    await wait(() => tree.root.findAllByProps({ "aria-label": "Cancel sort" }).length > 0);
+    holdSort(Promise.resolve());
+    await press("Column menu note");
+    assert.equal(tree.root.findByProps({ "aria-label": "Sort column 2 note ascending" }).props.disabled, false);
+    await act(async () => { tree.root.findByProps({ "aria-label": "Sort column 2 note ascending" }).props.onClick({ stopPropagation() {} }); });
+    const table = () => tree.root.findByType(TableView);
+    await wait(() => table().props.rows[0]?.[0] === "1");
+    await act(async () => { release(); });
+    assert.equal(table().props.rows[0][0], "1");
+    assert.deepEqual(table().props.sort, { column: 1, direction: "asc", mode: "auto" });
+  });
 });
