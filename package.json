@@ -7,7 +7,9 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts*",
-    "check": "npm run typecheck"
+    "check": "npm run typecheck",
+    "build": "esbuild server/worker.ts --bundle --platform=node --format=cjs --target=node20 --minify --outfile=server/worker.cjs",
+    "pretest": "npm run build"
   },
   "dependencies": {
     "@duckdb/node-api": "1.5.6-r.2"
@@ -25,6 +27,7 @@
     "react-native": "0.81.5",
     "tsx": "^4.20.0",
     "typescript": "^5.9.3",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "esbuild": "0.28.2"
   }
 }

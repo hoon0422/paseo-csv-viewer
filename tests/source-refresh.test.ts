@@ -3,12 +3,12 @@ import { strict as assert } from "node:assert";
 import { appendFile, chmod, mkdtemp, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createSessions } from "../server/session";
+import { createSessionProxy as createSessions } from "../server/proxy";
 import { anyColumnFilter } from "./filter-input";
 
 async function settled(sessions: ReturnType<typeof createSessions>, id: string) {
   for (let attempt = 0; attempt < 200; attempt++) {
-    const status = sessions.status(id);
+    const status = await sessions.status(id);
     if (status.phase === "complete" || status.phase === "error") return status;
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
@@ -26,7 +26,7 @@ test("external edits leave a completed snapshot stale until an explicit new sess
     const first = await sessions.open(input);
     assert.equal((await settled(sessions, first.sessionId)).phase, "complete");
     await writeFile(file, "id,value\n1,newer\n2,added\n");
-    assert.equal(sessions.status(first.sessionId).sourceChanged, true);
+    assert.equal((await sessions.status(first.sessionId)).sourceChanged, true);
     assert.deepEqual((await sessions.page(first.sessionId, 0, 50)).rows, [["1", "old"]]);
     const refreshed = await sessions.open({ ...input, turn: 1 });
     assert.notEqual(refreshed.sessionId, first.sessionId);
@@ -61,8 +61,8 @@ test("append, truncation, atomic replacement, deletion, and loss of access mark 
       const opened = await sessions.open({ ...first, turn: ++turn });
       assert.equal((await settled(sessions, opened.sessionId)).phase, "complete");
       await change();
-      assert.equal(sessions.status(opened.sessionId).sourceChanged, true);
-      assert.equal(sessions.status(other.sessionId).sourceChanged, false);
+      assert.equal((await sessions.status(opened.sessionId)).sourceChanged, true);
+      assert.equal((await sessions.status(other.sessionId)).sourceChanged, false);
       assert.deepEqual((await sessions.page(other.sessionId, 0, 50)).rows, [["2", "other"]]);
       if (turn === 4) await chmod(firstFile, 0o600);
     }
@@ -105,7 +105,7 @@ test("a source replacement during filtering returns only the completed snapshot"
     const result = await pending;
     assert.deepEqual(result.rows, [["99999", "needle-old"]]);
     assert.equal(result.totalRows, 1);
-    assert.equal(sessions.status(opened.sessionId).sourceChanged, true);
+    assert.equal((await sessions.status(opened.sessionId)).sourceChanged, true);
   } finally {
     await sessions.dispose();
     await rm(directory, { recursive: true, force: true });
@@ -133,7 +133,7 @@ test("superseded opens and closes release session storage without reviving an ol
     assert.deepEqual(second.rows, [["2", "second"]]);
     assert.equal((await settled(sessions, second.sessionId)).phase, "complete");
     assert.equal((await readdir(storage)).length, 1);
-    assert.equal(sessions.close(second.sessionId), true);
+    assert.equal(await sessions.close(second.sessionId), true);
     await sessions.dispose();
     assert.deepEqual(await readdir(storage), []);
   } finally {

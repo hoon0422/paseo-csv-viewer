@@ -78,7 +78,7 @@ function explain(cause: unknown) {
   return message.split(/Possible fixes?:|Possible Solution:/i)[0].trim();
 }
 
-async function resolveSource(input: Pick<OpenInput, "workspaceId" | "source">, paseo?: PaseoApi) {
+export async function resolveSource(input: Pick<OpenInput, "workspaceId" | "source">, paseo?: PaseoApi) {
   let path: string;
   let sourcePath: string;
   if (input.source.kind === "workspace") {

@@ -3,7 +3,7 @@ import { strict as assert } from "node:assert";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createSessions } from "../server/session";
+import { createSessionProxy as createSessions } from "../server/proxy";
 import { pageRows } from "../shared/session";
 
 async function fixture(body: string, check: (s: ReturnType<typeof createSessions>, id: string) => Promise<void>) {
@@ -13,12 +13,12 @@ async function fixture(body: string, check: (s: ReturnType<typeof createSessions
     const path = join(directory, "values.csv");
     await writeFile(path, body);
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path } });
-    for (let i = 0; i < 200 && sessions.status(opened.sessionId).phase !== "complete"; i++) {
-      const status = sessions.status(opened.sessionId);
+    for (let i = 0; i < 200 && (await sessions.status(opened.sessionId)).phase !== "complete"; i++) {
+      const status = await sessions.status(opened.sessionId);
       assert.notEqual(status.phase, "error", status.message);
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
-    assert.equal(sessions.status(opened.sessionId).phase, "complete");
+    assert.equal((await sessions.status(opened.sessionId)).phase, "complete");
     await check(sessions, opened.sessionId);
   } finally { await sessions.dispose(); await rm(directory, { recursive: true, force: true }); }
 }
@@ -121,7 +121,7 @@ test("regex filters use case mode and report invalid patterns without failing th
     assert.deepEqual((await s.page(id, 0, 200, { filter })).rows.map((row) => row[0]), ["1"]);
     assert.equal((await s.page(id, 0, 200, { filter: { ...filter, caseSensitive: true } })).totalRows, 0);
     await assert.rejects(s.page(id, 0, 200, { filter: { ...filter, rules: [{ ...filter.rules[0], value: "[" }] } }), /invalid.*regular expression|invalid.*regex/i);
-    assert.equal(s.status(id).phase, "complete");
+    assert.equal((await s.status(id)).phase, "complete");
     assert.equal((await s.page(id, 0, 200)).totalRows, 3);
     assert.equal((await s.page(id, 0, 200, { filter })).totalRows, 1);
   });
@@ -148,7 +148,7 @@ test("filter values are literal parameters and malformed rule inputs are rejecte
       await assert.rejects(s.page(id, 0, 200, { filter: invalid as typeof filter }));
     }
     for (const invalid of [{ ...filter, visibleColumns: [2] }, { ...filter, rules: [{ ...filter.rules[0], column: 2 }] }]) {
-      assert.throws(() => s.beginPage(id, 0, 200, { filter: invalid, requestId: 1 }), /filter column/i);
+      await assert.rejects(s.beginPage(id, 0, 200, { filter: invalid, requestId: 1 }), /filter column/i);
     }
     assert.equal((await s.page(id, 0, 200)).totalRows, 2);
   });
@@ -183,10 +183,10 @@ test("a new filter cancels a running build and the cancelled filter can be retri
     const rejected = assert.rejects(stale, /superseded|interrupt/i);
     await new Promise((resolve) => setTimeout(resolve, 5));
     const latest = { ...filter, rules: [{ enabled: true, column: 0, operator: "=" as const, value: "499999" }] };
-    assert.deepEqual(s.beginPage(id, 0, 200, { filter: latest, requestId: 2 }), { state: "pending" });
+    assert.deepEqual(await s.beginPage(id, 0, 200, { filter: latest, requestId: 2 }), { state: "pending" });
     await rejected;
     for (let i = 0; i < 200; i++) {
-      const result = s.pollPage(id, 2);
+      const result = await s.pollPage(id, 2);
       if (result.state === "ready") {
         assert.deepEqual(result.page.rows, [["499999", "ordinary-499999"]]);
         assert.equal(result.page.totalRows, 1);
@@ -195,7 +195,7 @@ test("a new filter cancels a running build and the cancelled filter can be retri
       assert.ok(i < 199, "Filter did not settle");
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
-    assert.throws(() => s.pollPage(id, 1), /superseded/i);
+    await assert.rejects(s.pollPage(id, 1), /superseded/i);
     const retried = await s.page(id, 0, 200, { filter, requestId: 3 });
     assert.equal(retried.totalRows, 500_000);
     assert.deepEqual(retried.rows[0], ["0", "ordinary-0"]);
