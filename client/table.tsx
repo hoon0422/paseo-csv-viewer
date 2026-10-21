@@ -38,11 +38,11 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
     return /[\t\r\n"]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
   }
 
-  const control = (label: string, onPress: () => void, disabled = false) => (
+  const control = (label: string, onPress: () => void, disabled = false, caption = label) => (
     <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled }}
       disabled={disabled} onPress={onPress}
       style={{ borderWidth: 1, borderColor: theme.border, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 3 }}>
-      <Text style={{ color: disabled ? theme.muted : theme.foreground }}>{label}</Text>
+      <Text style={{ color: disabled ? theme.muted : theme.foreground }}>{caption}</Text>
     </Pressable>
   );
 
@@ -56,7 +56,7 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
       {sort && onSortMode && <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
         <Text style={{ color: theme.muted }}>Sort {columns[sort.column] || `Column ${sort.column + 1}`} {sort.direction === "asc" ? "ascending" : "descending"} · mode:</Text>
         {(["auto", "numeric", "text"] as const).map((mode) => <View key={mode}>{control(`${mode === sort.mode ? "✓ " : ""}${mode[0].toUpperCase() + mode.slice(1)}`, () => onSortMode(mode), sortBusy)}</View>)}
-        <Text style={{ color: theme.muted }}>{sort.mode === "auto" && sortMode ? `Detected ${sortMode}. ` : ""}Blank values last; forced numeric puts other text after numbers. Equal values keep source order.</Text>
+        <Text style={{ color: theme.muted, width: "100%" }}>{sort.mode === "auto" && sortMode ? `Detected ${sortMode}. ` : ""}Blanks last. Numeric mode puts other text after numbers. Ties keep file order.</Text>
       </View>}
       <Text accessibilityLiveRegion="polite" style={{ color: theme.muted }}>{message || `${selected.length} rows selected`}</Text>
     </View>
@@ -71,8 +71,8 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
               {control(`Narrow ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.max(MIN_WIDTH, (widths[index] ?? DEFAULT_WIDTH) - 40) }), (widths[index] ?? DEFAULT_WIDTH) <= MIN_WIDTH)}
               {control(`Widen ${columns[index] || `Column ${index + 1}`}`, () => setWidths({ ...widths, [index]: Math.min(MAX_WIDTH, (widths[index] ?? DEFAULT_WIDTH) + 40) }), (widths[index] ?? DEFAULT_WIDTH) >= MAX_WIDTH)}
               {control(`Hide ${columns[index] || `Column ${index + 1}`}`, () => setHidden([...hidden, index]))}
-              {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} ascending`, () => onSort(index, "asc"), sortBusy)}
-              {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} descending`, () => onSort(index, "desc"), sortBusy)}
+              {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} ascending`, () => onSort(index, "asc"), sortBusy, "↑")}
+              {onSort && control(`Sort column ${index + 1} ${columns[index] || `Column ${index + 1}`} descending`, () => onSort(index, "desc"), sortBusy, "↓")}
             </View>
           </View>)}
         </View>

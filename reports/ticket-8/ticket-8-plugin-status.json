@@ -1,0 +1,16 @@
+[
+  {
+    "id": "csv-viewer",
+    "path": "/home/cua/ticket-8",
+    "enabled": true,
+    "status": "running",
+    "name": "CSV Viewer",
+    "description": "Read-only CSV and TSV preview in a workspace panel",
+    "installation": {
+      "identity": {
+        "kind": "directory",
+        "path": "/home/cua/ticket-8"
+      }
+    }
+  }
+]
