@@ -123,6 +123,16 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     void navigate(0, null, "");
   }
 
+  function changeSort(next: Sort) {
+    ++queryRequest.current;
+    setRows([]);
+    setOffset(0);
+    setTotalRows(null);
+    setSortMode(undefined);
+    setSort(next);
+    void navigate(0, next);
+  }
+
   async function navigate(nextOffset: number, nextSort = sort, nextSearch = search) {
     if (!preview || status?.phase !== "complete") return;
     const turn = generation.current;
@@ -276,8 +286,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           {search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
           {!search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={preview.sessionId} columns={preview.columns} rows={rows} sort={sort} sortMode={sortMode} sortBusy={pageBusy || status?.phase !== "complete"}
-            onSort={(column, direction) => { const next = { column, direction, mode: sort?.column === column ? sort.mode : "auto" } as Sort; ++queryRequest.current; setRows([]); setOffset(0); setTotalRows(null); setSortMode(undefined); setSort(next); void navigate(0, next); }}
-            onSortMode={(mode) => { if (!sort) return; const next = { ...sort, mode }; ++queryRequest.current; setRows([]); setOffset(0); setTotalRows(null); setSortMode(undefined); setSort(next); void navigate(0, next); }}
+            onSort={(column, direction) => changeSort({ column, direction, mode: sort?.column === column ? sort.mode : "auto" })}
+            onSortMode={(mode) => { if (sort) changeSort({ ...sort, mode }); }}
             theme={{ foreground, muted, border: theme.colors.border }} /></>}
       </>}
     </View>

@@ -11,6 +11,14 @@ import { createSessions } from "../server/session";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
+const cells = (tree: ReactTestRenderer, column: string) => tree.root.findAll((node) =>
+  typeof node.props.accessibilityLabel === "string" && node.props.accessibilityLabel.startsWith(`Copy cell row 1, ${column}, `));
+const cell = (tree: ReactTestRenderer, column: string) => {
+  const found = cells(tree, column)[0];
+  assert.ok(found, `Cell in ${column} is visible`);
+  return found;
+};
+
 class DropZone {
   private listeners = new Map<string, (event: unknown) => void>();
   addEventListener(name: string, listener: (event: unknown) => void) { this.listeners.set(name, listener); }
@@ -123,10 +131,10 @@ test("cancelling an unfiltered sort restores source order and supersedes its pag
     await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Cancel sort" }).length > 0);
     await press("Cancel sort");
     await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, id" }).findByType("div").children[0], "0");
+    assert.equal(cell(tree, "id").findByType("div").children[0], "0");
     assert.equal(pageCalls().at(-1)?.sort, undefined);
     await act(async () => { release(); });
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, id" }).findByType("div").children[0], "0");
+    assert.equal(cell(tree, "id").findByType("div").children[0], "0");
   });
 });
 
@@ -141,15 +149,15 @@ test("filtered sorting and visible-column copy use the displayed order; clear ke
     await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
     await press("Hide secret");
     await act(async () => { tree.root.findByProps({ accessibilityLabel: "Search all columns" }).props.onChangeText("needle"); });
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "1"));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "1"));
     await press("Sort column 2 visible descending");
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "90"));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "90"));
     await press("Select row 1");
     await press("Select row 2");
     await press("Copy selected rows");
     assert.equal(clipboard(), "90\tzeta\n70\tgamma");
     await press("Clear search");
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "90"));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "90"));
     assert.ok(tree.root.findAllByProps({ accessibilityLabel: "✓ Auto" }).length > 0);
   });
 });
@@ -172,8 +180,8 @@ test("replacement clears an old page load and header switch applies to the next 
     await press("First record is header");
     await wait(() => tree.root.findByProps({ accessibilityLabel: "First record is header" }).props.accessibilityState.checked === false);
     await act(async () => { zone.drop(first); });
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, Column 1" }).length > 0);
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, Column 1" }).findByType("div").children[0], "id");
+    await wait(() => cells(tree, "Column 1").length > 0);
+    assert.equal(cell(tree, "Column 1").findByType("div").children[0], "id");
   });
 });
 
@@ -191,7 +199,7 @@ test("two pending OS drops keep action order when locality checks resolve out of
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 25)); });
     assert.equal(calls, 2);
     assert.equal(opens(), 1);
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "new.csv-0");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "new.csv-0");
   });
 });
 
@@ -225,13 +233,13 @@ test("panel shows a source change notice and Refresh loads the selected file", a
   await panelTest(async ({ tree, zone, file, press, wait }) => {
     const source = await file("updated.csv", 2);
     await act(async () => { zone.drop(source); });
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, value" }).length > 0);
+    await wait(() => cells(tree, "value").length > 0);
     await wait(() => JSON.stringify(tree.toJSON()).includes("All rows ready"));
     await writeFile(source, "id,value\n0,new\n1,latest\n");
     await wait(() => JSON.stringify(tree.toJSON()).includes("Source file changed"));
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "updated.csv-0");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "updated.csv-0");
     await press("Refresh source");
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, value" })
+    await wait(() => cells(tree, "value")
       .some((cell) => cell.findByType("div").children[0] === "new"));
     assert.equal(JSON.stringify(tree.toJSON()).includes("Source file changed"), false);
   });
@@ -249,10 +257,10 @@ test("a newer selection wins over a pending Refresh", async () => {
       tree.root.findByProps({ accessibilityLabel: "Refresh source" }).props.onPress();
       zone.drop(second);
     });
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, value" })
+    await wait(() => cells(tree, "value")
       .some((cell) => cell.findByType("div").children[0] === "second.csv-0"));
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 100)); });
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "second.csv-0");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "second.csv-0");
   });
 });
 
@@ -271,14 +279,14 @@ test("search shows pending, hidden-column matches and no results; stale search c
     await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
     await act(async () => { release(); });
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 50)); });
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, id" }).findByType("div").children[0], "0");
+    assert.equal(cell(tree, "id").findByType("div").children[0], "0");
     await act(async () => { tree.root.findByProps({ accessibilityLabel: "Search all columns" }).props.onChangeText("CAFÉ [x]%_"); });
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "90"));
-    assert.equal(tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, secret" }).length, 0);
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "90"));
+    assert.equal(cells(tree, "secret").length, 0);
     await act(async () => { tree.root.findByProps({ accessibilityLabel: "Search all columns" }).props.onChangeText("no such value"); });
     await wait(() => JSON.stringify(tree.toJSON()).includes("No matching rows."));
     await press("Clear search");
-    await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 1, id" }).some((node) => node.findByType("div").children[0] === "0"));
+    await wait(() => cells(tree, "id").some((node) => node.findByType("div").children[0] === "0"));
 
     let releaseCancel!: () => void;
     holdSearch(new Promise<void>((resolve) => { releaseCancel = resolve; }));
@@ -287,7 +295,7 @@ test("search shows pending, hidden-column matches and no results; stale search c
     await press("Cancel search");
     await wait(() => tree.root.findAllByProps({ accessibilityLabel: "Next rows" }).some((node) => !node.props.disabled));
     await act(async () => { releaseCancel(); });
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, id" }).findByType("div").children[0], "0");
+    assert.equal(cell(tree, "id").findByType("div").children[0], "0");
 
     let releaseReplace!: () => void;
     holdSearch(new Promise<void>((resolve) => { releaseReplace = resolve; }));
@@ -297,6 +305,6 @@ test("search shows pending, hidden-column matches and no results; stale search c
     await act(async () => { zone.drop(replacement); });
     await wait(() => JSON.stringify(tree.toJSON()).includes('"replacement.csv"," · "'));
     await act(async () => { releaseReplace(); });
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 1, value" }).findByType("div").children[0], "replacement.csv-0");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "replacement.csv-0");
   });
 });

@@ -272,7 +272,7 @@ export function createSessions() {
     }
     return { phase: session.phase, message: session.message, bytesScanned: session.bytesScanned, sourceBytes: session.sourceBytes, percent, rowCount: session.rowCount, sourceChanged: !!session.sourceChanged };
   }
-  async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<PageResult> {
+  function admitPage(id: string, offset: number, limit: number, options?: PageOptions) {
     const session = find(id);
     if (!session || session.phase !== "complete" || !session.connection) throw new Error("Rows are not ready for this session");
     checkSource(session);
@@ -281,9 +281,13 @@ export function createSessions() {
     const requestId = options?.requestId ?? 0;
     if (search.length > 2048 || !Number.isSafeInteger(requestId) || requestId < 0) throw new Error("Invalid page query");
     if (requestId < session.queryRequestId) throw new Error("Query superseded");
+    if (session.pageBusy && requestId === session.queryRequestId) throw new Error("A page is already loading");
+    return { session, search, requestId };
+  }
+  async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<PageResult> {
+    const { session, search, requestId } = admitPage(id, offset, limit, options);
     const previous = session.pageBusy ? session.operation : undefined;
     if (previous) {
-      if (requestId === session.queryRequestId) throw new Error("A page is already loading");
       session.queryRequestId = requestId;
       const interrupt = () => { try { session.connection?.interrupt(); } catch (cause) { console.error("CSV Viewer interrupt failed:", cause); } };
       interrupt();
@@ -325,8 +329,7 @@ export function createSessions() {
     finally { if (session.operation === pending) session.pageBusy = false; }
   }
   function beginPage(id: string, offset: number, limit: number, options: PageOptions & { requestId: number }) {
-    const session = find(id);
-    if (!session) throw new Error("Viewer session is closed");
+    const { session } = admitPage(id, offset, limit, options);
     const query = { requestId: options.requestId } as NonNullable<Session["query"]>;
     session.query = query;
     void page(id, offset, limit, options).then((result) => { query.result = result; }, (error) => { query.error = error; });

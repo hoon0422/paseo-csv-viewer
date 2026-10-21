@@ -25,20 +25,25 @@ test("the viewer copies raw cells and selected visible columns in current row or
     const press = async (label: string) => {
       await act(async () => { await tree.root.findByProps({ accessibilityLabel: label }).props.onPress(); });
     };
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 2, id" }).props.style.width, 160);
+    assert.ok(tree.root.findByProps({ accessibilityLabel: "Copy cell row 2, id, value: 001" }));
+    assert.ok(tree.root.findByProps({ accessibilityLabel: 'Copy cell row 2, note, value: 猫\t"quoted"\r\nnext' }));
+    assert.ok(tree.root.findByProps({ accessibilityLabel: "Copy cell row 2, empty, empty cell" }));
+    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 2, id, value: 001" }).props.style.width, 160);
     await press("Widen id");
-    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 2, id" }).props.style.width, 200);
-    await press("Copy cell row 2, note");
+    assert.equal(tree.root.findByProps({ accessibilityLabel: "Copy cell row 2, id, value: 001" }).props.style.width, 200);
+    await press('Copy cell row 2, note, value: 猫\t"quoted"\r\nnext');
     assert.equal(copied.at(-1), '猫\t"quoted"\r\nnext');
+    await press("Copy cell row 2, empty, empty cell");
+    assert.equal(copied.at(-1), "");
     await press("Hide hidden");
-    assert.equal(tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 2, hidden" }).length, 0);
+    assert.equal(tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 2, hidden, value: secret" }).length, 0);
     await press("Select row 2");
     await press("Select row 1");
     await press("Copy selected rows");
     assert.equal(copied.at(-1), '002\tplain\t\n001\t"猫\t""quoted""\r\nnext"\t');
     await press("Reveal hidden");
-    assert.ok(tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 2, hidden" }).length > 0);
-    await press("Copy cell row 2, id");
+    assert.ok(tree.root.findAllByProps({ accessibilityLabel: "Copy cell row 2, hidden, value: secret" }).length > 0);
+    await press("Copy cell row 2, id, value: 001");
     assert.equal(copied.at(-1), "001");
     await act(async () => { tree.unmount(); });
   } finally {

@@ -88,12 +88,15 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
               style={{ width: 70, padding: 6 }}>
               <Text style={{ color: theme.foreground }}>{selected.includes(rowIndex) ? "☑" : "☐"} {rowIndex + 1}</Text>
             </Pressable>
-            {visible.map((index) => <Pressable key={index} accessibilityRole="button"
-              accessibilityLabel={`Copy cell row ${rowIndex + 1}, ${columns[index] || `Column ${index + 1}`}`}
-              onPress={() => void copy(row[index] ?? "", "Cell")}
-              style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 6 }}>
-              <Text style={{ color: theme.foreground }}>{row[index] ?? ""}</Text>
-            </Pressable>)}
+            {visible.map((index) => {
+              const value = row[index] ?? "";
+              return <Pressable key={index} accessibilityRole="button"
+                accessibilityLabel={`Copy cell row ${rowIndex + 1}, ${columns[index] || `Column ${index + 1}`}, ${value === "" ? "empty cell" : `value: ${value}`}`}
+                onPress={() => void copy(value, "Cell")}
+                style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 6 }}>
+                <Text style={{ color: theme.foreground }}>{value}</Text>
+              </Pressable>;
+            })}
           </View>)}
         </ScrollView>
       </View>
