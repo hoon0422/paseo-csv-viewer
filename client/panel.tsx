@@ -159,7 +159,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     void navigate(false, null, "");
   }
 
-  function changeSort(next: Sort) {
+  function changeSort(next: Sort | null) {
     ++queryRequest.current;
     resetRows();
     setSortMode(undefined);
@@ -368,10 +368,10 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
         {preview && !(status?.sourceChanged && status.phase !== "complete") && (preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
           {search && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
           {!search && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
-          <TableView key={tableKey} columns={preview.columns} rows={rows} sort={sort} sortBusy={pageBusy || !ready}
+          <TableView key={tableKey} columns={preview.columns} rows={rows} sort={sort} sortBusy={!ready}
             onEndReached={() => void navigate(true)}
             presentation={table} onPresentation={setTable} onCopy={(value, label) => void copy(value, label)}
-            onSort={(column, direction) => changeSort({ column, direction, mode: sort?.column === column ? sort.mode : "auto" })}
+            onSort={(column, direction) => changeSort(direction ? { column, direction, mode: sort?.column === column ? sort.mode : "auto" } : null)}
             theme={{ foreground, muted, border: colors.border }} />
         </>)}
       </div>

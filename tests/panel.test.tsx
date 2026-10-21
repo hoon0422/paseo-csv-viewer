@@ -14,11 +14,18 @@ import { TableView } from "../client/table";
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 const cells = (tree: ReactTestRenderer, column: string) => tree.root.findAll((node) =>
-  typeof node.props.accessibilityLabel === "string" && node.props.accessibilityLabel.startsWith(`Copy cell row 1, ${column}, `));
+  typeof node.props["aria-label"] === "string" && node.props["aria-label"].startsWith(`Copy cell row 1, ${column}, `));
 const cell = (tree: ReactTestRenderer, column: string) => {
   const found = cells(tree, column)[0];
   assert.ok(found, `Cell in ${column} is visible`);
   return found;
+};
+
+const menuNode = {
+  addEventListener() {}, removeEventListener() {}, contains: () => false, closest: () => null,
+  getBoundingClientRect: () => ({ left: 0, top: 0, right: 640, bottom: 480, width: 640, height: 480 }),
+  querySelector: () => null, focus() {}, isConnected: false,
+  ownerDocument: { addEventListener() {}, removeEventListener() {}, defaultView: { addEventListener() {}, removeEventListener() {} } },
 };
 
 class DropZone {
@@ -93,7 +100,7 @@ async function panelTest(run: (app: {
           </PluginClientStateProvider>
         </PluginRpcProvider>
       </QueryClientProvider>, { createNodeMock: (element) => (element.props as { "aria-label"?: string })["aria-label"] === "CSV viewer"
-        ? zone : { addEventListener() {}, removeEventListener() {} } });
+        ? zone : { ...menuNode } });
     });
     const wait = async (condition: () => boolean) => {
       for (let i = 0; i < 100; i++) {
@@ -117,7 +124,20 @@ async function panelTest(run: (app: {
       holdStatus: (next) => { statusGate = next; },
       pageCalls: () => pageCalls,
       clipboard: () => clipboard,
-      press: async (label) => { await act(async () => { const node = tree.root.findAll((node) => node.props["aria-label"] === label || node.props.accessibilityLabel === label)[0]; (node.props.onClick ?? node.props.onPress)(); }); },
+      press: async (label) => {
+        const menuName = label.startsWith("Hide ") ? label.slice(5) : /^Sort column \d+ (.*) (?:ascending|descending)$/.exec(label)?.[1];
+        if (menuName) await act(async () => {
+          tree.root.findByProps({ "aria-label": `Column menu ${menuName}` }).props.onClick({ currentTarget: menuNode, stopPropagation() {} });
+        });
+        if (label.startsWith("Widen ")) {
+          for (let i = 0; i < 4; i++) await act(async () => { tree.root.findByProps({ "aria-label": `Resize ${label.slice(6)}` }).props.onKeyDown({ key: "ArrowRight", preventDefault() {}, stopPropagation() {} }); });
+          return;
+        }
+        await act(async () => {
+          const node = tree.root.findAll((node) => node.props["aria-label"] === label || node.props.accessibilityLabel === label)[0];
+          (label.startsWith("Copy cell ") ? node.props.onDoubleClick : node.props.onClick ?? node.props.onPress)({ stopPropagation() {} });
+        });
+      },
       wait,
     });
   } finally {
