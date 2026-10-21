@@ -111,6 +111,7 @@ test("superseded opens and closes release session storage without reviving an ol
     await pending;
     assert.deepEqual(second.rows, [["2", "second"]]);
     assert.equal((await settled(sessions, second.sessionId)).phase, "complete");
+    assert.equal((await readdir(storage)).length, 1);
     assert.equal(sessions.close(second.sessionId), true);
     await sessions.dispose();
     assert.deepEqual(await readdir(storage), []);
