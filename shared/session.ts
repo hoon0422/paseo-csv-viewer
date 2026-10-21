@@ -2,11 +2,18 @@ import { defineRpc } from "@getpaseo/plugin";
 import { z } from "zod";
 
 export const PAGE_SIZE = 200;
+export const LARGE_SOURCE_BYTES = 500_000_000;
 
 export const source = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("workspace"), path: z.string().min(1) }),
   z.object({ kind: z.literal("local"), path: z.string().min(1) }),
 ]);
+
+export const inspectSource = defineRpc({
+  name: "viewer.inspect",
+  input: z.object({ workspaceId: z.string().min(1), source }),
+  output: z.object({ sourceBytes: z.number().nonnegative() }),
+});
 
 export const openPreview = defineRpc({
   name: "viewer.open",

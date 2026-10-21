@@ -65,7 +65,7 @@ test("consecutive 200-row pages append after a known sort position with stable t
   });
 });
 
-test("indexed sorted pages preserve quoted, multiline, Unicode and empty cells", async () => {
+test("sorted pages preserve quoted, multiline, Unicode and empty cells", async () => {
   await fixture('id,value,payload\n0,2,"a""b"\n1,1,"line\nbreak"\n2,1,"한글\t\\tail"\n3,1,\n', async (s, id) => {
     const sort = { column: 1, direction: "asc" as const, mode: "numeric" as const };
     const first = await s.page(id, 0, 2, { sort });
