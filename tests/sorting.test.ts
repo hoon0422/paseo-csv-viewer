@@ -72,3 +72,23 @@ test("numeric grammar and exact comparison preserve wide and high-precision orig
     assert.deepEqual(sorted.slice(5, 7), ["1e0", "1."]);
   });
 });
+
+test("search and sort share a filtered page count while auto inference still sees late text", async () => {
+  const lines = Array.from({ length: 55 }, (_, i) => `${i},${i === 54 ? "N/A" : "0"},miss`);
+  lines[1] = "1,10,hit";
+  lines[2] = "2,2,hit";
+  lines[51] = "51,2,hit";
+  lines[52] = "52,100,hit";
+  await fixture("id,value,tag\n" + lines.join("\n") + "\n", async (s, id) => {
+    const sort = { column: 1, direction: "asc" as const, mode: "auto" as const };
+    const first = await s.page(id, 0, 2, { search: "hit", requestId: 1, sort });
+    const second = await s.page(id, 2, 2, { search: "hit", requestId: 1, sort });
+    assert.equal(first.totalRows, 4);
+    assert.equal(first.sortMode, "text");
+    assert.deepEqual(first.rows.map((row) => row[0]), ["1", "52"]);
+    assert.deepEqual(second.rows.map((row) => row[0]), ["2", "51"]);
+    const numeric = await s.page(id, 0, 4, { search: "hit", requestId: 2, sort: { ...sort, mode: "numeric" } });
+    assert.deepEqual(numeric.rows.map((row) => row[0]), ["2", "51", "1", "52"]);
+    assert.equal(numeric.totalRows, 4);
+  });
+});

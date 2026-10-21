@@ -12,10 +12,11 @@ import { sortPage, type Sort } from "./sort";
 type OpenInput = z.output<typeof openPreview.input>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Phase = "preview" | "scanning" | "preparing" | "complete" | "error" | "cancelled";
+type PageOptions = { search?: string; requestId?: number; sort?: Sort };
 type Session = {
   id: string; panelId: string; turn: number; cancelled: boolean; phase: Phase; message: string;
-  sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null; width: number;
-  directory?: string; db?: DuckDBInstance; connection?: DuckDBConnection;
+  sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null;
+  directory?: string; db?: DuckDBInstance; connection?: DuckDBConnection; width?: number; queryRequestId: number;
   opening?: Promise<unknown>; operation?: Promise<unknown>; cleanup?: Promise<void>; pageBusy?: boolean;
   interruptTimer?: ReturnType<typeof setInterval>;
 };
@@ -119,7 +120,7 @@ export function createSessions() {
     latestTurn.set(input.panelId, turn);
     const previous = active.get(input.panelId);
     if (previous) cancel(previous);
-    const session: Session = { id: randomUUID(), panelId: input.panelId, turn, cancelled: false, phase: "preview", message: "Opening preview", sourceBytes: 0, bytesScanned: 0, percent: null, rowCount: null, width: 0 };
+    const session: Session = { id: randomUUID(), panelId: input.panelId, turn, cancelled: false, phase: "preview", message: "Opening preview", sourceBytes: 0, bytesScanned: 0, percent: null, rowCount: null, queryRequestId: 0 };
     active.set(input.panelId, session);
     owned.add(session);
     const initialize = async () => {
@@ -223,29 +224,53 @@ export function createSessions() {
     }
     return { phase: session.phase, message: session.message, bytesScanned: session.bytesScanned, sourceBytes: session.sourceBytes, percent, rowCount: session.rowCount };
   }
-  async function page(id: string, offset: number, limit: number, options?: { sort?: Sort }) {
+  async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<{ offset: number; rows: string[][]; totalRows: number; sortMode?: "numeric" | "text" }> {
     const session = find(id);
     if (!session || session.phase !== "complete" || !session.connection) throw new Error("Rows are not ready for this session");
     if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > LIMIT) throw new Error("Invalid page range");
-    if (session.operation && session.pageBusy) throw new Error("A page is already loading");
+    const search = options?.search ?? "";
+    const requestId = options?.requestId ?? 0;
+    if (search.length > 2048 || !Number.isSafeInteger(requestId) || requestId < 0) throw new Error("Invalid page query");
+    if (requestId < session.queryRequestId) throw new Error("Query superseded");
+    const previous = session.pageBusy ? session.operation : undefined;
+    if (previous) {
+      if (requestId === session.queryRequestId) throw new Error("A page is already loading");
+      session.queryRequestId = requestId;
+      const interrupt = () => { try { session.connection?.interrupt(); } catch (cause) { console.error("CSV Viewer interrupt failed:", cause); } };
+      interrupt();
+      const timer = setInterval(interrupt, 25);
+      try { await previous.catch(() => {}); } finally { clearInterval(timer); }
+    } else session.queryRequestId = requestId;
+    if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
     session.pageBusy = true;
     const pending = (async () => {
-      if (options?.sort) {
-        const sorted = await sortPage(session.connection!, session.width, options.sort, offset, limit);
-        if (!current(session)) throw new Error("Session cancelled");
-        return { offset, ...sorted };
+      const where = search ? ` WHERE ${Array.from({ length: session.width ?? 0 }, (_, index) => `contains(lower(coalesce(column${index}, '')), lower(?))`).join(" OR ")}` : "";
+      const searchParams = search ? Array.from({ length: session.width ?? 0 }, () => search) : [];
+      let totalRows = session.rowCount ?? 0;
+      if (search) {
+        const count = await session.connection!.runAndReadAll(`SELECT COUNT(*) FROM rows${where}`, searchParams);
+        try { totalRows = Number(count.getRows()[0][0]); } finally { count.closeSync(); }
       }
-      const reader = await session.connection!.runAndReadAll("SELECT * FROM rows WHERE rowid >= ? ORDER BY rowid LIMIT ?", [offset, limit]);
+      if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+      if (options?.sort) {
+        const sorted = await sortPage(session.connection!, session.width ?? 0, options.sort, offset, limit, where, searchParams);
+        if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+        return { offset, ...sorted, totalRows };
+      }
+      const reader = await session.connection!.runAndReadAll(search
+        ? `SELECT * FROM rows${where} ORDER BY rowid LIMIT ? OFFSET ?`
+        : "SELECT * FROM rows WHERE rowid >= ? ORDER BY rowid LIMIT ?",
+      search ? [...searchParams, limit, offset] : [offset, limit]);
       try {
-        if (!current(session)) throw new Error("Session cancelled");
-        return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), sortMode: undefined };
+        if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+        return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), totalRows };
       } finally { reader.closeSync(); }
     })();
     session.operation = pending;
     try {
       return await pending;
     } catch (cause) { throw new Error(explain(cause)); }
-    finally { session.pageBusy = false; }
+    finally { if (session.operation === pending) session.pageBusy = false; }
   }
   function close(sessionId?: string, panelId?: string, turn?: number) {
     if (panelId && turn !== undefined) latestTurn.set(panelId, Math.max(turn, latestTurn.get(panelId) ?? 0));

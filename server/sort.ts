@@ -6,7 +6,7 @@ export type Sort = { column: number; direction: "asc" | "desc"; mode: "auto" | "
 const whitespace = "' \t\r\n'";
 const number = "'[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?'";
 
-export async function sortPage(connection: DuckDBConnection, width: number, sort: Sort, offset: number, limit: number) {
+export async function sortPage(connection: DuckDBConnection, width: number, sort: Sort, offset: number, limit: number, where = "", searchParams: string[] = []) {
   if (!Number.isSafeInteger(sort.column) || sort.column < 0 || sort.column >= width) throw new Error("Invalid sort column");
   if (sort.direction !== "asc" && sort.direction !== "desc") throw new Error("Invalid sort direction");
   if (sort.mode !== "auto" && sort.mode !== "numeric" && sort.mode !== "text") throw new Error("Invalid sort mode");
@@ -21,12 +21,12 @@ export async function sortPage(connection: DuckDBConnection, width: number, sort
   }
   let sql: string;
   if (mode === "text") {
-    sql = `SELECT * FROM rows ORDER BY trim(${cell}, ${whitespace}) = '', ${cell} ${direction}, rowid LIMIT ? OFFSET ?`;
+    sql = `SELECT * FROM rows${where} ORDER BY trim(${cell}, ${whitespace}) = '', ${cell} ${direction}, rowid LIMIT ? OFFSET ?`;
   } else {
     const opposite = direction === "ASC" ? "DESC" : "ASC";
     sql = `WITH source AS (
       SELECT *, rowid AS source_rowid, trim(${cell}, ${whitespace}) AS value,
-        regexp_full_match(trim(${cell}, ${whitespace}), ${number}) AS valid FROM rows
+        regexp_full_match(trim(${cell}, ${whitespace}), ${number}) AS valid FROM rows${where}
     ), parts AS (
       SELECT *, regexp_replace(regexp_replace(value, '^[+-]', ''), '[eE].*$', '') AS mantissa,
         CASE WHEN valid THEN COALESCE(CAST(NULLIF(regexp_extract(value, '[eE]([+-]?[0-9]+)$', 1), '') AS BIGNUM), 0::BIGNUM) END AS exponent
@@ -47,7 +47,7 @@ export async function sortPage(connection: DuckDBConnection, width: number, sort
       CASE WHEN bucket = 0 AND sign = 2 THEN position END ${direction}, CASE WHEN bucket = 0 AND sign = 2 THEN significant END ${direction},
       CASE WHEN bucket = 1 THEN ${cell} END ${direction}, source_rowid LIMIT ? OFFSET ?`;
   }
-  const result = await connection.runAndReadAll(sql, [limit, offset]);
+  const result = await connection.runAndReadAll(sql, [...searchParams, limit, offset]);
   try { return { rows: result.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), sortMode: mode }; }
   finally { result.closeSync(); }
 }
