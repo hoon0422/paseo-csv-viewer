@@ -1,20 +1,20 @@
 import { randomUUID } from "node:crypto";
 import { accessSync, constants, realpathSync, statSync } from "node:fs";
 import { mkdtemp, open as openFile, realpath, rm, stat } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { availableParallelism, tmpdir } from "node:os";
 import { basename, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import type { DuckDBConnection, DuckDBInstance } from "@duckdb/node-api";
 import type { PluginHandlerContext } from "@getpaseo/plugin/server";
 import type { z } from "zod";
 import { openPreview } from "../shared/session";
 import { duckdb } from "./native";
-import { sortPage, type Sort } from "./sort";
+import { buildSortOrder, type Sort } from "./sort";
 
 type OpenInput = z.output<typeof openPreview.input>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Phase = "preview" | "preparing" | "complete" | "error" | "cancelled";
-type PageOptions = { search?: string; requestId?: number; sort?: Sort };
-type PageResult = { offset: number; rows: string[][]; totalRows: number | null; sortMode?: "numeric" | "text" };
+type PageOptions = { search?: string; requestId?: number; sort?: Sort; afterPosition?: number };
+type PageResult = { offset: number; nextPosition: number | null; rows: string[][]; totalRows: number | null; sortMode?: "numeric" | "text" };
 type Session = {
   id: string; panelId: string; turn: number; cancelled: boolean; phase: Phase; message: string;
   sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null;
@@ -24,6 +24,7 @@ type Session = {
   pageOperation?: Promise<unknown>; pageConnection?: DuckDBConnection;
   opening?: Promise<unknown>; operation?: Promise<unknown>; cleanup?: Promise<void>; pageBusy?: boolean;
   query?: { requestId: number; result?: PageResult; error?: unknown };
+  order?: { key: string; mode?: "numeric" | "text" };
   interruptTimer?: ReturnType<typeof setInterval>;
 };
 const LIMIT = 50;
@@ -189,7 +190,7 @@ export function createSessions() {
       const { DuckDBInstance } = duckdb();
       try {
         session.db = await DuckDBInstance.create(join(session.directory, "rows.duckdb"), {
-          temp_directory: join(session.directory, "spill"), memory_limit: "1GB", threads: "2", preserve_insertion_order: "true",
+          temp_directory: join(session.directory, "spill"), memory_limit: "4GB", threads: String(availableParallelism()), preserve_insertion_order: "true",
         });
       } catch (cause) { throw new Error(`Temporary storage failed. Check free disk space and permissions, then try again. ${String(cause)}`); }
       if (!current(session)) throw new Error("Session cancelled");
@@ -276,7 +277,8 @@ export function createSessions() {
     if (session) checkSource(session);
     if (!session || (session.phase !== "complete" && session.phase !== "preparing") || !session.connection) throw new Error("Rows are not ready for this session");
     if (session.phase === "preparing" && (options?.sort || options?.search)) throw new Error("Sort and filter are unavailable until preparation completes");
-    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > LIMIT) throw new Error("Invalid page range");
+    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > 200) throw new Error("Invalid page range");
+    if (options?.afterPosition !== undefined && (!Number.isSafeInteger(options.afterPosition) || options.afterPosition < 0 || options.afterPosition >= Number.MAX_SAFE_INTEGER)) throw new Error("Invalid page position");
     const search = options?.search ?? "";
     const requestId = options?.requestId ?? 0;
     if (search.length > 2048 || !Number.isSafeInteger(requestId) || requestId < 0) throw new Error("Invalid page query");
@@ -304,35 +306,55 @@ export function createSessions() {
       if (preparing) {
         requireSource(session);
         const csv = session.csv!;
-        const reader = await connection.runAndReadAll(`SELECT * FROM ${csv.from} LIMIT ? OFFSET ?`, [...csv.params, limit, offset + (csv.hasHeader ? 1 : 0)]);
+        const start = options?.afterPosition !== undefined ? options.afterPosition + 1 : offset;
+        const reader = await connection.runAndReadAll(`SELECT * FROM ${csv.from} LIMIT ? OFFSET ?`, [...csv.params, limit, start + (csv.hasHeader ? 1 : 0)]);
         try {
           if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
           requireSource(session);
-          return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), totalRows: null };
+          const rows = reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value)));
+          return { offset, nextPosition: rows.length ? start + rows.length - 1 : null, rows, totalRows: null };
         } finally { reader.closeSync(); }
       }
-      const where = search ? ` WHERE ${Array.from({ length: session.width ?? 0 }, (_, index) => `contains(lower(coalesce(column${index}, '')), lower(?))`).join(" OR ")}` : "";
+      const where = search ? Array.from({ length: session.width ?? 0 }, (_, index) => `contains(lower(coalesce(column${index}, '')), lower(?))`).join(" OR ") : "";
       const searchParams = search ? Array.from({ length: session.width ?? 0 }, () => search) : [];
+      const checkCurrent = () => {
+        if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+      };
+      const key = options?.sort ? JSON.stringify([options.sort.column, options.sort.direction, options.sort.mode]) : undefined;
+      if (session.order?.key !== key || (options?.sort && !session.order?.mode)) {
+        const dropped = await session.connection!.run("DROP TABLE IF EXISTS sort_order");
+        dropped.closeSync();
+        session.order = undefined;
+        checkCurrent();
+        if (options?.sort) {
+          // Remember an unfinished build so the next query drops it after cancellation.
+          session.order = { key: key! };
+          const mode = await buildSortOrder(session.connection!, session.width ?? 0, options.sort, checkCurrent);
+          checkCurrent();
+          session.order = { key: key!, mode };
+        }
+      }
       let totalRows = session.rowCount ?? 0;
       if (search) {
-        const count = await session.connection!.runAndReadAll(`SELECT COUNT(*) FROM rows${where}`, searchParams);
+        const count = await session.connection!.runAndReadAll(`SELECT COUNT(*) FROM rows WHERE ${where}`, searchParams);
         try { totalRows = Number(count.getRows()[0][0]); } finally { count.closeSync(); }
       }
-      if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
-      if (options?.sort) {
-        const sorted = await sortPage(session.connection!, session.width ?? 0, options.sort, offset, limit, where, searchParams);
-        if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
-        checkSource(session);
-        return { offset, ...sorted, totalRows };
-      }
-      const reader = await session.connection!.runAndReadAll(search
-        ? `SELECT * FROM rows${where} ORDER BY rowid LIMIT ? OFFSET ?`
-        : "SELECT * FROM rows WHERE rowid >= ? ORDER BY rowid LIMIT ?",
-      search ? [...searchParams, limit, offset] : [offset, limit]);
+      checkCurrent();
+      const position = session.order ? "ord.pos" : "rows.rowid";
+      const from = session.order ? "sort_order ord JOIN rows ON rows.rowid = ord.src" : "rows";
+      const start = options?.afterPosition !== undefined ? options.afterPosition + 1 : search ? 0 : offset;
+      const range = search ? `${position} >= ?` : `${position} >= ? AND ${position} < ?`;
+      const params = search ? [start, ...searchParams, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit];
+      const reader = await session.connection!.runAndReadAll(
+        `SELECT rows.*, ${position} FROM ${from} WHERE ${range}${search ? ` AND (${where})` : ""}
+          ORDER BY ${position} LIMIT ?${search ? " OFFSET ?" : ""}`, params);
       try {
-        if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+        checkCurrent();
         checkSource(session);
-        return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), totalRows };
+        const values = reader.getRows();
+        return { offset, nextPosition: values.length ? Number(values[values.length - 1][session.width!]) : null,
+          rows: values.map((row) => row.slice(0, session.width).map((value) => value == null ? "" : String(value))),
+          totalRows, ...(session.order ? { sortMode: session.order.mode } : {}) };
       } finally { reader.closeSync(); }
     })();
     session.pageOperation = pending;

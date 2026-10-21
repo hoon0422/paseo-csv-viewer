@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createSessions } from "../server/session";
+import { pageRows } from "../shared/session";
 
 async function fixture(body: string, check: (session: ReturnType<typeof createSessions>, id: string, path: string, panelId: string) => Promise<void>) {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-sort-"));
@@ -38,6 +39,58 @@ test("automatic numeric sort covers the whole file and keeps equal values in sou
   });
 });
 
+test("consecutive 200-row pages append after a known sort position with stable ties", async () => {
+  await fixture("id,value\n" + Array.from({ length: 451 }, (_, i) => `${i},${i % 3}\n`).join(""), async (s, id) => {
+    const sort = { column: 1, direction: "asc" as const, mode: "auto" as const };
+    pageRows.input.parse({ sessionId: id, offset: 0, limit: 200, sort });
+    const first = await s.page(id, 0, 200, { sort });
+    pageRows.output.parse(first);
+    assert.equal(first.nextPosition, 199);
+    const second = await s.page(id, 200, 200, { sort, afterPosition: first.nextPosition! });
+    const third = await s.page(id, 400, 200, { sort, afterPosition: second.nextPosition! });
+    const expected = [0, 1, 2].flatMap((value) => Array.from({ length: 451 }, (_, i) => i).filter((i) => i % 3 === value).map(String));
+    assert.deepEqual([...first.rows, ...second.rows, ...third.rows].map((row) => row[0]), expected);
+    assert.equal(first.sortMode, "numeric");
+    assert.equal(second.sortMode, "numeric");
+    assert.equal(third.nextPosition, 450);
+    const end = await s.page(id, 451, 200, { sort, afterPosition: third.nextPosition! });
+    assert.deepEqual(end.rows, []);
+    assert.equal(end.nextPosition, null);
+    assert.deepEqual((await s.page(id, 200, 200, { sort })).rows, second.rows);
+    for (const afterPosition of [-1, 0.5, Number.MAX_SAFE_INTEGER]) {
+      await assert.rejects(s.page(id, 0, 200, { sort, afterPosition }), /position/);
+    }
+    assert.equal(pageRows.input.safeParse({ sessionId: id, offset: 0, limit: 201 }).success, false);
+  });
+});
+
+test("closing a sorted session removes its temporary storage and leaves the source untouched", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "csv-viewer-sort-close-"));
+  const storage = join(directory, "storage");
+  const previous = process.env.TMPDIR;
+  const s = createSessions();
+  try {
+    await mkdir(storage);
+    const path = join(directory, "source.csv");
+    const body = "value\n2\n1\n";
+    await writeFile(path, body);
+    process.env.TMPDIR = storage;
+    const opened = await s.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path } });
+    for (let i = 0; i < 200 && s.status(opened.sessionId).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
+    assert.deepEqual((await s.page(opened.sessionId, 0, 200, { sort: { column: 0, direction: "asc", mode: "auto" } })).rows, [["1"], ["2"]]);
+    assert.equal((await readdir(storage)).length, 1);
+    assert.equal(s.close(opened.sessionId), true);
+    for (let i = 0; i < 200 && (await readdir(storage)).length; i++) await new Promise((resolve) => setTimeout(resolve, 25));
+    assert.deepEqual(await readdir(storage), []);
+    assert.equal(await readFile(path, "utf8"), body);
+  } finally {
+    if (previous === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = previous;
+    await s.dispose();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact", async () => {
   const values = ["1e+2", "-0", "0e3", "1e-2", "  +.5\t", "2.", "1e", "NaN", "0x10", "1_0", "  "];
   await fixture("value\n" + values.map((value) => `"${value}"`).join("\n") + "\n", async (s, id) => {
@@ -63,14 +116,25 @@ test("late nonnumeric text forces auto text order; manual numeric keeps all rows
   });
 });
 
-test("numeric grammar and exact comparison preserve wide and high-precision original text", async () => {
+test("numeric DOUBLE comparison keeps rounded ties in file order and preserves original text", async () => {
   const values = ["9007199254740993", "9007199254740992", "-1.0000000000000000000000000000000000000002", "-1.0000000000000000000000000000000000000001", "1.0000000000000000000000000000000000000001", "1.0000000000000000000000000000000000000002", "+01.0", "1e0", ".5", "  -0.5  ", "1.", "", "N/A"];
   await fixture("value\n" + values.map((value) => value === "" ? '""' : value).join("\n") + "\n", async (s, id) => {
     const sorted = (await s.page(id, 0, 50, { sort: { column: 0, direction: "asc", mode: "numeric" } })).rows.map((row) => row[0]);
-    assert.deepEqual(sorted, [values[2], values[3], values[9], values[8], values[6], values[7], values[10], values[4], values[5], values[1], values[0], "N/A", ""]);
+    assert.deepEqual(sorted, [values[2], values[3], values[9], values[8], values[4], values[5], values[6], values[7], values[10], values[0], values[1], "N/A", ""]);
     const text = (await s.page(id, 0, 50, { sort: { column: 0, direction: "asc", mode: "text" } })).rows.map((row) => row[0]);
     assert.equal(text.indexOf("9007199254740992") < text.indexOf("9007199254740993"), true);
-    assert.deepEqual(sorted.slice(5, 7), ["1e0", "1."]);
+    assert.deepEqual(sorted.slice(6, 9), ["+01.0", "1e0", "1."]);
+  });
+});
+
+test("DOUBLE overflow and underflow stay numeric, special spellings stay text, and blanks keep file order", async () => {
+  const values = ["1e309", "-1e309", "1e-400", "-0", "inf", "NaN", "1,234", "$5", "  ", "", "\t"];
+  await fixture("value\n" + values.map((value) => `"${value}"`).join("\n") + "\n", async (s, id) => {
+    const numeric = await s.page(id, 0, 200, { sort: { column: 0, direction: "desc", mode: "numeric" } });
+    assert.deepEqual(numeric.rows.map((row) => row[0]), ["1e309", "1e-400", "-0", "-1e309", "inf", "NaN", "1,234", "$5", "  ", "", "\t"]);
+    const text = await s.page(id, 0, 200, { sort: { column: 0, direction: "desc", mode: "text" } });
+    assert.deepEqual(text.rows.slice(-3).map((row) => row[0]), ["  ", "", "\t"]);
+    assert.equal((await s.page(id, 0, 200, { sort: { column: 0, direction: "asc", mode: "auto" } })).sortMode, "text");
   });
 });
 
@@ -83,14 +147,33 @@ test("search and sort share a filtered page count while auto inference still see
   await fixture("id,value,tag\n" + lines.join("\n") + "\n", async (s, id) => {
     const sort = { column: 1, direction: "asc" as const, mode: "auto" as const };
     const first = await s.page(id, 0, 2, { search: "hit", requestId: 1, sort });
-    const second = await s.page(id, 2, 2, { search: "hit", requestId: 1, sort });
+    const second = await s.page(id, 2, 2, { search: "hit", requestId: 1, sort, afterPosition: first.nextPosition! });
     assert.equal(first.totalRows, 4);
     assert.equal(first.sortMode, "text");
     assert.deepEqual(first.rows.map((row) => row[0]), ["1", "52"]);
     assert.deepEqual(second.rows.map((row) => row[0]), ["2", "51"]);
+    assert.ok(first.nextPosition! > first.rows.length);
     const numeric = await s.page(id, 0, 4, { search: "hit", requestId: 2, sort: { ...sort, mode: "numeric" } });
     assert.deepEqual(numeric.rows.map((row) => row[0]), ["2", "51", "1", "52"]);
     assert.equal(numeric.totalRows, 4);
+  });
+});
+
+test("new sort requests cancel a build, and clearing sort restores file order", async () => {
+  await fixture("id,value\n" + Array.from({ length: 500_000 }, (_, i) => `${i},${(i * 7919) % 500_000}\n`).join(""), async (s, id) => {
+    const stale = s.page(id, 0, 200, { requestId: 1, sort: { column: 1, direction: "asc", mode: "auto" } });
+    const rejected = assert.rejects(stale, /superseded|interrupt/i);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const newest = await s.page(id, 0, 200, { requestId: 2, sort: { column: 0, direction: "desc", mode: "numeric" } });
+    await rejected;
+    assert.deepEqual(newest.rows.slice(0, 3).map((row) => row[0]), ["499999", "499998", "499997"]);
+    const continued = await s.page(id, 200, 200, { requestId: 2, sort: { column: 0, direction: "desc", mode: "numeric" }, afterPosition: newest.nextPosition! });
+    assert.equal(continued.rows[0][0], "499799");
+    const cleared = await s.page(id, 0, 2, { requestId: 3 });
+    assert.deepEqual(cleared.rows.map((row) => row[0]), ["0", "1"]);
+    assert.equal(cleared.sortMode, undefined);
+    const restarted = await s.page(id, 0, 2, { requestId: 4, sort: { column: 1, direction: "asc", mode: "auto" } });
+    assert.deepEqual(restarted.rows, [["0", "0"], ["17679", "1"]]);
   });
 });
 

@@ -7,7 +7,7 @@ export default function contribute(server: PluginServerContext) {
   server.handle(openPreview, (input, { paseo }) => sessions.open(input, paseo));
   server.handle(closePreview, ({ sessionId, panelId, turn }) => ({ closed: sessions.close(sessionId, panelId, turn) }));
   server.handle(sessionStatus, ({ sessionId }) => sessions.status(sessionId));
-  server.handle(pageRows, ({ sessionId, offset, limit, search, requestId, sort }) => sessions.page(sessionId, offset, limit, { search, requestId, sort }));
+  server.handle(pageRows, ({ sessionId, offset, limit, ...options }) => sessions.page(sessionId, offset, limit, options));
   server.handle(pageQuery, (input) => input.action === "start"
     ? sessions.beginPage(input.sessionId, input.offset, input.limit, input)
     : sessions.pollPage(input.sessionId, input.requestId));
