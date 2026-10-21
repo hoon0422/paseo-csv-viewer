@@ -1,0 +1,45 @@
+{
+  "ticket": 9,
+  "branch": "ticket/9-source-refresh",
+  "implementation_sha": "4ee9c4ff50139428e10f217615fc8933c27b7349",
+  "cleanup_assertion_sha": "66543c6",
+  "merged_tested_sha": "d1466ed26747fa8b700934da23fe4c136f7853a6",
+  "integration_tip_merged": "fb1b06aef00f486b2c451a81f3bc48d7de30fc10",
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "runtime": {
+    "os": "Ubuntu 24.04.5 x86_64",
+    "paseo": "Official 0.12.0 amd64",
+    "daemon_home": "/home/cua/.paseo-x64-ticket-2",
+    "desktop_userdata": "/home/cua/.config/Paseo-x64-ticket-2",
+    "daemon_port": 6779,
+    "daemon_evidence": "daemon-status.json",
+    "plugin_install": "plugin-install-ticket9.json",
+    "plugin_restoration": ["plugin-disable-ticket9.json", "plugin-restore-old.json"],
+    "source_dir": "/home/cua/ticket-9/source",
+    "workspace": "workspace-create.json"
+  },
+  "revision_gate": "Resolve selected original path and compare resolved path, device, inode, byte size, nanosecond modification and change times around source reads and during status/page requests. Completed disk snapshots remain readable with a stale notice; source changes during preview or preparation invalidate unsafe work. Existing panel status poll reports steady-state changes; no new watcher or server timer is retained.",
+  "checks": {
+    "tdd_red": ["red.tap", "panel-red.tap"],
+    "base_typecheck": "passed: typecheck.log",
+    "base_tests": "25 passed, 0 failed: final-base-tests.xml",
+    "merge_typecheck": "passed: typecheck-after-merge.log",
+    "merge_tests": "28 passed, 0 failed: merged-tests.xml",
+    "desktop": "Plugin installed in independent daemon. Original two rows and 32 bytes shown; external overwrite plus append produced change notice while old two-row snapshot stayed visible; explicit Refresh showed updated and appended three rows and 42 bytes. Tested before #7 merge; merged panel and real-file suite then passed.",
+    "desktop_screenshots": ["ui-source-original.png", "ui-source-stale.png", "ui-source-refreshed.png"],
+    "source_unchanged_by_viewer": "The fixture was externally edited in the guest; the viewer did not write it.",
+    "ui_lock": "Acquired atomically before plugin install/input, released after prior plugin restoration."
+  },
+  "merged_source_hashes_in_guest": {
+    "server/session.ts": "40d2bfb2d813b5ff7ddc5f4f79c87473cdcc504e30db9a23cf8da10840c6d442",
+    "client/panel.tsx": "71cc51b5f8b05a564c0341ac3355ef011ec4c396ad3a6c3494c750566d296684",
+    "shared/session.ts": "04f831800b57871568565c538bc2633f98077a34b8ee3cf2c660d56f6e1c192f"
+  },
+  "limitations": [
+    "Combined active-query/source-change stress behavior belongs to #10. The merged #7 search controls, request ownership, result count and source/refresh tests passed together.",
+    "Revision identity uses filesystem metadata, not a full-file checksum. A filesystem or privileged writer that changes bytes while preserving path, device, inode, size, mtime and ctime could evade detection.",
+    "Steady-state notices appear on the existing 500 ms panel status poll; no filesystem watcher is retained.",
+    "Desktop smoke ran on #9 before the #7 merge; post-merge source and search boundaries were verified in the real-file and panel suite, not by a second desktop smoke.",
+    "Ubuntu verification does not establish macOS or Windows runtime behavior."
+  ]
+}

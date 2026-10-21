@@ -5,20 +5,21 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createSessions } from "../server/session";
 
-async function fixture(body: string, check: (session: ReturnType<typeof createSessions>, id: string) => Promise<void>) {
+async function fixture(body: string, check: (session: ReturnType<typeof createSessions>, id: string, path: string, panelId: string) => Promise<void>) {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-sort-"));
   const session = createSessions();
   try {
     const path = join(dir, "values.csv");
     await writeFile(path, body);
-    const opened = await session.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path } });
+    const panelId = crypto.randomUUID();
+    const opened = await session.open({ panelId, workspaceId: "workspace", source: { kind: "local", path } });
     for (let i = 0; i < 200 && session.status(opened.sessionId).phase !== "complete"; i++) {
       const status = session.status(opened.sessionId);
       assert.notEqual(status.phase, "error", status.message);
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
     assert.equal(session.status(opened.sessionId).phase, "complete");
-    await check(session, opened.sessionId);
+    await check(session, opened.sessionId, path, panelId);
   } finally { await session.dispose(); await rm(dir, { recursive: true, force: true }); }
 }
 
@@ -90,5 +91,26 @@ test("search and sort share a filtered page count while auto inference still see
     const numeric = await s.page(id, 0, 4, { search: "hit", requestId: 2, sort: { ...sort, mode: "numeric" } });
     assert.deepEqual(numeric.rows.map((row) => row[0]), ["2", "51", "1", "52"]);
     assert.equal(numeric.totalRows, 4);
+  });
+});
+
+test("sorted search keeps the completed snapshot stale until Refresh creates a new session", async () => {
+  await fixture("id,value,tag\n1,10,hit\n2,2,hit\n3,N/A,miss\n", async (s, id, path, panelId) => {
+    const sort = { column: 1, direction: "asc" as const, mode: "auto" as const };
+    const old = await s.page(id, 0, 50, { search: "hit", requestId: 1, sort });
+    assert.deepEqual(old.rows.map((row) => row[0]), ["1", "2"]);
+    assert.equal(old.sortMode, "text");
+    await writeFile(path, "id,value,tag\n1,10,hit\n2,2,hit\n3,1,miss\n4,100,hit\n");
+    assert.equal(s.status(id).sourceChanged, true);
+    const stale = await s.page(id, 0, 50, { search: "hit", requestId: 2, sort });
+    assert.deepEqual(stale.rows, old.rows);
+    assert.equal(stale.totalRows, 2);
+    const refreshed = await s.open({ panelId, workspaceId: "workspace", source: { kind: "local", path }, turn: 1 });
+    for (let i = 0; i < 200 && s.status(refreshed.sessionId).phase !== "complete"; i++) await new Promise((resolve) => setTimeout(resolve, 25));
+    assert.equal(s.status(refreshed.sessionId).sourceChanged, false);
+    const current = await s.page(refreshed.sessionId, 0, 50, { search: "hit", requestId: 1, sort });
+    assert.deepEqual(current.rows.map((row) => row[0]), ["2", "1", "4"]);
+    assert.equal(current.totalRows, 3);
+    assert.equal(current.sortMode, "numeric");
   });
 });

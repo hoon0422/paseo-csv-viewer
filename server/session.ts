@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { accessSync, constants, realpathSync, statSync } from "node:fs";
 import { mkdtemp, open as openFile, realpath, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
@@ -16,11 +17,21 @@ type PageOptions = { search?: string; requestId?: number; sort?: Sort };
 type Session = {
   id: string; panelId: string; turn: number; cancelled: boolean; phase: Phase; message: string;
   sourceBytes: number; bytesScanned: number; percent: number | null; rowCount: number | null;
+  sourcePath?: string; revision?: string; sourceChanged?: boolean;
   directory?: string; db?: DuckDBInstance; connection?: DuckDBConnection; width?: number; queryRequestId: number;
   opening?: Promise<unknown>; operation?: Promise<unknown>; cleanup?: Promise<void>; pageBusy?: boolean;
   interruptTimer?: ReturnType<typeof setInterval>;
 };
 const LIMIT = 50;
+const CHANGED = "Source file changed or is no longer accessible. Refresh to read the current file.";
+
+function sourceRevision(path: string) {
+  const resolved = realpathSync(path);
+  accessSync(path, constants.R_OK);
+  const info = statSync(path, { bigint: true });
+  if (!info.isFile()) throw new Error("Source is not a regular file");
+  return { resolved, size: Number(info.size), key: [resolved, info.dev, info.ino, info.size, info.mtimeNs, info.ctimeNs].join(":") };
+}
 
 // DuckDB's strict reader skips blank records in multi-column files; this checks only that defect.
 async function scanCsv(path: string, delimiter: number, current: () => boolean, firstOnly: boolean, progress?: (bytes: number) => void) {
@@ -77,7 +88,32 @@ export function createSessions() {
   const owned = new Set<Session>();
   const latestTurn = new Map<string, number>();
   let disposed = false;
-  const current = (session: Session) => !disposed && !session.cancelled && active.get(session.panelId) === session;
+  const current = (session: Session) => !disposed && !session.cancelled && (!session.sourceChanged || session.phase === "complete") && active.get(session.panelId) === session;
+  function interrupt(session: Session) {
+    const send = () => {
+      try { session.connection?.interrupt(); }
+      catch (cause) { console.error("CSV Viewer interrupt failed:", cause); }
+    };
+    send();
+    session.interruptTimer ??= setInterval(send, 25);
+  }
+  function checkSource(session: Session) {
+    if (!session.sourcePath || !session.revision || session.sourceChanged) return;
+    try {
+      if (sourceRevision(session.sourcePath).key === session.revision) return;
+    } catch { /* A missing or inaccessible source is a changed source. */ }
+    session.sourceChanged = true;
+    if (session.phase !== "complete") {
+      session.phase = "error";
+      session.message = CHANGED;
+      interrupt(session);
+      void drain(session).catch((cause) => console.error("CSV Viewer cleanup failed:", cause));
+    }
+  }
+  function requireSource(session: Session) {
+    checkSource(session);
+    if (session.sourceChanged) throw new Error(CHANGED);
+  }
   function cleanup(session: Session) {
     return session.cleanup ??= (async () => {
       try { session.connection?.closeSync(); } finally {
@@ -101,15 +137,7 @@ export function createSessions() {
     session.phase = "cancelled";
     session.message = "Session cancelled";
     if (active.get(session.panelId) === session) active.delete(session.panelId);
-    if (running) {
-      const interrupt = () => {
-        try { session.connection?.interrupt(); }
-        catch (cause) { console.error("CSV Viewer interrupt failed:", cause); }
-      };
-      interrupt();
-      // run() prepares asynchronously; repeat until it settles so an early interrupt cannot miss the query.
-      session.interruptTimer = setInterval(interrupt, 25);
-    }
+    if (running) interrupt(session);
     void drain(session).catch((cause) => console.error("CSV Viewer cleanup failed:", cause));
   }
 
@@ -125,29 +153,37 @@ export function createSessions() {
     owned.add(session);
     const initialize = async () => {
       let path: string;
+      let sourcePath: string;
       if (input.source.kind === "workspace") {
         if (!paseo) throw new Error("Workspace lookup is unavailable");
         if (isAbsolute(input.source.path)) throw new Error("Workspace file path must be relative");
         const workspace = await paseo.workspaces.ref(input.workspaceId).refresh();
         if (!workspace || workspace.id !== input.workspaceId || !workspace.workspaceDirectory) throw new Error("Workspace is unavailable");
         const root = await realpath(workspace.workspaceDirectory);
-        path = await realpath(resolve(root, input.source.path));
+        sourcePath = resolve(root, input.source.path);
+        path = await realpath(sourcePath);
         const within = relative(root, path);
         if (!within || within === ".." || within.startsWith(`..${sep}`) || isAbsolute(within)) throw new Error("File is outside this workspace");
       } else {
         if (!isAbsolute(input.source.path)) throw new Error("Local file path must be absolute");
-        path = await realpath(input.source.path);
+        sourcePath = input.source.path;
+        path = await realpath(sourcePath);
       }
       if (!current(session)) throw new Error("Session cancelled");
       if (!/\.(csv|tsv)$/i.test(extname(path))) throw new Error("Choose a CSV or TSV file");
       const info = await stat(path);
       if (!info.isFile()) throw new Error("Choose a regular file");
-      session.sourceBytes = info.size;
+      session.sourcePath = sourcePath;
+      const revision = sourceRevision(sourcePath);
+      if (revision.resolved !== path) throw new Error(CHANGED);
+      session.revision = revision.key;
+      session.sourceBytes = revision.size;
       const delimiter = extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c;
       const width = await scanCsv(path, delimiter, () => current(session), true);
+      requireSource(session);
       session.width = width;
       if (!current(session)) throw new Error("Session cancelled");
-      const base = { sessionId: session.id, fileName: basename(path), sourceBytes: info.size, status: "preview" as const, limit: LIMIT };
+      const base = { sessionId: session.id, fileName: basename(path), sourceBytes: revision.size, status: "preview" as const, limit: LIMIT };
       if (!width) {
         session.phase = "complete"; session.message = "Empty file"; session.rowCount = 0;
         return { ...base, columns: [], rows: [] as string[][] };
@@ -171,6 +207,7 @@ export function createSessions() {
       let values: string[][];
       try { values = reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))); }
       finally { reader.closeSync(); }
+      requireSource(session);
       if (!current(session)) throw new Error("Session cancelled");
       const columns = input.hasHeader !== false ? values.shift() ?? [] : values[0]?.map((_, index) => `Column ${index + 1}`) ?? [];
       const rows = values.slice(0, LIMIT);
@@ -183,9 +220,10 @@ export function createSessions() {
     session.opening = pending;
     try { return await pending; }
     catch (cause) {
+      checkSource(session);
       cancel(session);
       await cleanup(session);
-      throw new Error(explain(cause));
+      throw new Error(session.sourceChanged ? CHANGED : explain(cause));
     }
   }
 
@@ -193,22 +231,29 @@ export function createSessions() {
     try {
       if (width > 1) {
         await scanCsv(path, delimiter, () => current(session), false, (bytes) => { session.bytesScanned = bytes; });
+        requireSource(session);
         session.bytesScanned = session.sourceBytes;
       }
       if (!current(session)) return;
+      requireSource(session);
       session.phase = "preparing";
       session.message = "Preparing disk-backed rows";
       const result = await session.connection!.run(`CREATE TABLE rows AS SELECT * FROM ${from}${hasHeader ? " OFFSET 1" : ""}`, params);
       result.closeSync();
+      requireSource(session);
       if (!current(session)) return;
       const count = await session.connection!.runAndReadAll("SELECT COUNT(*) FROM rows");
       try { session.rowCount = Number(count.getRows()[0][0]); } finally { count.closeSync(); }
+      requireSource(session);
       if (!current(session)) return;
       session.phase = "complete";
       session.message = "All rows ready";
       session.percent = 100;
     } catch (cause) {
+      checkSource(session);
       if (current(session)) { session.phase = "error"; session.message = explain(cause); await cleanup(session); }
+    } finally {
+      if (session.sourceChanged) await cleanup(session);
     }
   }
 
@@ -216,17 +261,19 @@ export function createSessions() {
   function status(id: string) {
     const session = find(id);
     if (!session) throw new Error("Viewer session is closed");
+    checkSource(session);
     let percent = session.percent;
     if (session.phase === "scanning" && session.sourceBytes) percent = Math.min(100, Math.floor(session.bytesScanned / session.sourceBytes * 100));
     if (session.phase === "preparing" && session.connection) {
       const native = session.connection.progress.percentage;
       percent = native >= 0 && native <= 100 ? native : null;
     }
-    return { phase: session.phase, message: session.message, bytesScanned: session.bytesScanned, sourceBytes: session.sourceBytes, percent, rowCount: session.rowCount };
+    return { phase: session.phase, message: session.message, bytesScanned: session.bytesScanned, sourceBytes: session.sourceBytes, percent, rowCount: session.rowCount, sourceChanged: !!session.sourceChanged };
   }
   async function page(id: string, offset: number, limit: number, options?: PageOptions): Promise<{ offset: number; rows: string[][]; totalRows: number; sortMode?: "numeric" | "text" }> {
     const session = find(id);
     if (!session || session.phase !== "complete" || !session.connection) throw new Error("Rows are not ready for this session");
+    checkSource(session);
     if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > LIMIT) throw new Error("Invalid page range");
     const search = options?.search ?? "";
     const requestId = options?.requestId ?? 0;
@@ -242,6 +289,7 @@ export function createSessions() {
       try { await previous.catch(() => {}); } finally { clearInterval(timer); }
     } else session.queryRequestId = requestId;
     if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+    checkSource(session);
     session.pageBusy = true;
     const pending = (async () => {
       const where = search ? ` WHERE ${Array.from({ length: session.width ?? 0 }, (_, index) => `contains(lower(coalesce(column${index}, '')), lower(?))`).join(" OR ")}` : "";
@@ -255,6 +303,7 @@ export function createSessions() {
       if (options?.sort) {
         const sorted = await sortPage(session.connection!, session.width ?? 0, options.sort, offset, limit, where, searchParams);
         if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+        checkSource(session);
         return { offset, ...sorted, totalRows };
       }
       const reader = await session.connection!.runAndReadAll(search
@@ -263,6 +312,7 @@ export function createSessions() {
       search ? [...searchParams, limit, offset] : [offset, limit]);
       try {
         if (!current(session) || requestId !== session.queryRequestId) throw new Error("Query superseded");
+        checkSource(session);
         return { offset, rows: reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value))), totalRows };
       } finally { reader.closeSync(); }
     })();

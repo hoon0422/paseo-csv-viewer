@@ -1,0 +1,60 @@
+{
+  "home": "/home/cua/.paseo-x64-ticket-2",
+  "pid": 876,
+  "startedAt": "2026-10-21T02:43:12.972Z",
+  "listen": "127.0.0.1:6779",
+  "serverId": "srv_Ssxondu_-ziz",
+  "hostname": "paseo-x64-ubuntu-ticket-2",
+  "configuredListen": "127.0.0.1:6779",
+  "localDaemon": "running",
+  "desktopManaged": false,
+  "logPath": "/home/cua/.paseo-x64-ticket-2/daemon.log",
+  "daemonVersion": "0.12.0",
+  "workerPid": 889,
+  "daemonNode": "/opt/Paseo/Paseo.bin",
+  "providers": [
+    {
+      "provider": "claude",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "codex",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "copilot",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "opencode",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "pi",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "antigravity",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "muse",
+      "available": false,
+      "error": null
+    }
+  ],
+  "relay": {
+    "enabled": false,
+    "endpoint": "relay.paseo.sh:443",
+    "publicEndpoint": "relay.paseo.sh:443",
+    "useTls": true,
+    "publicUseTls": true
+  },
+  "connectedDaemon": "reachable"
+}

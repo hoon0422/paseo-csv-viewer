@@ -213,6 +213,14 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       </Pressable>
       {busy && <Text style={{ color: muted }}>Opening preview…</Text>}
       {!!message && <Text accessibilityRole="alert" style={{ color: foreground }}>{message}</Text>}
+      {status?.sourceChanged && status.phase === "complete" && <Text accessibilityRole="alert" style={{ color: foreground }}>
+        Source file changed or is no longer accessible. Showing the completed snapshot; refresh to read the current file.
+      </Text>}
+      {selectedSource.current && !busy && <Pressable accessibilityRole="button" accessibilityLabel="Refresh source"
+        onPress={() => { if (selectedSource.current) void open(selectedSource.current); }}
+        style={{ alignSelf: "flex-start", padding: 9, borderWidth: 1, borderColor: muted, borderRadius: 6 }}>
+        <Text style={{ color: foreground }}>Refresh</Text>
+      </Pressable>}
       {preview && <>
         <Text style={{ color: foreground }}>{preview.fileName} · {preview.sourceBytes} bytes</Text>
         {preview.columns.length > 0 && <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
@@ -243,7 +251,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
             onPress={() => void navigate(offset + preview.limit)}><Text style={{ color: foreground }}>Next</Text></Pressable>
         </View>}
         {pageBusy && <Text accessibilityLiveRegion="polite" style={{ color: muted }}>{sort ? "Sorting rows…" : "Loading rows…"}</Text>}
-        {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
+        {status?.sourceChanged && status.phase !== "complete" ? null : preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
           {search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
           {!search && status?.phase === "complete" && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={preview.sessionId} columns={preview.columns} rows={rows} sort={sort} sortMode={sortMode} sortBusy={pageBusy || status?.phase !== "complete"}

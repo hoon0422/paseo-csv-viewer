@@ -1,0 +1,8 @@
+{
+  "workspaceId": "wks_0a83243517c24af8",
+  "project": "fixtures",
+  "name": "Ticket 9 refresh smoke",
+  "isolation": "local",
+  "cwd": "/home/cua/ticket-9/fixtures",
+  "background": false
+}
