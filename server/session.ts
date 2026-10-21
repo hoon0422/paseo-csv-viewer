@@ -11,23 +11,31 @@ type PaseoApi = PluginHandlerContext["paseo"];
 type Session = { id: string; panelId: string; path: string };
 const LIMIT = 50;
 
-async function firstRecordWidth(path: string, delimiter: number) {
+async function scanCsv(path: string, delimiter: number, current: () => boolean) {
   const file = await openFile(path, "r");
   const chunk = Buffer.allocUnsafe(64 * 1024);
   let width = 1;
+  let firstWidth = 0;
   let seen = false;
+  let recordHasBytes = false;
   let quoted = false;
   let quotePending = false;
+  let skipLf = false;
+  let line = 1;
   let offset = 0;
   try {
     for (;;) {
+      if (!current()) throw new Error("Replaced by a newer file");
       const { bytesRead } = await file.read(chunk, 0, chunk.length, null);
-      if (!bytesRead) return seen ? width : 0;
+      if (!bytesRead) return firstWidth || (seen ? width : 0);
       let index = offset === 0 && bytesRead >= 3 && chunk[0] === 0xef && chunk[1] === 0xbb && chunk[2] === 0xbf ? 3 : 0;
-      offset += bytesRead;
       for (; index < bytesRead; index++) {
         const byte = chunk[index];
         seen = true;
+        if (skipLf) {
+          skipLf = false;
+          if (byte === 0x0a) continue;
+        }
         if (quotePending) {
           quotePending = false;
           if (byte === 0x22) continue;
@@ -35,12 +43,26 @@ async function firstRecordWidth(path: string, delimiter: number) {
         }
         if (byte === 0x22) {
           if (quoted) quotePending = true;
-          else quoted = true;
+          else { quoted = true; recordHasBytes = true; }
+        } else if (byte === 0x0a || byte === 0x0d) {
+          if (!quoted) {
+            if (!firstWidth) {
+              firstWidth = width;
+              if (firstWidth === 1) return firstWidth;
+            } else if (!recordHasBytes) {
+              throw new Error(`CSV Error on Line: ${line} (byte ${offset + index}): empty record has 1 column; expected ${firstWidth}`);
+            }
+            width = 1;
+            recordHasBytes = false;
+          }
+          line++;
+          skipLf = byte === 0x0d;
         } else if (!quoted) {
-          if (byte === delimiter) width++;
-          if (byte === 0x0a || byte === 0x0d) return width;
+          if (!firstWidth && byte === delimiter) width++;
+          recordHasBytes = true;
         }
       }
+      offset += bytesRead;
     }
   } finally {
     await file.close();
@@ -76,8 +98,9 @@ export function createSessions() {
     const info = await stat(path);
     if (!info.isFile()) throw new Error("Choose a regular file");
 
-    // DuckDB's sniffer can accept broken quotes or fail malformed widths without a line location.
-    const width = await firstRecordWidth(path, extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c);
+    // DuckDB's sniffer can accept broken quotes; its strict reader also skips blank records in wider files.
+    const width = await scanCsv(path, extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c,
+      () => generations.get(input.panelId) === generation);
     if (!width) {
       const sessionId = randomUUID();
       active.set(input.panelId, { id: sessionId, panelId: input.panelId, path });

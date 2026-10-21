@@ -7,6 +7,8 @@ The panel shows at most 50 data rows and replaces the previous preview. The
 first record is a header by default; the panel switch can show it as data.
 Opening validates the full CSV or TSV before displaying a preview, so malformed
 rows beyond the first 50 fail with a location instead of appearing valid.
+An empty physical record is retained in a one-column file; in a wider file it
+fails strict width validation. Blank lines inside quoted fields remain cell text.
 
 Install from this Git repository after its dependencies are prepared by the
 manifest build command. The daemon reads the original file by path; file bytes

@@ -165,6 +165,49 @@ test("a quoted multiline first record still defines column positions", async () 
   }
 });
 
+test("blank and quoted-empty first records remain headers or data by position", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-blank-first-"));
+  try {
+    const file = join(dir, "blank.csv");
+    const sessions = createSessions();
+    const input = { panelId: "91236ce6-6023-4ed6-85aa-747474ed528c", workspaceId: "workspace", source: { kind: "local" as const, path: file } };
+    for (const body of ["\nvalue\n", '""\nvalue\n']) {
+      await writeFile(file, body);
+      const headed = await sessions.open(input);
+      assert.deepEqual(headed.columns, [""]);
+      assert.deepEqual(headed.rows, [["value"]]);
+      const headerless = await sessions.open({ ...input, hasHeader: false });
+      assert.deepEqual(headerless.columns, ["Column 1"]);
+      assert.deepEqual(headerless.rows, [[""], ["value"]]);
+    }
+    await writeFile(file, "label\n\nvalue\n");
+    assert.deepEqual((await sessions.open(input)).rows, [[""], ["value"]]);
+    await sessions.dispose();
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("a blank physical record in a two-column file cannot disappear", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-blank-width-"));
+  try {
+    const file = join(dir, "blank-width.csv");
+    const sessions = createSessions();
+    const input = { panelId: "70dcfc29-8659-4a46-86dc-a5691eed8f27", workspaceId: "workspace", source: { kind: "local" as const, path: file } };
+    await writeFile(file, "a,b\n1,ok\n\n2,ok\n");
+    await assert.rejects(sessions.open(input), /(?:[Ll]ine|[Bb]yte|[Rr]ecord).*(?:3|9)/);
+    await writeFile(file, "a,b\n" + "1,ok\n".repeat(60) + "\n2,ok\n");
+    await assert.rejects(sessions.open(input), /Line: 62 .*empty record has 1 column/);
+    await writeFile(file, "a,b\r\n1,ok\r\n\r\n2,ok\r\n");
+    await assert.rejects(sessions.open(input), /Line: 3 .*empty record has 1 column/);
+    await writeFile(file, 'a,b\n1,"before\n\nafter"\n2,ok\n');
+    assert.deepEqual((await sessions.open(input)).rows, [["1", "before\n\nafter"], ["2", "ok"]]);
+    await sessions.dispose();
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test("rejects malformed quoting, width and UTF-8 with locations, including after 50 rows", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-invalid-"));
   try {
