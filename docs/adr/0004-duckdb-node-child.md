@@ -8,4 +8,6 @@ The official macOS Paseo 0.12.0 daemon has Hardened Runtime library validation a
 
 The last panel close stops the child. If it crashes, affected sessions fail, the daemon removes the child's owned temporary directory, and the next open starts a new child. Sessions are not restored after a crash. The client RPC contract stays unchanged. This avoids changing Paseo or re-signing DuckDB, at the cost of requiring a compatible Node.js runtime on PATH and shipping a bundled child entry with the plugin.
 
+IPC uses JSON because the host Electron runtime and system Node can use different V8 versions; advanced V8 serialization failed across those versions in macOS acceptance. Omitted positional arguments use null on the wire, and errors use plain `{message}` objects.
+
 If the daemon and child are killed together, cleanup cannot run and owned temporary directories can remain.
