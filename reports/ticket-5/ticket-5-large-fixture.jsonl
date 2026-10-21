@@ -1,0 +1,11 @@
+{"block":0,"bytesWritten":1000100}
+{"block":500,"bytesWritten":501000100}
+{"block":1000,"bytesWritten":1001000100}
+{"block":1500,"bytesWritten":1501000100}
+{"block":2000,"bytesWritten":2001000100}
+{"block":2500,"bytesWritten":2501000100}
+{"block":3000,"bytesWritten":3001000100}
+{"block":3500,"bytesWritten":3501000100}
+{"block":4000,"bytesWritten":4001000100}
+{"block":4500,"bytesWritten":4501000100}
+{"path":"/home/cua/ticket-5/fixtures/large.csv","size":5000000000,"rowBytes":100,"headerBytes":100,"dataRows":49999999,"firstDataOrdinal":0,"lastDataOrdinal":49999998,"markerOrdinals":[0,10000,49990000,49999994,49999998],"tails":["query-tail-alpha","query-tail-bravo","query-tail-charlie","query-tail-delta","query-tail-echo"]}

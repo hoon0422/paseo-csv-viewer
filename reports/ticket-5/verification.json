@@ -1,0 +1,112 @@
+{
+  "ticket": 5,
+  "branch": "ticket/5-large-file-sessions",
+  "source_merge_sha": "c5c3754132c071342a388a296f6550d4b6ad6418",
+  "integration_tip_merged": "c7dc3053261483620954dec3602a425e98d77109",
+  "recorded_at_utc": "2026-10-21T05:02:45Z",
+  "environment": {
+    "space": "local:paseo-x64-ubuntu-ticket-2",
+    "os": "Ubuntu 24.04.5 LTS x86_64",
+    "cpu": "2 vCPU QEMU TCG CPU version 2.5+",
+    "ram_bytes": 4105060352,
+    "swap_bytes": 0,
+    "node": "v24.21.0",
+    "paseo_desktop_and_daemon": "0.12.0 official amd64",
+    "duckdb_node_api": "1.5.6-r.2",
+    "daemon_home": "/home/cua/.paseo-x64-ticket-2",
+    "desktop_userdata": "/home/cua/.config/Paseo-x64-ticket-2",
+    "daemon_port": 6779,
+    "plugin_source": "/home/cua/ticket-5",
+    "plugin_status_at_ui_check": "running"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "merged_tests": { "passed": 17, "failed": 0, "junit": "ticket-5-merged-tests.xml" },
+    "desktop": {
+      "early_preview_before_full_validation": "passed",
+      "full_file_completion_and_row_count": "passed",
+      "next_and_previous_page": "passed",
+      "paged_copy_raw_row": "passed: 00000050 then body-0050",
+      "paged_hide_column_and_copy_visible_only": "passed: body-0050 only",
+      "paged_resize": "passed",
+      "selection_clears_on_page_change": "passed",
+      "native_local_picker_after_merge": "passed: picker.csv opened through the dialog",
+      "close_removes_owned_database_and_wal": "passed"
+    },
+    "public_session": {
+      "large_file_page_50_and_tail": "passed",
+      "large_file_scanner_cancel": "passed",
+      "native_query_cancel_500mb": "passed",
+      "direct_duckdb_interrupt": "passed"
+    }
+  },
+  "fixture": {
+    "guest_path": "/home/cua/ticket-5/fixtures/large.csv",
+    "sha256": "f61cf371efbc50c9530cbb64705bb01b1e82f683bfbe0d9cc6b0a92382656a43",
+    "bytes": 5000000000,
+    "header_bytes": 100,
+    "data_rows": 49999999,
+    "data_row_bytes": 100,
+    "first_source_ordinal": 0,
+    "last_source_ordinal": 49999998,
+    "tail_marker_ordinals": [49999994, 49999995, 49999996, 49999997, 49999998],
+    "tail_markers": ["query-tail-alpha", "query-tail-bravo", "query-tail-charlie", "query-tail-delta", "query-tail-echo"],
+    "source_mtime_unix_seconds_after_runs": 1792556710,
+    "ownership": "Ticket #5 fixture retained in the assigned guest directory for later #10 acceptance; remove /home/cua/ticket-5/fixtures/large.csv after downstream verification if space is needed. No 5 GB file was exported to the host."
+  },
+  "timings_ms": {
+    "public_first_preview": 1908.951843,
+    "public_full_preparation": 534103.064288,
+    "public_page_50": 444.462159,
+    "public_tail_page": 278.386957,
+    "ui_first_preview_observed_by": 15207.794,
+    "ui_complete_observed_by": 630607.289,
+    "five_gb_scanner_cancel_close": 2.084945,
+    "five_gb_scanner_cancel_cleanup": 56.88951,
+    "native_query_cancel_close_500mb": 2.156014,
+    "native_query_cancel_cleanup_500mb": 129.832843,
+    "direct_duckdb_interrupt_settled": 5.554035
+  },
+  "resources": {
+    "pre_generation_space_check": "Guest 12.63 GB free and host 32.44 GB available were measured before creating the fixture; after generation they were about 7.63 GB and 27.84 GB respectively.",
+    "guest_free_bytes_after_fixture_before_ui": 7612420096,
+    "guest_free_bytes_minimum_during_ui": 6657839104,
+    "guest_free_bytes_after_close": 7609102336,
+    "peak_plugin_server_rss_bytes": 1321828352,
+    "peak_client_renderer_rss_bytes": 373428224,
+    "peak_owned_db_allocated_bytes": 951336960,
+    "peak_owned_wal_allocated_bytes": 331776,
+    "peak_owned_spill_allocated_bytes": 0,
+    "sample_interval_seconds": 1,
+    "details": "large-ui-resources.json",
+    "raw_samples": "large-monitor.jsonl"
+  },
+  "screenshots": [
+    "large-first.png",
+    "large-phase.png",
+    "large-responsive.png",
+    "large-completion-check.png",
+    "large-page2.png",
+    "large-page2-hide.png",
+    "large-page2-widen.png",
+    "large-previous.png",
+    "picker-final.png"
+  ],
+  "evidence": [
+    "large-public.json",
+    "large-public.err",
+    "large-public.exit",
+    "large-scan-cancel.json",
+    "ticket-5-cancel-after.json",
+    "ticket-5-native-interrupt.json",
+    "large-fixture.sha256",
+    "ticket-5-large-fixture.jsonl",
+    "ticket-5-merged-tests.xml",
+    "ticket-5-typecheck.log"
+  ],
+  "limits": [
+    "DuckDB 1.5.6-r.2 reported indeterminate native CTAS percentage here; the UI showed source scan percentage and an accurate preparation phase without inventing a query percentage.",
+    "The UI timing values are observation upper bounds; exact preview and preparation times come from the public session run.",
+    "Desktop runtime was checked on Ubuntu; macOS and Windows remain unverified."
+  ]
+}
