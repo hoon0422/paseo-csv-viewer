@@ -1,0 +1,14 @@
+{
+  "platform": "macOS26 arm64",
+  "result": "blocked_before_vm_creation",
+  "requestedSpace": "local:paseo-csv-macos-acceptance",
+  "image": "ghcr.io/trycua/macos:26@sha256:d6d864fe6bba6ada8b2e5cd9d7f1ba4f64b1e5ca8a2ef7edc1d1530e356437df",
+  "cachedBase": "cua-base-3416f98dedcf",
+  "cachedBaseAllocatedBytes": 30769414144,
+  "hostRamBytes": 25769803776,
+  "hostFreeBytesAtPreflight": 27313520640,
+  "cliExitCode": 7,
+  "cliError": "insufficient disk: needs about 30.0 GiB and cua keeps 5.0 GiB free, but only 25.4 GiB is available on /Users/Younghoon/.lume",
+  "changes": "No new macOS VM registered or cloned; existing cached base and Ubuntu Spaces preserved. Did not lower disk reserve, prune cache, delete user files or use paid cloud. Removed unused clean macOS worktree and archived its workspace.",
+  "runtimeAcceptance": "not run"
+}
