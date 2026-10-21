@@ -1,42 +1,29 @@
-import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+export type TablePresentation = { hidden: number[]; widths: Record<number, number>; selected: number[] };
+
 type Props = {
+  presentation: TablePresentation;
+  onPresentation: (next: TablePresentation) => void;
+  onCopy: (value: string, label: string) => void;
   columns: string[];
   rows: string[][];
   theme: { foreground: string; muted: string; border: string };
   sort?: { column: number; direction: "asc" | "desc"; mode: "auto" | "numeric" | "text" } | null;
-  sortMode?: "numeric" | "text";
   sortBusy?: boolean;
   onSort?: (column: number, direction: "asc" | "desc") => void;
-  onSortMode?: (mode: "auto" | "numeric" | "text") => void;
 };
 
 const DEFAULT_WIDTH = 160;
 const MIN_WIDTH = 80;
 const MAX_WIDTH = 480;
 
-export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSort, onSortMode }: Props) {
-  const [hidden, setHidden] = useState<number[]>([]);
-  const [widths, setWidths] = useState<Record<number, number>>({});
-  const [selected, setSelected] = useState<number[]>([]);
-  const [message, setMessage] = useState("");
+export function TableView({ columns, rows, theme, sort, sortBusy, onSort, presentation, onPresentation, onCopy }: Props) {
+  const { hidden, widths, selected } = presentation;
+  const setHidden = (hidden: number[]) => onPresentation({ ...presentation, hidden });
+  const setWidths = (widths: Record<number, number>) => onPresentation({ ...presentation, widths });
+  const setSelected = (selected: number[]) => onPresentation({ ...presentation, selected });
   const visible = columns.map((_, index) => index).filter((index) => !hidden.includes(index));
-
-  useEffect(() => { setSelected([]); }, [rows]);
-
-  async function copy(value: string, label: string) {
-    try {
-      await navigator.clipboard.writeText(value);
-      setMessage(`${label} copied`);
-    } catch {
-      setMessage("Clipboard unavailable. Check desktop clipboard permission.");
-    }
-  }
-
-  function tsv(value: string) {
-    return /[\t\r\n"]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
-  }
 
   const control = (label: string, onPress: () => void, disabled = false, caption = label) => (
     <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled }}
@@ -46,23 +33,7 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
     </Pressable>
   );
 
-  return <View style={{ flex: 1, minHeight: 140, gap: 6 }}>
-    <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-      {control("Copy selected rows", () => {
-        const value = [...selected].sort((a, b) => a - b).map((index) => visible.map((column) => tsv(rows[index]?.[column] ?? "")).join("\t")).join("\n");
-        void copy(value, "Rows");
-      }, selected.length === 0)}
-      {hidden.map((index) => <View key={index}>{control(`Reveal ${columns[index] || `Column ${index + 1}`}`, () => setHidden(hidden.filter((value) => value !== index)), false, "Reveal")}</View>)}
-      {sort && onSortMode && <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
-        <Text accessibilityLabel={`Sort ${columns[sort.column] || `Column ${sort.column + 1}`} ${sort.direction === "asc" ? "ascending" : "descending"} · mode:`}
-          numberOfLines={1} style={{ color: theme.muted, maxWidth: 240, flexShrink: 1 }}>
-          Sort {columns[sort.column] || `Column ${sort.column + 1}`} {sort.direction === "asc" ? "ascending" : "descending"} · mode:
-        </Text>
-        {(["auto", "numeric", "text"] as const).map((mode) => <View key={mode}>{control(`${mode === sort.mode ? "✓ " : ""}${mode[0].toUpperCase() + mode.slice(1)}`, () => onSortMode(mode), sortBusy)}</View>)}
-        <Text style={{ color: theme.muted, width: "100%" }}>{sort.mode === "auto" && sortMode ? `Detected ${sortMode}. ` : ""}Blanks last. Numeric mode puts other text after numbers. Ties keep file order.</Text>
-      </View>}
-      <Text accessibilityLiveRegion="polite" style={{ color: theme.muted }}>{message || `${selected.length} rows selected`}</Text>
-    </View>
+  return <View style={{ flex: 1, minHeight: 0 }}>
     <ScrollView horizontal style={{ flex: 1 }} contentContainerStyle={{ minWidth: "100%" }}>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: theme.border, backgroundColor: theme.border }}>
@@ -92,7 +63,7 @@ export function TableView({ columns, rows, theme, sort, sortMode, sortBusy, onSo
               const value = row[index] ?? "";
               return <Pressable key={index} accessibilityRole="button"
                 accessibilityLabel={`Copy cell row ${rowIndex + 1}, ${columns[index] || `Column ${index + 1}`}, ${value === "" ? "empty cell" : `value: ${value}`}`}
-                onPress={() => void copy(value, "Cell")}
+                onPress={() => onCopy(value, "Copied cell")}
                 style={{ width: widths[index] ?? DEFAULT_WIDTH, padding: 6 }}>
                 <Text style={{ color: theme.foreground }}>{value}</Text>
               </Pressable>;
