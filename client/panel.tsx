@@ -24,7 +24,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [sortMode, setSortMode] = useState<"numeric" | "text" | undefined>();
   const [filter, setFilter] = useState<Filter | undefined>();
   const [filterDraft, setFilterDraft] = useState(emptyFilter);
-  const [queryPending, setQueryPending] = useState(false);
+  const [pendingOperation, setPendingOperation] = useState<"sort" | "filter" | "rows" | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [hasHeader, setHasHeader] = useState(true);
@@ -94,7 +94,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       setToast(null);
       setStatus(null);
       setPageBusy(false);
-      setQueryPending(false);
+      setPendingOperation(null);
       setTotalRows(null);
       nextPosition.current = next.rows.length ? next.rows.length - 1 : undefined;
       moreRows.current = next.rows.length === next.limit;
@@ -143,9 +143,9 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     const applied = next?.rules.some(activeRule) ? next : undefined;
     setFilter(applied);
     resetRows();
-    setQueryPending(true);
+    setPendingOperation("filter");
     setMessage("");
-    void navigate(false, sort, applied ?? null);
+    void navigate(false, sort, applied ?? null, applied ? "filter" : "sort");
   }
 
   function resetRows() {
@@ -176,16 +176,18 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     zone.current?.focus({ preventScroll: true });
   }
 
-  function cancelQuery() {
+  function cancelBuild() {
     ++queryRequest.current;
     ++pageRequest.current;
     queryDirty.current = false;
-    setFilter(undefined);
-    setFilterDraft(emptyFilter());
-    setSort(null);
-    setSortMode(undefined);
+    const nextSort = pendingOperation === "sort" ? null : sort;
+    const nextFilter = pendingOperation === "filter" ? undefined : filter;
+    setFilter(nextFilter);
+    if (pendingOperation === "filter") setFilterDraft(emptyFilter());
+    setSort(nextSort);
+    if (pendingOperation === "sort") setSortMode(undefined);
     resetRows();
-    void navigate(false, null, null);
+    void navigate(false, nextSort, nextFilter ?? null);
   }
 
   function changeSort(next: Sort | null) {
@@ -193,10 +195,10 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     resetRows();
     setSortMode(undefined);
     setSort(next);
-    void navigate(false, next);
+    void navigate(false, next, filter, next ? "sort" : "filter");
   }
 
-  async function navigate(append = false, nextSort = sort, nextFilter: Filter | null | undefined = filter) {
+  async function navigate(append = false, nextSort = sort, nextFilter: Filter | null | undefined = filter, operation: "sort" | "filter" = nextFilter ? "filter" : "sort") {
     // Preparation already runs when open returns, before the first status poll.
     if (!preview || busy || (status && status.phase !== "complete" && status.phase !== "preparing")) return;
     if (status?.phase !== "complete" && (nextSort || nextFilter)) return;
@@ -208,7 +210,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     pageInFlight.current = true;
     queryDirty.current = false;
     setPageBusy(true);
-    if (!append) setQueryPending(true);
+    if (!append) setPendingOperation(nextSort || nextFilter ? operation : "rows");
     try {
       await queryRpc({ action: "start", sessionId: preview.sessionId, offset: nextOffset, limit: PAGE_SIZE,
         afterPosition: append ? nextPosition.current : undefined,
@@ -230,7 +232,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     } catch (cause) {
       if (mounted.current && turn === generation.current && request === pageRequest.current) setMessage(cause instanceof Error ? cause.message : String(cause));
     } finally {
-      if (mounted.current && turn === generation.current && request === pageRequest.current) { pageInFlight.current = false; setPageBusy(false); setQueryPending(false); }
+      if (mounted.current && turn === generation.current && request === pageRequest.current) { pageInFlight.current = false; setPageBusy(false); setPendingOperation(null); }
     }
   }
 
@@ -284,7 +286,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setPageBusy(false);
     setFilter(undefined);
     setFilterDraft(emptyFilter());
-    setQueryPending(false);
+    setPendingOperation(null);
     queryDirty.current = false;
     setMessage("");
     session.current = null;
@@ -373,7 +375,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const unit = Math.min(4, Math.floor(Math.log10(Math.max(1, bytes)) / 3));
   const size = `${(bytes / 1000 ** unit).toFixed(1)} ${["B", "kB", "MB", "GB", "TB"][unit]}`;
   const state = busy ? "Opening preview…" : status?.phase === "error" ? status.message
-    : queryPending || (pageBusy && !sort && !filter) ? (filter ? "Filtering…" : sort ? "Sorting…" : "Loading rows…")
+    : pendingOperation || (pageBusy && !sort && !filter) ? (pendingOperation === "filter" ? "Filtering…" : pendingOperation === "sort" ? "Sorting…" : "Loading rows…")
     : ready ? "Ready" : preview ? `Preparing${status?.percent == null ? "…" : ` ${Math.round(status.percent)}%`}` : "No source";
   const textButtonStyle = { color: foreground, backgroundColor: colors.surface0, border: `1px solid ${colors.border}`, borderRadius: 4, padding: 4 };
   const sortTitle = sort?.mode === "auto" ? `Auto${sortMode ? ` — ${sortMode === "numeric" ? "Numeric" : "Text"} detected` : " — detection pending"}` : "Sort mode";
@@ -448,8 +450,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
         disabled={!ready} style={textButtonStyle} danger={colors.statusDanger} />}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0 }}>
         {preview && !(status?.sourceChanged && status.phase !== "complete") && (preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
-          {filter && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
-          {!filter && ready && !queryPending && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
+          {filter && ready && !pendingOperation && totalRows === 0 && <Text style={{ color: muted }}>No matching rows.</Text>}
+          {!filter && ready && !pendingOperation && totalRows === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <TableView key={tableKey} columns={preview.columns} rows={rows} sort={sort} sortBusy={!ready}
             onEndReached={() => void navigate(true)} onSelectRow={selectRow}
             onVisibleRowsChange={(indices) => { visibleRows.current = indices; }}
@@ -463,10 +465,10 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
         {preview && <><span>{rowSummary}</span><span>{count(table.selected.length)} selected</span><span>{size}</span></>}
         <span>{state}</span>
         {status?.sourceChanged && <span>Source file changed or is no longer accessible. {ready ? "Showing the completed snapshot; refresh to read the current file." : "Refresh to read the current file."}</span>}
-        {queryPending && ready && <button type="button" style={textButtonStyle} aria-label={filter ? "Cancel filter" : "Cancel sort"} onClick={cancelQuery}>Cancel</button>}
+        {pendingOperation && pendingOperation !== "rows" && ready && <button type="button" style={textButtonStyle} aria-label={pendingOperation === "filter" ? "Cancel filter" : "Cancel sort"} onClick={cancelBuild}>Cancel</button>}
         {preview && !ready && !busy && status?.phase !== "error" && <button type="button" style={textButtonStyle} aria-label="Cancel preparation" onClick={() => {
           ++generation.current; ++selection.current; ++pageRequest.current; ++queryRequest.current;
-          setPageBusy(false); setQueryPending(false);
+          setPageBusy(false); setPendingOperation(null);
           if (session.current) void closeRpc({ sessionId: session.current });
           session.current = null; selectedSource.current = null; setPath("");
           setPreview(null); setStatus(null); resetRows(); setMessage("Preparation cancelled");

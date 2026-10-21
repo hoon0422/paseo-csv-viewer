@@ -593,6 +593,60 @@ test("cancelling an unfiltered sort restores source order and supersedes its pag
   });
 });
 
+test("cancelling a running sort preserves the applied filter and ignores the superseded sort page", async () => {
+  await panelTest(async ({ tree, zone, write, press, wait, holdSort, pageCalls }) => {
+    await act(async () => { zone.drop(await write("cancel-sort.csv", "id,note\n3,keep\n1,skip\n2,keep\n")); });
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    await applyValue(tree, "keep", "1");
+    const table = () => tree.root.findByType(TableView);
+    await wait(() => table().props.rows.length === 2);
+    let release!: () => void;
+    holdSort(new Promise<void>((resolve) => { release = resolve; }));
+    try {
+      await press("Sort column 1 id ascending");
+      assert.equal(tree.root.findAllByProps({ "aria-label": "Cancel sort" }).length, 1);
+      assert.ok(JSON.stringify(tree.toJSON()).includes("Sorting…"));
+      await press("Cancel sort");
+      await wait(() => table().props.rows.length === 2);
+      assert.equal(table().props.sort, null);
+      assert.deepEqual(table().props.rows.map((row: string[]) => row[0]), ["3", "2"]);
+      assert.equal(tree.root.findByProps({ "aria-label": "Filter value 1" }).props.value, "keep");
+      assert.equal((pageCalls().at(-1)?.filter as any).rules[0].value, "keep");
+    } finally { await act(async () => { release(); }); }
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 100)); });
+    assert.deepEqual(table().props.rows.map((row: string[]) => row[0]), ["3", "2"]);
+    assert.equal(table().props.sort, null);
+  });
+});
+
+test("cancelling a running filter preserves the applied sort and ignores the superseded filter page", async () => {
+  await panelTest(async ({ tree, zone, write, press, wait, holdFilter, pageCalls }) => {
+    await act(async () => { zone.drop(await write("cancel-filter.csv", "id,note\n3,skip\n1,keep\n2,keep\n")); });
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    await press("Sort column 1 id descending");
+    const table = () => tree.root.findByType(TableView);
+    await wait(() => table().props.rows[1]?.[0] === "2");
+    const sort = table().props.sort;
+    let release!: () => void;
+    holdFilter(new Promise<void>((resolve) => { release = resolve; }));
+    try {
+      await applyValue(tree, "keep", "1");
+      assert.equal(tree.root.findAllByProps({ "aria-label": "Cancel filter" }).length, 1);
+      assert.ok(JSON.stringify(tree.toJSON()).includes("Filtering…"));
+      await press("Cancel filter");
+      await wait(() => table().props.rows.length === 3);
+      assert.deepEqual(table().props.sort, sort);
+      assert.deepEqual(table().props.rows.map((row: string[]) => row[0]), ["3", "2", "1"]);
+      assert.equal(tree.root.findByProps({ "aria-label": "Filter value 1" }).props.value, "");
+      assert.deepEqual(pageCalls().at(-1)?.sort, sort);
+      assert.equal(pageCalls().at(-1)?.filter, undefined);
+    } finally { await act(async () => { release(); }); }
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 100)); });
+    assert.deepEqual(table().props.rows.map((row: string[]) => row[0]), ["3", "2", "1"]);
+    assert.deepEqual(table().props.sort, sort);
+  });
+});
+
 test("filtered cursor pages append across gaps and sort or filter changes collapse expanded rows", async () => {
   await panelTest(async ({ tree, zone, write, press, wait }) => {
     await act(async () => { zone.drop(await write("gaps.csv", "id,value\n" + Array.from({ length: 640 }, (_, i) =>
