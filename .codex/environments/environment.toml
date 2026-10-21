@@ -1,0 +1,10 @@
+version = 1
+name = "CSV Viewer"
+
+[setup]
+script = "./scripts/bootstrap.sh setup"
+
+[[actions]]
+name = "Check"
+icon = "run"
+command = "./scripts/bootstrap.sh check"
