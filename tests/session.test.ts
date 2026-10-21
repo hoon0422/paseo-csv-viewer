@@ -126,6 +126,69 @@ test("prepares a file-backed session and pages beyond the preview in source orde
   }
 });
 
+test("searches all prepared columns beyond preview as literal Unicode text and clears to source order", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-search-"));
+  const sessions = createSessions();
+  try {
+    const file = join(dir, "search.csv");
+    const source = "id,visible,secret\n" + Array.from({ length: 125 }, (_, i) =>
+      `${i},plain,${i === 90 ? "café [X]%_" : i === 120 ? "CAFÉ [x]%_" : i === 110 ? "O'Reilly; -- %_" : "ordinary"}\n`).join("");
+    await writeFile(file, source);
+    const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
+    assert.equal(opened.rows.length, 50);
+    assert.equal((await settled(sessions, opened.sessionId)).rowCount, 125);
+    const found = await sessions.page(opened.sessionId, 0, 1, { search: "CAFÉ [x]%_", requestId: 1 });
+    assert.deepEqual(found, { offset: 0, rows: [["90", "plain", "café [X]%_"]], totalRows: 2 });
+    assert.deepEqual((await sessions.page(opened.sessionId, 1, 50, { search: "CAFÉ [x]%_", requestId: 1 })).rows,
+      [["120", "plain", "CAFÉ [x]%_"]]);
+    assert.deepEqual((await sessions.page(opened.sessionId, 0, 50, { search: "O'Reilly; -- %_", requestId: 2 })).rows,
+      [["110", "plain", "O'Reilly; -- %_"]]);
+    assert.deepEqual(await sessions.page(opened.sessionId, 0, 50, { search: "^café.*$", requestId: 3 }),
+      { offset: 0, rows: [], totalRows: 0 });
+    const cleared = await sessions.page(opened.sessionId, 0, 50, { search: "", requestId: 4 });
+    assert.equal(cleared.totalRows, 125);
+    assert.deepEqual(cleared.rows[0], ["0", "plain", "ordinary"]);
+    assert.deepEqual(await readFile(file, "utf8"), source);
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("new query, file replacement and cancellation supersede in-flight search", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-search-order-"));
+  const sessions = createSessions();
+  const panelId = crypto.randomUUID();
+  try {
+    const first = join(dir, "first.csv");
+    const second = join(dir, "second.csv");
+    await writeFile(first, "id,secret\n" + Array.from({ length: 5_000 }, (_, i) => `${i},ordinary\n`).join(""));
+    await writeFile(second, "id,secret\nnew,needle\n");
+    const input = (path: string) => ({ panelId, workspaceId: "workspace", source: { kind: "local" as const, path } });
+    const opened = await sessions.open(input(first));
+    await settled(sessions, opened.sessionId);
+    const stale = sessions.page(opened.sessionId, 0, 50, { search: "missing", requestId: 1 });
+    const staleRejected = assert.rejects(stale, /superseded|interrupt/i);
+    const cleared = sessions.page(opened.sessionId, 0, 50, { search: "", requestId: 2 });
+    await staleRejected;
+    assert.equal((await cleared).totalRows, 5_000);
+    await assert.rejects(sessions.page(opened.sessionId, 0, 50, { search: "missing", requestId: 1 }), /superseded/);
+    const replacedSearch = sessions.page(opened.sessionId, 0, 50, { search: "ordinary", requestId: 3 });
+    const replacedRejected = assert.rejects(replacedSearch, /superseded|interrupt|cancelled|closed/i);
+    const replaced = await sessions.open(input(second));
+    await replacedRejected;
+    await settled(sessions, replaced.sessionId);
+    assert.deepEqual((await sessions.page(replaced.sessionId, 0, 50, { search: "NEEDLE", requestId: 1 })).rows, [["new", "needle"]]);
+    const cancelledSearch = sessions.page(replaced.sessionId, 0, 50, { search: "needle", requestId: 2 });
+    const cancelledRejected = assert.rejects(cancelledSearch, /superseded|interrupt|cancelled|closed/i);
+    assert.equal(sessions.close(replaced.sessionId), true);
+    await cancelledRejected;
+  } finally {
+    await sessions.dispose();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test("closing a pending open and cancelling preparation cannot revive that panel", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-cancel-"));
   const sessions = createSessions();

@@ -1,0 +1,11 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ search shows pending, hidden-column matches and no results; stale search cannot replace cleared rows (102606.79347ms)
+✔ searches all prepared columns beyond preview as literal Unicode text and clears to source order (1850.024519ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117949.827075
