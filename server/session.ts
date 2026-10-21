@@ -78,6 +78,32 @@ function explain(cause: unknown) {
   return message.split(/Possible fixes?:|Possible Solution:/i)[0].trim();
 }
 
+async function resolveSource(input: Pick<OpenInput, "workspaceId" | "source">, paseo?: PaseoApi) {
+  let path: string;
+  let sourcePath: string;
+  if (input.source.kind === "workspace") {
+    if (!paseo) throw new Error("Workspace lookup is unavailable");
+    if (isAbsolute(input.source.path)) throw new Error("Workspace file path must be relative");
+    const workspace = await paseo.workspaces.ref(input.workspaceId).refresh();
+    if (!workspace || workspace.id !== input.workspaceId || !workspace.workspaceDirectory) throw new Error("Workspace is unavailable");
+    const root = await realpath(workspace.workspaceDirectory);
+    sourcePath = resolve(root, input.source.path);
+    path = await realpath(sourcePath);
+    const within = relative(root, path);
+    if (!within || within === ".." || within.startsWith(`..${sep}`) || isAbsolute(within)) throw new Error("File is outside this workspace");
+  } else {
+    if (!isAbsolute(input.source.path)) throw new Error("Local file path must be absolute");
+    sourcePath = input.source.path;
+    path = await realpath(sourcePath);
+  }
+  if (!/\.(csv|tsv)$/i.test(extname(path))) throw new Error("Choose a CSV or TSV file");
+  const info = await stat(path);
+  if (!info.isFile()) throw new Error("Choose a regular file");
+  const revision = sourceRevision(sourcePath);
+  if (revision.resolved !== path) throw new Error(CHANGED);
+  return { path, sourcePath, revision };
+}
+
 export function createSessions() {
   const active = new Map<string, Session>();
   const owned = new Set<Session>();
@@ -139,6 +165,12 @@ export function createSessions() {
     void drain(session).catch((cause) => console.error("CSV Viewer cleanup failed:", cause));
   }
 
+  async function inspect(input: Pick<OpenInput, "workspaceId" | "source">, paseo?: PaseoApi) {
+    if (disposed) throw new Error("Viewer is closed");
+    const { revision } = await resolveSource(input, paseo);
+    return { sourceBytes: revision.size };
+  }
+
   async function open(input: OpenInput, paseo?: PaseoApi) {
     if (disposed) throw new Error("Viewer is closed");
     const turn = input.turn ?? 0;
@@ -150,30 +182,9 @@ export function createSessions() {
     active.set(input.panelId, session);
     owned.add(session);
     const initialize = async () => {
-      let path: string;
-      let sourcePath: string;
-      if (input.source.kind === "workspace") {
-        if (!paseo) throw new Error("Workspace lookup is unavailable");
-        if (isAbsolute(input.source.path)) throw new Error("Workspace file path must be relative");
-        const workspace = await paseo.workspaces.ref(input.workspaceId).refresh();
-        if (!workspace || workspace.id !== input.workspaceId || !workspace.workspaceDirectory) throw new Error("Workspace is unavailable");
-        const root = await realpath(workspace.workspaceDirectory);
-        sourcePath = resolve(root, input.source.path);
-        path = await realpath(sourcePath);
-        const within = relative(root, path);
-        if (!within || within === ".." || within.startsWith(`..${sep}`) || isAbsolute(within)) throw new Error("File is outside this workspace");
-      } else {
-        if (!isAbsolute(input.source.path)) throw new Error("Local file path must be absolute");
-        sourcePath = input.source.path;
-        path = await realpath(sourcePath);
-      }
+      const { path, sourcePath, revision } = await resolveSource(input, paseo);
       if (!current(session)) throw new Error("Session cancelled");
-      if (!/\.(csv|tsv)$/i.test(extname(path))) throw new Error("Choose a CSV or TSV file");
-      const info = await stat(path);
-      if (!info.isFile()) throw new Error("Choose a regular file");
       session.sourcePath = sourcePath;
-      const revision = sourceRevision(sourcePath);
-      if (revision.resolved !== path) throw new Error(CHANGED);
       session.revision = revision.key;
       session.sourceBytes = revision.size;
       const delimiter = extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c;
@@ -234,18 +245,12 @@ export function createSessions() {
       requireSource(session);
       session.phase = "preparing";
       session.message = "Preparing disk-backed rows";
-      const columns = Array.from({ length: session.width! }, (_, i) => `column${i}`).join(", ");
-      const result = await session.connection!.run(`CREATE TABLE rows AS SELECT *, row_number() OVER () - 1 AS source_row,
-        to_json([${columns}])::VARCHAR AS source_cells FROM (SELECT * FROM ${from}${hasHeader ? " OFFSET 1" : ""})`, params);
+      const result = await session.connection!.run(`CREATE TABLE rows AS SELECT * FROM ${from}${hasHeader ? " OFFSET 1" : ""}`, params);
       result.closeSync();
       requireSource(session);
       if (!current(session)) return;
       const count = await session.connection!.runAndReadAll("SELECT COUNT(*) FROM rows");
       try { session.rowCount = Number(count.getRows()[0][0]); } finally { count.closeSync(); }
-      requireSource(session);
-      if (!current(session)) return;
-      const indexed = await session.connection!.run("CREATE UNIQUE INDEX source_rows ON rows(source_row)");
-      indexed.closeSync();
       requireSource(session);
       if (!current(session)) return;
       session.phase = "complete";
@@ -375,33 +380,18 @@ export function createSessions() {
       }
       checkCurrent();
       const totalRows = session.filterOrder?.totalRows ?? session.rowCount ?? 0;
+      const position = filtered ? "filtered.pos" : sortPosition;
+      const from = filtered ? "filter_order filtered JOIN rows ON rows.rowid = filtered.src" : sortFrom;
       const start = options?.afterPosition !== undefined ? options.afterPosition + 1 : filtered ? 0 : offset;
-      let sql = `SELECT source_cells, rowid FROM rows WHERE rowid >= ? AND rowid < ? ORDER BY rowid LIMIT ?`;
-      let params: (number | bigint)[] = [start, start + limit, limit];
-      let page: (number | bigint)[][] | undefined;
-      if (session.order || filtered) {
-        const table = filtered ? "filter_order" : "sort_order";
-        const range = filtered ? "pos >= ?" : "pos >= ? AND pos < ?";
-        const positions = await connection.runAndReadAll(`SELECT src, pos FROM ${table} WHERE ${range}
-          ORDER BY pos LIMIT ?${filtered ? " OFFSET ?" : ""}`,
-          filtered ? [start, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit]);
-        try { page = positions.getRows() as (number | bigint)[][]; }
-        finally { positions.closeSync(); }
-        checkCurrent();
-        // Fetch one packed row per index lookup instead of independent cell-column blocks.
-        sql = `SELECT source_cells, source_row FROM rows WHERE ${page.length ? `source_row IN (${page.map(() => "?").join(",")})` : "false"}`;
-        params = page.map(([src]) => src);
-      }
-      const reader = await connection.runAndReadAll(sql, params);
+      const range = filtered ? `${position} >= ?` : `${position} >= ? AND ${position} < ?`;
+      const params = filtered ? [start, limit, options?.afterPosition !== undefined ? 0 : offset] : [start, start + limit, limit];
+      const reader = await session.connection!.runAndReadAll(
+        `SELECT rows.*, ${position} FROM ${from} WHERE ${range}
+          ORDER BY ${position} LIMIT ?${filtered ? " OFFSET ?" : ""}`, params);
       try {
         checkCurrent();
         checkSource(session);
-        let stored = reader.getRows();
-        if (page) {
-          const rows = new Map(stored.map(([cells, src]) => [Number(src), cells]));
-          stored = page.map(([src, pos]) => [rows.get(Number(src))!, pos]);
-        }
-        const values = stored.map(([cells, pos]) => [...JSON.parse(String(cells)), pos]);
+        const values = reader.getRows();
         return { offset, nextPosition: values.length ? Number(values[values.length - 1][session.width!]) : null,
           rows: values.map((row) => row.slice(0, session.width).map((value) => value == null ? "" : String(value))),
           totalRows, ...(session.order ? { sortMode: session.order.mode } : {}) };
@@ -441,5 +431,5 @@ export function createSessions() {
     sessions.forEach(cancel);
     await Promise.allSettled(sessions.map(drain));
   }
-  return { open, status, page, beginPage, pollPage, close, dispose };
+  return { inspect, open, status, page, beginPage, pollPage, close, dispose };
 }

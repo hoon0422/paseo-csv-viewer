@@ -280,6 +280,7 @@ async function panelTest(run: (app: {
   write: (path: string, content: string) => Promise<string>;
   bridgeStatus: (next: () => Promise<unknown>) => void;
   opens: () => number;
+  sourceBytes: (next: (path: string) => number | undefined) => void;
   holdPage: (next: Promise<void>) => void;
   holdFilter: (next: Promise<void>) => void;
   holdSort: (next: Promise<void>) => void;
@@ -303,11 +304,16 @@ async function panelTest(run: (app: {
   let clipboard = "";
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { platform, clipboard: { writeText: async (text: string) => { clipboard = text; } } } });
   let opens = 0;
+  let sourceBytes: (path: string) => number | undefined = () => undefined;
   Object.defineProperty(globalThis, "window", { configurable: true, value: {
     paseoDesktop: { webUtils: { getPathForFile: (file: { path: string }) => file.path }, invoke: () => status() },
   } });
   Object.defineProperty(globalThis, "document", { configurable: true, value: { activeElement: null } });
   const invoke = async (name: string, input: any): Promise<unknown> => {
+    if (name === "viewer.inspect") {
+      const info = await sessions.inspect(input, { workspaces: { ref: () => ({ refresh: async () => ({ id: "workspace", workspaceDirectory: directory }) }) } } as any);
+      return { ...info, sourceBytes: sourceBytes(input.source.path) ?? info.sourceBytes };
+    }
     if (name === "viewer.open") { opens++; return sessions.open(input, { workspaces: { ref: () => ({ refresh: async () => ({ id: "workspace", workspaceDirectory: directory }) }) } } as any); }
     if (name === "viewer.close") return { closed: sessions.close(input.sessionId, input.panelId, input.turn) };
     if (name === "viewer.status") { await statusGate; return { ...await sessions.status(input.sessionId), ...(preparing ? { phase: "preparing", percent: 45, rowCount: null } : {}) }; }
@@ -347,6 +353,7 @@ async function panelTest(run: (app: {
       write: async (path, content) => { const full = join(directory, path); await writeFile(full, content); return full; },
       bridgeStatus: (next) => { status = next; },
       opens: () => opens,
+      sourceBytes: (next) => { sourceBytes = next; },
       holdPage: (next) => { pageGate = next; },
       holdFilter: (next) => { filterGate = next; },
       holdSort: (next) => { sortGate = next; },
@@ -909,6 +916,111 @@ test("filter shows pending, hidden-column matches and no results; stale filter c
   });
 });
 
+
+test("large path opens wait for confirmation; Cancel preserves the current source and OK opens it", async () => {
+  await panelTest(async ({ tree, zone, file, wait, press, opens, sourceBytes }) => {
+    const current = await file("current.csv", 2);
+    await file("large.csv", 2);
+    await act(async () => { zone.drop(current); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    sourceBytes((path) => path.endsWith("large.csv") ? 5_400_000_000 : undefined);
+    const input = () => tree.root.findByProps({ "aria-label": "Workspace file path" });
+    const enter = async () => {
+      await change(tree, "Workspace file path", "large.csv");
+      await act(async () => { input().props.onKeyDown({ key: "Enter", preventDefault() {} }); });
+      await wait(() => tree.root.findAllByProps({ role: "alertdialog" }).length === 1);
+    };
+    const count = opens();
+    await enter();
+    assert.equal(tree.root.findByProps({ role: "alertdialog" }).findByType("p").children.join(""), "This file is 5.4 GB. Files over 500 MB can take a long time to sort and filter. Open anyway?");
+    assert.equal(opens(), count);
+    await press("Cancel large file");
+    assert.equal(input().props.value, "current.csv");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "current.csv-0");
+    assert.equal(opens(), count);
+    await enter();
+    await press("Open large file");
+    await wait(() => cell(tree, "value").findByType("div").children[0] === "large.csv-0");
+    assert.equal(input().props.value, "large.csv");
+    assert.equal(opens(), count + 1);
+  });
+});
+
+test("drops warn only above 500,000,000 bytes, and a newer selection replaces a pending confirmation", async () => {
+  await panelTest(async ({ tree, zone, file, wait, press, opens, sourceBytes }) => {
+    const boundary = await file("boundary.csv", 2);
+    const large = await file("large-drop.csv", 2);
+    const replacement = await file("replacement.csv", 2);
+    sourceBytes((path) => path.endsWith("boundary.csv") ? 500_000_000 : path.endsWith("large-drop.csv") ? 500_000_001 : undefined);
+    await act(async () => { zone.drop(boundary); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    assert.equal(tree.root.findAllByProps({ role: "alertdialog" }).length, 0);
+    const count = opens();
+    await act(async () => { zone.drop(large); });
+    await wait(() => tree.root.findAllByProps({ role: "alertdialog" }).length === 1);
+    assert.ok(tree.root.findByProps({ role: "alertdialog" }).findByType("p").children.join("").startsWith("This file is 500.0 MB."));
+    assert.equal(opens(), count);
+    let escaped = false;
+    await act(async () => { tree.root.findByProps({ role: "alertdialog" }).props.onKeyDown({ key: "Escape",
+      preventDefault() { escaped = true; }, stopPropagation() {},
+    }); });
+    assert.equal(escaped, true);
+    assert.equal(tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value, "boundary.csv");
+    await act(async () => { zone.drop(large); });
+    await wait(() => tree.root.findAllByProps({ role: "alertdialog" }).length === 1);
+    const staleOK = tree.root.findByProps({ "aria-label": "Open large file" }).props.onClick;
+    await act(async () => { zone.drop(replacement); });
+    await wait(() => cell(tree, "value").findByType("div").children[0] === "replacement.csv-0");
+    await act(async () => { staleOK(); });
+    assert.equal(opens(), count + 1);
+    assert.equal(tree.root.findAllByProps({ role: "alertdialog" }).length, 0);
+  });
+});
+
+test("local picker waits for OK before opening a large source", async () => {
+  await panelTest(async ({ tree, file, press, wait, opens, sourceBytes }) => {
+    const path = await file("picked-large.csv", 2);
+    sourceBytes(() => 500_000_001);
+    const listeners = new Map<string, () => void>();
+    Object.assign(document, {
+      body: { appendChild() {} },
+      createElement: () => ({ style: {}, files: [{ path }], remove() {},
+        addEventListener: (name: string, callback: () => void) => listeners.set(name, callback),
+        click: () => listeners.get("change")?.(),
+      }),
+    });
+    await press("Choose local CSV or TSV");
+    await wait(() => tree.root.findAllByProps({ role: "alertdialog" }).length === 1);
+    assert.equal(opens(), 0);
+    assert.equal(tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value, "");
+    await press("Open large file");
+    await wait(() => cells(tree, "value").length > 0);
+    assert.equal(opens(), 1);
+    assert.equal(tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value, "picked-large.csv");
+  });
+});
+
+test("Refresh checks growth and Cancel preserves the completed snapshot until OK", async () => {
+  await panelTest(async ({ tree, zone, file, press, wait, opens, sourceBytes }) => {
+    const path = await file("grown.csv", 2);
+    await act(async () => { zone.drop(path); });
+    await wait(() => JSON.stringify(tree.toJSON()).includes("Ready"));
+    await writeFile(path, "id,value\n0,grown\n1,new\n");
+    sourceBytes(() => 500_000_001);
+    const count = opens();
+    await press("Refresh source");
+    await wait(() => tree.root.findAllByProps({ role: "alertdialog" }).length === 1);
+    assert.equal(opens(), count);
+    await press("Cancel large file");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "grown.csv-0");
+    assert.equal(tree.root.findByProps({ "aria-label": "Workspace file path" }).props.value, "grown.csv");
+    await press("Refresh source");
+    await wait(() => tree.root.findAllByProps({ role: "alertdialog" }).length === 1);
+    await press("Open large file");
+    await wait(() => cell(tree, "value").findByType("div").children[0] === "grown");
+    assert.equal(opens(), count + 1);
+  });
+});
 
 test("the path bar opens on Enter, restores edits and keeps the current table after an error", async () => {
   await panelTest(async ({ tree, file, wait, press }) => {
