@@ -1,0 +1,45 @@
+{
+  "ticket": 8,
+  "branch": "ticket/8-sorting",
+  "testedSourceSha": "6f41335f5b4aaa39171efc32df17ea168e19b97f",
+  "baseSha": "ecf4ccd74e5acbe8b078663b6d7048861981146a",
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "runtime": {
+    "os": "Ubuntu 24.04.5 x86_64",
+    "node": "24.21.0",
+    "paseoDesktopAndDaemon": "0.12.0 official amd64",
+    "daemonHome": "/home/cua/.paseo-x64-ticket-2",
+    "desktopUserData": "/home/cua/.config/Paseo-x64-ticket-2",
+    "daemonPort": 6779,
+    "duckdbNodeApi": "1.5.6-r.2",
+    "pluginSource": "/home/cua/ticket-8",
+    "pluginId": "csv-viewer",
+    "pluginStatusAtCheck": "running"
+  },
+  "guestSourceHashes": {
+    "server/sort.ts": "d15d01d25aae70b86aa6cf9f0bbdf9eb126b4b6a8f09fcd90fc263b2ace46232",
+    "server/session.ts": "bff27c3b70b724bbe05cf409863664d4c0d23835634788b5a70b55003badf549",
+    "shared/session.ts": "a37ed36003dd9c0d75a4f056c1a530299e88350c13ad8ce85d66d655506b7974",
+    "client/panel.tsx": "e5e1a4025fb677b7607189550a8264dde83dd3e9451d7b7d58fbdf9376b9e3e4",
+    "client/table.tsx": "bc8f33c4a8a53fa1fd317d4bb8928f40836739a2ab1b4742ae88e890a072b265"
+  },
+  "checks": {
+    "tddRed": "ticket-8-red.log",
+    "focusedSort": "4 passed, 0 failed; ticket-8-green.log",
+    "fullSerialSuite": "23 passed, 0 failed; ticket-8-tests-serial.log",
+    "finalTypecheck": "passed; ticket-8-final-typecheck.log",
+    "finalTableTest": "1 passed, 0 failed; ticket-8-table.xml",
+    "pluginInstallAndReload": "running; ticket-8-plugin-install.json, ticket-8-plugin-reload.json, ticket-8-plugin-status.json",
+    "desktopAuto": "late N/A detected as text; 10 preceded 2; ticket-8-final-auto.png",
+    "desktopForcedNumeric": "2 preceded 10; ticket-8-final-numeric.png",
+    "desktopDescending": "9007199254740993 preceded 9007199254740992; ticket-8-final-desc.png",
+    "desktopCopy": "clicked 9007199254740993 in descending view; clipboard text was exactly 9007199254740993"
+  },
+  "limits": [
+    "The 5 GB sort cost is not measured here; ticket 10 owns that workload.",
+    "Desktop runtime was checked on Ubuntu only; macOS and Windows remain unverified.",
+    "An exponent beyond DuckDB BIGNUM range raises an explicit query error rather than rounding."
+  ],
+  "spaceUiLockReleased": true,
+  "trackerUpdate": "https://github.com/hoon0422/csv-viewer/issues/8#issuecomment-6309356608"
+}
