@@ -926,13 +926,18 @@ test("the path bar opens on Enter, restores edits and keeps the current table af
     await act(async () => { path().props.onChange({ currentTarget: { value: "blurred.csv" } }); });
     await act(async () => { path().props.onBlur(); });
     assert.equal(path().props.value, "current.csv");
+    await wait(() => !tree.root.findByProps({ "aria-label": "Filter" }).props.disabled);
+    await applyValue(tree, "current.csv-1");
+    await wait(() => JSON.stringify(tree.toJSON()).includes("1 of 3 rows"));
     await act(async () => { path().props.onChange({ currentTarget: { value: "missing.csv" } }); });
     await act(async () => { path().props.onKeyDown({ key: "Enter", preventDefault() {} }); });
     await wait(() => JSON.stringify(tree.toJSON()).includes("ENOENT"));
-    assert.equal(cell(tree, "value").findByType("div").children[0], "current.csv-0");
+    assert.equal(cell(tree, "value").findByType("div").children[0], "current.csv-1");
+    assert.ok(JSON.stringify(tree.toJSON()).includes("1 of 3 rows"));
     await press("Refresh source");
     await wait(() => !JSON.stringify(tree.toJSON()).includes("ENOENT"));
-    assert.equal(cell(tree, "value").findByType("div").children[0], "current.csv-0");
+    await wait(() => cell(tree, "value").findByType("div").children[0] === "current.csv-1");
+    assert.ok(JSON.stringify(tree.toJSON()).includes("1 of 3 rows"));
   });
 });
 
