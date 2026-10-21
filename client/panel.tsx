@@ -1,10 +1,11 @@
 import { useRpc, type PluginWorkspacePanelProps } from "@getpaseo/plugin/client";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import type { z } from "zod";
 import { closePreview, openPreview, type source } from "../shared/session";
 import { chooseLocalFile, listenForDrops } from "./drop";
+import { TableView } from "./table";
 
 type Source = z.output<typeof source>;
 type Preview = z.output<typeof openPreview.output>;
@@ -91,14 +92,8 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
         <Text style={{ color: foreground }}>{preview.fileName} · {preview.sourceBytes} bytes · first {preview.limit} rows only</Text>
         {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
           {preview.rows.length === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
-          <ScrollView horizontal style={{ flex: 1 }}><ScrollView>
-            <View style={{ flexDirection: "row" }}>
-              {preview.columns.map((column, index) => <Text key={index} style={{ color: foreground, fontWeight: "700", minWidth: 130, padding: 6 }}>{column || "Column " + (index + 1)}</Text>)}
-            </View>
-            {preview.rows.map((row, rowIndex) => <View key={rowIndex} style={{ flexDirection: "row" }}>
-              {row.map((cell, columnIndex) => <Text key={columnIndex} selectable style={{ color: foreground, minWidth: 130, padding: 6 }}>{cell}</Text>)}
-            </View>)}
-          </ScrollView></ScrollView></>}
+          <TableView key={preview.sessionId} columns={preview.columns} rows={preview.rows}
+            theme={{ foreground, muted, border: theme.colors.border }} /></>}
       </>}
     </View>
   );

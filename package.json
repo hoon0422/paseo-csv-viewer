@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/session.test.ts",
+    "test": "tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts*",
     "check": "npm run typecheck"
   },
   "dependencies": {
@@ -15,7 +15,11 @@
     "@tanstack/react-query": "^5.90.11",
     "@types/node": "^24.0.0",
     "@types/react": "~19.2.0",
+    "@types/react-test-renderer": "^19.1.0",
     "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native-web": "^0.21.2",
+    "react-test-renderer": "19.1.0",
     "react-native": "0.81.5",
     "tsx": "^4.20.0",
     "typescript": "^5.9.3",
