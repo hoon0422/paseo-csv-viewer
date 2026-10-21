@@ -202,11 +202,11 @@ test("superseding direct CSV pages leaves preparation running and cancellation r
   }
 });
 
-test("a page query starts promptly and can be polled through completion", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-query-poll-"));
+test("a filtered page starts promptly and can be polled through completion", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-filter-poll-"));
   const sessions = createSessions();
   try {
-    const file = join(dir, "query.csv");
+    const file = join(dir, "filter.csv");
     await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     await settled(sessions, opened.sessionId);
@@ -227,11 +227,11 @@ test("a page query starts promptly and can be polled through completion", async 
   }
 });
 
-test("rejected stale and duplicate starts leave the active query pollable", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-query-owner-"));
+test("rejected stale and duplicate starts leave the active filtered page pollable", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "csv-viewer-filter-owner-"));
   const sessions = createSessions();
   try {
-    const file = join(dir, "query.csv");
+    const file = join(dir, "filter.csv");
     await writeFile(file, "id,value\n" + Array.from({ length: 10_000 }, (_, i) => `${i},${i === 9_999 ? "needle" : "other"}\n`).join(""));
     const opened = await sessions.open({ panelId: crypto.randomUUID(), workspaceId: "workspace", source: { kind: "local", path: file } });
     await settled(sessions, opened.sessionId);
@@ -289,7 +289,7 @@ test("filters all visible prepared columns beyond preview as literal Unicode tex
   }
 });
 
-test("new query, file replacement and cancellation supersede an in-flight filter", async () => {
+test("new filter, source replacement and cancellation supersede an in-flight filter", async () => {
   const dir = await mkdtemp(join(tmpdir(), "csv-viewer-search-order-"));
   const sessions = createSessions();
   const panelId = crypto.randomUUID();

@@ -1,5 +1,6 @@
 import { useCallback, useId, useRef, useState, type MouseEvent } from "react";
 import { FlatList, ScrollView, Text, View, type ViewToken } from "react-native";
+import type { Sort } from "../shared/session";
 import { ColumnHeader, ColumnMenu } from "./columns";
 
 export type TablePresentation = { hidden: number[]; widths: Record<number, number>; selected: number[] };
@@ -11,7 +12,7 @@ type Props = {
   columns: string[];
   rows: string[][];
   theme: { foreground: string; muted: string; border: string };
-  sort?: { column: number; direction: "asc" | "desc"; mode: "auto" | "numeric" | "text" } | null;
+  sort?: Sort | null;
   sortBusy?: boolean;
   onSort?: (column: number, direction: "asc" | "desc" | null) => void;
   onEndReached?: () => void;

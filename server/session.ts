@@ -6,9 +6,9 @@ import { basename, extname, isAbsolute, join, relative, resolve, sep } from "nod
 import type { DuckDBConnection, DuckDBInstance } from "@duckdb/node-api";
 import type { PluginHandlerContext } from "@getpaseo/plugin/server";
 import type { z } from "zod";
-import { openPreview, type Filter } from "../shared/session";
+import { openPreview, PAGE_SIZE, type Filter, type Sort } from "../shared/session";
 import { duckdb } from "./native";
-import { buildSortOrder, type Sort } from "./sort";
+import { buildSortOrder } from "./sort";
 import { buildFilter } from "./filter";
 
 type OpenInput = z.output<typeof openPreview.input>;
@@ -279,7 +279,7 @@ export function createSessions() {
     if (session) checkSource(session);
     if (!session || (session.phase !== "complete" && session.phase !== "preparing") || !session.connection) throw new Error("Rows are not ready for this session");
     if (session.phase === "preparing" && (options?.sort || options?.filter)) throw new Error("Sort and filter are unavailable until preparation completes");
-    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > 200) throw new Error("Invalid page range");
+    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > PAGE_SIZE) throw new Error("Invalid page range");
     if (options?.afterPosition !== undefined && (!Number.isSafeInteger(options.afterPosition) || options.afterPosition < 0 || options.afterPosition >= Number.MAX_SAFE_INTEGER)) throw new Error("Invalid page position");
     const requestId = options?.requestId ?? 0;
     if (!Number.isSafeInteger(requestId) || requestId < 0) throw new Error("Invalid page query");
@@ -339,7 +339,7 @@ export function createSessions() {
         session.order = undefined;
         checkCurrent();
         if (options?.sort) {
-          // Remember an unfinished build so the next query drops it after cancellation.
+          // Remember an unfinished build so the next page request drops it after cancellation.
           session.order = { key: key! };
           const mode = await buildSortOrder(session.connection!, session.width ?? 0, options.sort, checkCurrent);
           checkCurrent();

@@ -1,4 +1,4 @@
-import { filter as filterSchema, type Filter } from "../shared/session";
+import { activeRule, filter as filterSchema, operatorNeedsValue, type Filter } from "../shared/session";
 import { numericValue } from "./sort";
 
 export function buildFilter(input: Filter | undefined, width: number) {
@@ -13,13 +13,12 @@ export function buildFilter(input: Filter | undefined, width: number) {
   filter.visibleColumns.forEach(column);
   const rules = filter.rules.flatMap((rule) => {
     if (rule.column !== "any") column(rule.column);
-    const empty = rule.operator === "is empty" || rule.operator === "is not empty";
-    if (!rule.enabled || (!empty && !rule.value) || (rule.operator === "between" && !rule.value2)) return [];
+    if (!activeRule(rule)) return [];
     if (rule.operator === "matches regex") regexes.push(rule.value!);
     const columns = rule.column === "any" ? filter.visibleColumns : [rule.column];
     const clauses = columns.map((index) => {
       const cell = column(index);
-      if (empty) return `${cell} ${rule.operator === "is empty" ? "=" : "<>"} ''`;
+      if (!operatorNeedsValue(rule.operator)) return `${cell} ${rule.operator === "is empty" ? "=" : "<>"} ''`;
       if ([">", "<", "≥", "≤", "between"].includes(rule.operator)) {
         // numericValue reads each operand twice: once for its grammar and once for the cast.
         params.push(rule.value!, rule.value!);
@@ -44,7 +43,9 @@ export function buildFilter(input: Filter | undefined, width: number) {
         default: throw new Error("Unsupported filter operator");
       }
     });
-    return [`(${clauses.join(" OR ") || "false"})`];
+    // Negation applies to the whole row; a positive rule needs only one visible cell.
+    const negated = rule.operator === "does not contain" || rule.operator === "≠" || rule.operator === "is empty";
+    return [`(${clauses.join(negated ? " AND " : " OR ") || "false"})`];
   });
   return { where: rules.join(filter.match === "all" ? " AND " : " OR "), params, regexes };
 }

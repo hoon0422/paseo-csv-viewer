@@ -40,3 +40,6 @@ How a sort compares cells: Auto, Numeric or Text. Numeric compares cells as appr
 
 **Hidden column**:
 A column the user has removed from view. It is left out of copies and of "any column" filter rules, but a rule can still name it directly.
+
+**Expanded row**:
+A row the user has opened to show its full cell contents. It collapses when the sort, filter or source changes.

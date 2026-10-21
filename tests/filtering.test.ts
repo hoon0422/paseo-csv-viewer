@@ -35,6 +35,44 @@ test("Any column filter covers visible columns while a rule can name a hidden co
   });
 });
 
+test("Any column negated text operators require no visible cell to match", async () => {
+  await fixture("id,left,right,hidden\n1,Alpha,other,other\n2,other,ALPHA,other\n3,beta,gamma,Alpha\n4,Alpha,alpha,other\n5,,,Alpha\n", async (s, id) => {
+    for (const operator of ["does not contain", "≠"] as const) {
+      const filter = { match: "all" as const, caseSensitive: false, visibleColumns: [1, 2],
+        rules: [{ enabled: true, column: "any" as const, operator, value: "alpha" }] };
+      assert.deepEqual((await s.page(id, 0, 200, { filter })).rows.map((row) => row[0]), ["3", "5"], operator);
+      assert.deepEqual((await s.page(id, 0, 200, { filter: { ...filter, caseSensitive: true } })).rows.map((row) => row[0]), ["1", "2", "3", "5"], operator);
+      assert.equal((await s.page(id, 0, 200, { filter: { ...filter, visibleColumns: [] } })).totalRows, 0);
+    }
+  });
+});
+
+test("Any column is empty only when all visible cells are empty, and is not empty when any has content", async () => {
+  await fixture('id,left,right,hidden\n1,,,filled\n2,,filled,\n3,filled,,\n4,filled,filled,\n5," ",,\n', async (s, id) => {
+    for (const [operator, expected] of [["is empty", ["1"]], ["is not empty", ["2", "3", "4", "5"]]] as const) {
+      const filter = { match: "all" as const, caseSensitive: false, visibleColumns: [1, 2],
+        rules: [{ enabled: true, column: "any" as const, operator }] };
+      assert.deepEqual((await s.page(id, 0, 200, { filter })).rows.map((row) => row[0]), expected, operator);
+      assert.equal((await s.page(id, 0, 200, { filter: { ...filter, visibleColumns: [] } })).totalRows, 0);
+    }
+  });
+});
+
+test("Any column positive text, regex and numeric operators match at least one visible cell", async () => {
+  await fixture("id,left,right,hidden\n1,Alpha,1,other\n2,2,ALPHABET,other\n3,beta,10,Alpha\n4,,,Alpha\n5,text,NaN,100\n", async (s, id) => {
+    const cases = [["contains", "alp", undefined, ["1", "2"]], ["=", "alpha", undefined, ["1"]],
+      ["begins with", "ALP", undefined, ["1", "2"]], ["ends with", "HA", undefined, ["1"]],
+      ["matches regex", "^alpha", undefined, ["1", "2"]], [">", "2", undefined, ["3"]],
+      ["<", "2", undefined, ["1"]], ["≥", "2", undefined, ["2", "3"]], ["≤", "2", undefined, ["1", "2"]],
+      ["between", "1", "2", ["1", "2"]]] as const;
+    for (const [operator, value, value2, expected] of cases) {
+      const filter = { match: "all" as const, caseSensitive: false, visibleColumns: [1, 2],
+        rules: [{ enabled: true, column: "any" as const, operator, value, value2 }] };
+      assert.deepEqual((await s.page(id, 0, 200, { filter })).rows.map((row) => row[0]), expected, operator);
+    }
+  });
+});
+
 test("text filter operators combine rules, ignore incomplete rules and honor case sensitivity", async () => {
   await fixture('id,value\n1,Alpha\n2,alphabet\n3,BETA\n4,""\n5," "\n6,café\n', async (s, id) => {
     const base = { match: "all" as const, caseSensitive: false, visibleColumns: [1] };

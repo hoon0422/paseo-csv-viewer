@@ -1,14 +1,10 @@
 import { useEffect, useRef, type CSSProperties } from "react";
-import { filter, type Filter } from "../shared/session";
+import { activeRule, filterOperators, operatorNeedsValue, type Filter } from "../shared/session";
 
 export const emptyFilter = (): Filter => ({
   rules: [{ enabled: true, column: "any", operator: "contains", value: "" }],
   match: "all", caseSensitive: false, visibleColumns: [],
 });
-
-export const activeRule = (rule: Filter["rules"][number]) => rule.enabled &&
-  (rule.operator === "is empty" || rule.operator === "is not empty" ||
-    (!!rule.value && (rule.operator !== "between" || !!rule.value2)));
 
 export function FilterBar({ value, columns, hidden, onChange, onApply, onClose, focusRequest, disabled, style, danger }: {
   value: Filter; columns: string[]; hidden: number[];
@@ -17,9 +13,20 @@ export function FilterBar({ value, columns, hidden, onChange, onApply, onClose, 
   disabled: boolean; style: CSSProperties; danger: string;
 }) {
   const form = useRef<HTMLFormElement>(null);
+  // Keep UI identity across edits without adding IDs to the strict filter contract.
+  const ruleKeys = useRef(new WeakMap<Filter["rules"][number], string>());
+  const ruleKey = (rule: Filter["rules"][number]) => {
+    if (!ruleKeys.current.has(rule)) ruleKeys.current.set(rule, crypto.randomUUID());
+    return ruleKeys.current.get(rule)!;
+  };
   useEffect(() => { (form.current?.querySelector<HTMLInputElement>("input[type=text]") ?? form.current?.querySelector("select"))?.focus(); }, [focusRequest]);
   const updateRule = (index: number, patch: Partial<Filter["rules"][number]>, apply = false) => {
-    const next = { ...value, rules: value.rules.map((rule, i) => i === index ? { ...rule, ...patch } : rule) };
+    const next = { ...value, rules: value.rules.map((rule, i) => {
+      if (i !== index) return rule;
+      const updated = { ...rule, ...patch };
+      ruleKeys.current.set(updated, ruleKey(rule));
+      return updated;
+    }) };
     onChange(next);
     if (apply) onApply(next);
   };
@@ -30,10 +37,10 @@ export function FilterBar({ value, columns, hidden, onChange, onApply, onClose, 
     style={{ width: "100%", overflowY: "auto", maxHeight: "40%", flexShrink: 1 }}>
     <fieldset disabled={disabled} style={{ display: "flex", flexDirection: "column", gap: 6, border: 0, margin: 0, padding: 6, minWidth: 0 }}>
       {value.rules.map((rule, index) => {
-        const empty = rule.operator === "is empty" || rule.operator === "is not empty";
+        const needsValue = operatorNeedsValue(rule.operator);
         const invalid = rule.enabled && !activeRule(rule);
         const inputStyle = { ...style, flex: 1, minWidth: 60, width: 80, ...(invalid ? { border: `1px solid ${danger}` } : {}) };
-        return <div key={index} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+        return <div key={ruleKey(rule)} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
           <input type="checkbox" aria-label={`Enable filter rule ${index + 1}`} checked={rule.enabled}
             onChange={(event) => updateRule(index, { enabled: event.currentTarget.checked }, true)} />
           <select aria-label={`Filter column ${index + 1}`} value={rule.column} style={{ ...style, maxWidth: "100%" }}
@@ -43,9 +50,9 @@ export function FilterBar({ value, columns, hidden, onChange, onApply, onClose, 
           </select>
           <select aria-label={`Filter operator ${index + 1}`} value={rule.operator} style={style}
             onChange={(event) => updateRule(index, { operator: event.currentTarget.value as Filter["rules"][number]["operator"] })}>
-            {filter.shape.rules.element.shape.operator.options.map((operator) => <option key={operator} value={operator}>{operator}</option>)}
+            {filterOperators.map((operator) => <option key={operator} value={operator}>{operator}</option>)}
           </select>
-          {!empty && <input type="text" aria-label={`Filter value ${index + 1}`} value={rule.value ?? ""} aria-invalid={invalid}
+          {needsValue && <input type="text" aria-label={`Filter value ${index + 1}`} value={rule.value ?? ""} aria-invalid={invalid}
             title={invalid ? "This rule needs a value and will be ignored until complete" : undefined} style={inputStyle}
             onChange={(event) => updateRule(index, { value: event.currentTarget.value })} />}
           {rule.operator === "between" && <input type="text" aria-label={`Filter upper value ${index + 1}`} value={rule.value2 ?? ""} aria-invalid={invalid}

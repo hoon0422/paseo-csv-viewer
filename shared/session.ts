@@ -1,6 +1,8 @@
 import { defineRpc } from "@getpaseo/plugin";
 import { z } from "zod";
 
+export const PAGE_SIZE = 200;
+
 export const source = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("workspace"), path: z.string().min(1) }),
   z.object({ kind: z.literal("local"), path: z.string().min(1) }),
@@ -40,10 +42,12 @@ export const sessionStatus = defineRpc({
   }),
 });
 
+export const filterOperators = ["contains", "does not contain", "=", "≠", "begins with", "ends with", "is empty", "is not empty", "matches regex", ">", "<", "≥", "≤", "between"] as const;
+
 export const filter = z.object({
   rules: z.array(z.object({
     enabled: z.boolean(), column: z.union([z.number().int().nonnegative(), z.literal("any")]),
-    operator: z.enum(["contains", "does not contain", "=", "≠", "begins with", "ends with", "is empty", "is not empty", "matches regex", ">", "<", "≥", "≤", "between"]),
+    operator: z.enum(filterOperators),
     value: z.string().optional(), value2: z.string().optional(),
   }).strict()),
   match: z.enum(["all", "any"]), caseSensitive: z.boolean(),
@@ -51,11 +55,16 @@ export const filter = z.object({
 }).strict();
 export type Filter = z.output<typeof filter>;
 
+export const operatorNeedsValue = (operator: Filter["rules"][number]["operator"]) => operator !== "is empty" && operator !== "is not empty";
+export const activeRule = (rule: Filter["rules"][number]) => rule.enabled &&
+  (!operatorNeedsValue(rule.operator) || (!!rule.value && (rule.operator !== "between" || !!rule.value2)));
+
 // afterPosition resumes after the last returned row in the current sort (or file order).
-const pageInput = z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(200),
+const pageInput = z.object({ sessionId: z.string().uuid(), offset: z.number().int().nonnegative(), limit: z.number().int().min(1).max(PAGE_SIZE),
     afterPosition: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER - 1).optional(),
     filter: filter.optional(), requestId: z.number().int().nonnegative().optional(),
     sort: z.object({ column: z.number().int().nonnegative(), direction: z.enum(["asc", "desc"]), mode: z.enum(["auto", "numeric", "text"]) }).optional() });
+export type Sort = NonNullable<z.output<typeof pageInput>["sort"]>;
 const pageOutput = z.object({ offset: z.number(), nextPosition: z.number().int().nonnegative().nullable(), rows: z.array(z.array(z.string())), totalRows: z.number().int().nonnegative().nullable(), sortMode: z.enum(["numeric", "text"]).optional() });
 
 export const pageRows = defineRpc({ name: "viewer.page", input: pageInput, output: pageOutput });
