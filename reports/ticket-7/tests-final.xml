@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="replacement clears an old page load and header switch applies to the next drop" time="37.823113" classname="test" file="/home/cua/ticket-7/source/tests/panel.test.tsx"/>
+	<testcase name="two pending OS drops keep action order when locality checks resolve out of order" time="0.708435" classname="test" file="/home/cua/ticket-7/source/tests/panel.test.tsx"/>
+	<testcase name="search shows pending, hidden-column matches and no results; stale search cannot replace cleared rows" time="28.581821" classname="test" file="/home/cua/ticket-7/source/tests/panel.test.tsx"/>
+	<testcase name="opens a real CSV as a bounded read-only viewer session and replaces it" time="3.211434" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="empty CSV has an honest empty preview" time="0.041459" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="workspace selection stays inside its workspace and rejects other file kinds" time="0.383425" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="preview response stays at 50 data rows" time="0.238046" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="prepares a file-backed session and pages beyond the preview in source order" time="0.499806" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="searches all prepared columns beyond preview as literal Unicode text and clears to source order" time="0.904369" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="new query, file replacement and cancellation supersede in-flight search" time="0.655254" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="closing a pending open and cancelling preparation cannot revive that panel" time="0.221099" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="a delayed open or close cannot supersede a newer panel request" time="0.274162" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="a source removed after preview ends in an actionable error, never complete" time="2.174746" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="unavailable temporary storage reports how to recover" time="0.028377" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes" time="0.401756" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="keeps duplicate and blank headers by position and handles header-only TSV" time="0.441130" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF" time="0.159601" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="a quoted multiline first record still defines column positions" time="0.183877" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="blank and quoted-empty first records remain headers or data by position" time="0.874670" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="a blank physical record in a two-column file cannot disappear" time="0.665799" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="rejects malformed quoting, width and UTF-8 with locations, including after 50 rows" time="0.732509" classname="test" file="/home/cua/ticket-7/source/tests/session.test.ts"/>
+	<testcase name="the viewer copies raw cells and selected visible columns in current row order" time="3.663800" classname="test" file="/home/cua/ticket-7/source/tests/table.test.tsx"/>
+	<!-- tests 22 -->
+	<!-- suites 0 -->
+	<!-- pass 22 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 101993.471254 -->
+</testsuites>

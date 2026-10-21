@@ -1,0 +1,41 @@
+✖ searches all prepared columns beyond preview as literal Unicode text and clears to source order (1920.111461ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4657.542362
+
+✖ failing tests:
+
+test at tests/session.test.ts:3:959
+✖ searches all prepared columns beyond preview as literal Unicode text and clears to source order (1920.111461ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+      offset: 0,
+      rows: [
+        [
+  +       '0',
+  -       '90',
+          'plain',
+  +       'ordinary'
+  -       'café [X]%_'
+        ]
+      ],
+  -   totalRows: 2
+    }
+  
+      at TestContext.<anonymous> (/home/cua/ticket-7/source/tests/session.test.ts:141:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { offset: 0, rows: [ [Array] ] },
+    expected: { offset: 0, rows: [ [Array] ], totalRows: 2 },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

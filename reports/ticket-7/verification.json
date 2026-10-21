@@ -1,0 +1,33 @@
+{
+  "ticket": 7,
+  "branch": "ticket/7-search",
+  "testedCodeSha": "ef2c27a8f5c24b7b82780eb7a7e3122f8e74e78b",
+  "baseSha": "ecf4ccd74e5acbe8b078663b6d7048861981146a",
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "runtime": {
+    "os": "Ubuntu 24.04.5 LTS x86_64",
+    "paseo": "official 0.12.0",
+    "node": "v24.21.0",
+    "daemonHome": "/home/cua/.paseo-x64-ticket-2",
+    "desktopUserData": "/home/cua/.config/Paseo-x64-ticket-2",
+    "guestSource": "/home/cua/ticket-7/source",
+    "guestFixture": "/home/cua/ticket-7/fixtures/search-demo.csv"
+  },
+  "checks": {
+    "typecheck": { "exitCode": 0, "file": "typecheck-final.log" },
+    "tests": { "passed": 22, "failed": 0, "file": "tests-final.xml" },
+    "tddRed": { "failedAsExpected": true, "file": "red.log" },
+    "focusedSearch": { "passed": 2, "failed": 0, "file": "search-focused-final.log" },
+    "pluginRunning": { "file": "plugin-status.json" },
+    "desktop": {
+      "sourceRows": 80,
+      "literalQuery": "[x]%_",
+      "matchingSourceRowId": "60",
+      "resultRows": 1,
+      "clearedRows": 80,
+      "files": ["ui-file7.png", "ui-search7.png", "ui-cleared7.png"]
+    }
+  },
+  "fixtureSha256": "3230fd8900974533223102699ce5ea357941f8f5ecc23a538daf41c3c406566a",
+  "scopeLimit": "Full 5 GB search measurements and combined search-sort acceptance belong to ticket #10. Ubuntu verification does not establish macOS or Windows runtime support."
+}
