@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="replacement clears an old page load and header switch applies to the next drop" time="8.540503" classname="test" file="/home/cua/ticket-5/tests/panel.test.tsx"/>
+	<testcase name="two pending OS drops keep action order when locality checks resolve out of order" time="0.504438" classname="test" file="/home/cua/ticket-5/tests/panel.test.tsx"/>
+	<testcase name="opens a real CSV as a bounded read-only viewer session and replaces it" time="1.313418" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="empty CSV has an honest empty preview" time="0.021073" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="workspace selection stays inside its workspace and rejects other file kinds" time="0.479055" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="preview response stays at 50 data rows" time="0.309461" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="prepares a file-backed session and pages beyond the preview in source order" time="0.404248" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="closing a pending open and cancelling preparation cannot revive that panel" time="0.237639" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="a delayed open or close cannot supersede a newer panel request" time="0.268109" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="a source removed after preview ends in an actionable error, never complete" time="2.093596" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="unavailable temporary storage reports how to recover" time="0.026064" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes" time="0.357311" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="keeps duplicate and blank headers by position and handles header-only TSV" time="0.438773" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF" time="0.151678" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="a quoted multiline first record still defines column positions" time="0.146785" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="blank and quoted-empty first records remain headers or data by position" time="0.777870" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="a blank physical record in a two-column file cannot disappear" time="0.602611" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="rejects malformed quoting, width and UTF-8 with locations, including after 50 rows" time="0.641385" classname="test" file="/home/cua/ticket-5/tests/session.test.ts"/>
+	<testcase name="the viewer copies raw cells and selected visible columns in current row order" time="2.197122" classname="test" file="/home/cua/ticket-5/tests/table.test.tsx"/>
+	<!-- tests 19 -->
+	<!-- suites 0 -->
+	<!-- pass 19 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 32318.663628 -->
+</testsuites>

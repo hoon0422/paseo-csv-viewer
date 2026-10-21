@@ -1,0 +1,52 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✖ replacement clears an old page load and header switch applies to the next drop (20792.265123ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✖ two pending OS drops keep action order when locality checks resolve out of order (1141.183378ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28368.160974
+
+✖ failing tests:
+
+test at tests/panel.test.tsx:3:673
+✖ replacement clears an old page load and header switch applies to the next drop (20792.265123ms)
+  AssertionError [ERR_ASSERTION]: Panel state did not settle
+      at wait (/home/cua/ticket-5/tests/panel.test.tsx:66:14)
+      at async <anonymous> (/home/cua/ticket-5/tests/panel.test.tsx:103:5)
+      at async panelTest (/home/cua/ticket-5/tests/panel.test.tsx:68:5)
+      at async TestContext.<anonymous> (/home/cua/ticket-5/tests/panel.test.tsx:90:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'fail',
+    diff: 'simple'
+  }
+
+test at tests/panel.test.tsx:3:2168
+✖ two pending OS drops keep action order when locality checks resolve out of order (1141.183378ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'slow.csv-0'
+  - 'new.csv-0'
+
+      at <anonymous> (/home/cua/ticket-5/tests/panel.test.tsx:125:12)
+      at async panelTest (/home/cua/ticket-5/tests/panel.test.tsx:68:5)
+      at async TestContext.<anonymous> (/home/cua/ticket-5/tests/panel.test.tsx:113:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'slow.csv-0',
+    expected: 'new.csv-0',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

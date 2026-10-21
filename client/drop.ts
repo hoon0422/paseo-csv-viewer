@@ -34,7 +34,7 @@ export async function localSource(file: File, hostId: string): Promise<Source> {
 
 export function listenForDrops(
   node: unknown, hostId: string, workspaceId: string,
-  open: (source: Source) => void, error: (message: string) => void,
+  open: (source: Source | Promise<Source>) => void, error: (message: string) => void,
 ) {
   if (!(node instanceof HTMLElement)) return () => {};
   const over = (event: DragEvent) => {
@@ -61,7 +61,7 @@ export function listenForDrops(
     }
     const file = data.files?.[0];
     if (!file) return error("Drop a CSV or TSV file from Paseo Files or your file manager");
-    void localSource(file, hostId).then(open, (cause) => error(cause instanceof Error ? cause.message : String(cause)));
+    open(localSource(file, hostId));
   };
   node.addEventListener("dragenter", over);
   node.addEventListener("dragover", over);

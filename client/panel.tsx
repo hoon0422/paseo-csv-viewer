@@ -23,11 +23,16 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [hasHeader, setHasHeader] = useState(true);
   const panelId = useRef(crypto.randomUUID());
   const generation = useRef(0);
+  const selection = useRef(0);
+  const pageRequest = useRef(0);
   const mounted = useRef(true);
   const session = useRef<string | null>(null);
   const selectedSource = useRef<Source | null>(null);
   const currentHost = useRef(host.id);
+  const currentWorkspace = useRef(workspaceId);
+  const currentHeader = useRef(hasHeader);
   currentHost.current = host.id;
+  currentWorkspace.current = workspaceId;
   const zone = useRef<View>(null);
   const openRpc = useRpc(openPreview);
   const closeRpc = useRpc(closePreview);
@@ -35,14 +40,18 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const pageRpc = useRpc(pageRows);
   const mutation = useMutation({ mutationFn: openRpc });
 
-  async function open(file: Source, header = hasHeader) {
-    if (currentHost.current !== host.id) {
-      setMessage("The selected host changed. Try the file again.");
+  async function open(file: Source, header = currentHeader.current) {
+    if (!mounted.current) return;
+    if (currentHost.current !== host.id || currentWorkspace.current !== workspaceId) {
+      setMessage("The selected workspace or host changed. Try the file again.");
       return;
     }
     const turn = ++generation.current;
+    ++selection.current;
+    ++pageRequest.current;
     selectedSource.current = file;
     setBusy(true);
+    setPageBusy(false);
     setMessage("");
     setPreview(null);
     setStatus(null);
@@ -64,26 +73,36 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     }
   }
 
+  function select(source: Source | Promise<Source | null>) {
+    const action = ++selection.current;
+    void Promise.resolve(source).then((file) => {
+      if (file && mounted.current && action === selection.current && currentHost.current === host.id && currentWorkspace.current === workspaceId) void open(file, currentHeader.current);
+    }, (cause) => {
+      if (mounted.current && action === selection.current) setMessage(cause instanceof Error ? cause.message : String(cause));
+    });
+  }
+
   async function navigate(nextOffset: number) {
     if (!preview || status?.phase !== "complete") return;
     const turn = generation.current;
+    const request = ++pageRequest.current;
     setPageBusy(true);
     try {
       const page = await pageRpc({ sessionId: preview.sessionId, offset: nextOffset, limit: preview.limit });
-      if (!mounted.current || turn !== generation.current || session.current !== preview.sessionId) return;
+      if (!mounted.current || turn !== generation.current || request !== pageRequest.current || session.current !== preview.sessionId) return;
       setRows(page.rows);
       setOffset(page.offset);
     } catch (cause) {
-      if (mounted.current && turn === generation.current) setMessage(cause instanceof Error ? cause.message : String(cause));
+      if (mounted.current && turn === generation.current && request === pageRequest.current) setMessage(cause instanceof Error ? cause.message : String(cause));
     } finally {
-      if (mounted.current && turn === generation.current) setPageBusy(false);
+      if (mounted.current && turn === generation.current && request === pageRequest.current) setPageBusy(false);
     }
   }
 
   useEffect(() => {
     let live = true;
     const stop = listenForDrops(zone.current, host.id, workspaceId,
-      (file) => { if (live) void open(file); },
+      (file) => { if (live) select(file); },
       (error) => { if (live) setMessage(error); });
     return () => { live = false; stop(); };
   }, [host.id, workspaceId]);
@@ -106,11 +125,14 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
     setRows([]);
     setOffset(0);
     setBusy(false);
+    setPageBusy(false);
     setMessage("");
     session.current = null;
     selectedSource.current = null;
     return () => {
       const turn = ++generation.current;
+      ++selection.current;
+      ++pageRequest.current;
       void closeRpc({ panelId: panelId.current, turn });
     };
   }, [host.id, workspaceId]);
@@ -131,12 +153,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           <Text style={{ color: foreground }}>Open path</Text>
         </Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Choose local CSV or TSV" onPress={() => {
-          const turn = generation.current;
-          void chooseLocalFile(host.id).then((file) => {
-            if (file && mounted.current && turn === generation.current && currentHost.current === host.id) void open(file);
-          }, (cause) => {
-            if (mounted.current && turn === generation.current) setMessage(cause instanceof Error ? cause.message : String(cause));
-          });
+          select(chooseLocalFile(host.id));
         }} style={{ padding: 9, borderWidth: 1, borderColor: muted, borderRadius: 6 }}>
           <Text style={{ color: foreground }}>Choose local file</Text>
         </Pressable>
@@ -144,6 +161,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
       <Pressable accessibilityRole="switch" accessibilityLabel="First record is header"
         accessibilityState={{ checked: hasHeader }} onPress={() => {
           const next = !hasHeader;
+          currentHeader.current = next;
           setHasHeader(next);
           if (selectedSource.current) void open(selectedSource.current, next);
         }} style={{ alignSelf: "flex-start", padding: 9, borderWidth: 1, borderColor: muted, borderRadius: 6 }}>
@@ -157,7 +175,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           {status.phase === "error" ? status.message : `${status.message}${status.percent == null ? "" : ` · ${Math.round(status.percent)}%`}`}
         </Text>}
         {status?.phase !== "complete" && status?.phase !== "error" && <Pressable accessibilityRole="button" accessibilityLabel="Cancel preparation"
-          onPress={() => { const turn = ++generation.current; void closeRpc({ panelId: panelId.current, turn }); setPreview(null); setStatus(null); setRows([]); setMessage("Preparation cancelled"); }}>
+          onPress={() => { const turn = ++generation.current; ++selection.current; ++pageRequest.current; setPageBusy(false); void closeRpc({ panelId: panelId.current, turn }); setPreview(null); setStatus(null); setRows([]); setMessage("Preparation cancelled"); }}>
           <Text style={{ color: foreground }}>Cancel</Text>
         </Pressable>}
         {status?.phase === "complete" && !!status.rowCount && <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>

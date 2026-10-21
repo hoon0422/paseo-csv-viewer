@@ -1,0 +1,30 @@
+{
+  "ticket": 5,
+  "branch": "ticket/5-large-file-sessions",
+  "integration_tip_in_branch": "c7dc3053261483620954dec3602a425e98d77109",
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "runtime": "Paseo 0.12.0 official amd64; Node 24.21.0; DuckDB 1.5.6-r.2; Ubuntu 24.04.5 x86_64; 2 vCPU QEMU TCG; 4 GB RAM",
+  "source_changed": {
+    "client/panel.tsx": "5c2e1d64fa055020620297bf88dd0da92fb43db3d6d0cf663eac0a9bc0540deb",
+    "client/drop.ts": "906a9375397878fe6bc37e7050c8105bbf363a4f35c93ee2fe27c3174782eec7",
+    "tests/panel.test.tsx": "b8d349902f4b5e887aad3bdf94a0d2569a2096d2fc62b2135330d84820b02603"
+  },
+  "server_unchanged": {
+    "server/session.ts": "c3f80e956e6d60e1199d59e4702d11c0c8aa94dc0829b424828de63b0c3c45e7",
+    "server/native.ts": "bdeb88cce2e54e2a6842ee09952477f3dd79f41e7617772c02d5a464b5abd5ca"
+  },
+  "checks": {
+    "tdd_red": "followup-red.log: old page remained disabled; delayed first OS drop replaced second",
+    "typecheck": "passed; followup-typecheck.log",
+    "tests": "19 passed, 0 failed; followup-tests.xml",
+    "desktop": "After plugin reload, header Off kept id,value as row 1; 121 rows total; Next showed rows 51-100 with 049,smoke-049 first. Closing the tab returned to New tab.",
+    "desktop_screenshots": ["followup-path-ready.png", "followup-page2.png", "followup-closed.png"]
+  },
+  "prior_5gb_evidence": {
+    "report": "verification.json",
+    "fixture": "5,000,000,000-byte /home/cua/ticket-5/fixtures/large.csv retained for #10",
+    "still_applicable": "Public real-session preview, preparation, paging, cancellation, disk and server memory measurements use the unchanged server/session.ts and server/native.ts. The #4 strict parser and blank-record behavior also remains covered by the 19-test suite.",
+    "not_remeasured": "The prior 5 GB desktop UI observation times and client renderer RSS describe the earlier client build. This follow-up changes only client state, and the 5 GB UI run was not repeated."
+  },
+  "cleanup": "Small follow-up fixture removed from the guest after the tab closed; shared UI lock released. The 5 GB fixture remains owned by ticket #5 for later acceptance."
+}
