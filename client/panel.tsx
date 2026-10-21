@@ -14,9 +14,11 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const [preview, setPreview] = useState<Preview | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [hasHeader, setHasHeader] = useState(true);
   const panelId = useRef(crypto.randomUUID());
   const generation = useRef(0);
   const session = useRef<string | null>(null);
+  const selectedSource = useRef<Source | null>(null);
   const currentHost = useRef(host.id);
   currentHost.current = host.id;
   const zone = useRef<View>(null);
@@ -24,17 +26,18 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
   const closeRpc = useRpc(closePreview);
   const mutation = useMutation({ mutationFn: openRpc });
 
-  async function open(file: Source) {
+  async function open(file: Source, header = hasHeader) {
     if (currentHost.current !== host.id) {
       setMessage("The selected host changed. Try the file again.");
       return;
     }
     const turn = ++generation.current;
+    selectedSource.current = file;
     setBusy(true);
     setMessage("");
     setPreview(null);
     try {
-      const next = await mutation.mutateAsync({ panelId: panelId.current, workspaceId, source: file });
+      const next = await mutation.mutateAsync({ panelId: panelId.current, workspaceId, source: file, hasHeader: header });
       if (turn !== generation.current || currentHost.current !== host.id) {
         void closeRpc({ sessionId: next.sessionId });
         return;
@@ -74,11 +77,20 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
           <Text style={{ color: foreground }}>Choose local file</Text>
         </Pressable>
       </View>
+      <Pressable accessibilityRole="switch" accessibilityLabel="First record is header"
+        accessibilityState={{ checked: hasHeader }} onPress={() => {
+          const next = !hasHeader;
+          setHasHeader(next);
+          if (selectedSource.current) void open(selectedSource.current, next);
+        }} style={{ alignSelf: "flex-start", padding: 9, borderWidth: 1, borderColor: muted, borderRadius: 6 }}>
+        <Text style={{ color: foreground }}>First record is header: {hasHeader ? "On" : "Off"}</Text>
+      </Pressable>
       {busy && <Text style={{ color: muted }}>Opening preview…</Text>}
       {!!message && <Text accessibilityRole="alert" style={{ color: foreground }}>{message}</Text>}
       {preview && <>
         <Text style={{ color: foreground }}>{preview.fileName} · {preview.sourceBytes} bytes · first {preview.limit} rows only</Text>
-        {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> :
+        {preview.columns.length === 0 ? <Text style={{ color: muted }}>This file is empty.</Text> : <>
+          {preview.rows.length === 0 && <Text style={{ color: muted }}>No data rows in this file.</Text>}
           <ScrollView horizontal style={{ flex: 1 }}><ScrollView>
             <View style={{ flexDirection: "row" }}>
               {preview.columns.map((column, index) => <Text key={index} style={{ color: foreground, fontWeight: "700", minWidth: 130, padding: 6 }}>{column || "Column " + (index + 1)}</Text>)}
@@ -86,7 +98,7 @@ export function ViewerPanel({ theme, host, workspaceId, layout }: PluginWorkspac
             {preview.rows.map((row, rowIndex) => <View key={rowIndex} style={{ flexDirection: "row" }}>
               {row.map((cell, columnIndex) => <Text key={columnIndex} selectable style={{ color: foreground, minWidth: 130, padding: 6 }}>{cell}</Text>)}
             </View>)}
-          </ScrollView></ScrollView>}
+          </ScrollView></ScrollView></>}
       </>}
     </View>
   );

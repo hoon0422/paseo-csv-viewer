@@ -8,7 +8,7 @@ export const source = z.discriminatedUnion("kind", [
 
 export const openPreview = defineRpc({
   name: "viewer.open",
-  input: z.object({ panelId: z.string().uuid(), workspaceId: z.string().min(1), source }),
+  input: z.object({ panelId: z.string().uuid(), workspaceId: z.string().min(1), source, hasHeader: z.boolean().optional() }),
   output: z.object({
     sessionId: z.string().uuid(),
     fileName: z.string(),

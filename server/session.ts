@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { realpath, stat } from "node:fs/promises";
+import { open as openFile, realpath, stat } from "node:fs/promises";
 import { basename, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import type { PluginHandlerContext } from "@getpaseo/plugin/server";
 import type { z } from "zod";
@@ -10,6 +10,42 @@ type OpenInput = z.output<typeof openPreview.input>;
 type PaseoApi = PluginHandlerContext["paseo"];
 type Session = { id: string; panelId: string; path: string };
 const LIMIT = 50;
+
+async function firstRecordWidth(path: string, delimiter: number) {
+  const file = await openFile(path, "r");
+  const chunk = Buffer.allocUnsafe(64 * 1024);
+  let width = 1;
+  let seen = false;
+  let quoted = false;
+  let quotePending = false;
+  let offset = 0;
+  try {
+    for (;;) {
+      const { bytesRead } = await file.read(chunk, 0, chunk.length, null);
+      if (!bytesRead) return seen ? width : 0;
+      let index = offset === 0 && bytesRead >= 3 && chunk[0] === 0xef && chunk[1] === 0xbb && chunk[2] === 0xbf ? 3 : 0;
+      offset += bytesRead;
+      for (; index < bytesRead; index++) {
+        const byte = chunk[index];
+        seen = true;
+        if (quotePending) {
+          quotePending = false;
+          if (byte === 0x22) continue;
+          quoted = false;
+        }
+        if (byte === 0x22) {
+          if (quoted) quotePending = true;
+          else quoted = true;
+        } else if (!quoted) {
+          if (byte === delimiter) width++;
+          if (byte === 0x0a || byte === 0x0d) return width;
+        }
+      }
+    }
+  } finally {
+    await file.close();
+  }
+}
 
 export function createSessions() {
   const active = new Map<string, Session>();
@@ -40,21 +76,37 @@ export function createSessions() {
     const info = await stat(path);
     if (!info.isFile()) throw new Error("Choose a regular file");
 
+    // DuckDB's sniffer can accept broken quotes or fail malformed widths without a line location.
+    const width = await firstRecordWidth(path, extname(path).toLowerCase() === ".tsv" ? 0x09 : 0x2c);
+    if (!width) {
+      const sessionId = randomUUID();
+      active.set(input.panelId, { id: sessionId, panelId: input.panelId, path });
+      return { sessionId, fileName: basename(path), sourceBytes: info.size, columns: [], rows: [], status: "preview" as const, limit: LIMIT };
+    }
+
     const { DuckDBInstance } = duckdb();
     const db = await DuckDBInstance.create(":memory:");
     const connection = await db.connect();
     let columns: string[];
     let rows: string[][];
     try {
-      // shortcut: only the first 50 rows are read, full-file preparation belongs to #4/#5.
+      const columnsSql = Array.from({ length: width }, (_, index) => `'column${index}':'VARCHAR'`).join(",");
+      const from = `read_csv(?, delim=?, quote='"', escape='"', header=false, auto_detect=false, columns={${columnsSql}}, strict_mode=true, ignore_errors=false, null_padding=false)`;
+      const params = [path, extname(path).toLowerCase() === ".tsv" ? "\t" : ","];
       const reader = await connection.runAndReadAll(
-        "SELECT * FROM read_csv(?, delim=?, header=false, all_varchar=true, strict_mode=true, ignore_errors=false, null_padding=false) LIMIT 51",
-        [path, extname(path).toLowerCase() === ".tsv" ? "\t" : ","],
+        `SELECT * FROM ${from} LIMIT ${LIMIT + (input.hasHeader === false ? 0 : 1)}`,
+        params,
       );
       const values = reader.getRows().map((row) => row.map((value) => value == null ? "" : String(value)));
-      columns = values.shift() ?? [];
+      columns = input.hasHeader !== false ? values.shift() ?? [] : values[0]?.map((_, index) => `Column ${index + 1}`) ?? [];
       rows = values.slice(0, LIMIT);
       reader.closeSync();
+      // shortcut: opening waits for a full strict scan; #5 moves this into preparation.
+      const validation = await connection.runAndReadAll(`SELECT COUNT(*) FROM ${from}`, params);
+      validation.closeSync();
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : String(cause);
+      throw new Error(message.split(/Possible fixes?:|Possible Solution:/i)[0].trim());
     } finally {
       connection.closeSync();
       db.closeSync();

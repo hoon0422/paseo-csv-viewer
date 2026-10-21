@@ -3,7 +3,10 @@
 A read-only CSV/TSV preview plugin for Paseo 0.12.x desktop. Open its workspace
 panel from the Command Center or workspace header. Enter a workspace-relative
 path, choose a local file, or drop one from Paseo Files or a desktop file manager.
-The panel shows at most 50 data rows and replaces the previous preview.
+The panel shows at most 50 data rows and replaces the previous preview. The
+first record is a header by default; the panel switch can show it as data.
+Opening validates the full CSV or TSV before displaying a preview, so malformed
+rows beyond the first 50 fail with a location instead of appearing valid.
 
 Install from this Git repository after its dependencies are prepared by the
 manifest build command. The daemon reads the original file by path; file bytes
