@@ -1,0 +1,13 @@
+✔ automatic numeric sort covers the whole file and keeps equal values in source order (1767.235534ms)
+✔ numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact (351.574091ms)
+✔ late nonnumeric text forces auto text order; manual numeric keeps all rows (566.439979ms)
+✔ numeric grammar and exact comparison preserve wide and high-precision original text (283.501492ms)
+✔ search and sort share a filtered page count while auto inference still sees late text (396.327483ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5134.644133
