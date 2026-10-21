@@ -1,0 +1,7 @@
+{
+  "id": "csv-viewer",
+  "name": "CSV Viewer",
+  "description": "Read-only CSV and TSV preview in a workspace panel",
+  "requirements": { "paseo": ">=0.12.0 <0.13.0" },
+  "build": [["npm", "ci", "--omit=dev", "--ignore-scripts"]]
+}
