@@ -1,0 +1,17 @@
+{
+  "id": "csv-viewer",
+  "path": "/home/cua/ui-v2-final/package",
+  "enabled": false,
+  "status": "disabled",
+  "name": "CSV Viewer",
+  "description": "Read-only CSV and TSV exploration in a workspace panel",
+  "media": [
+    "assets/screenshot.png"
+  ],
+  "installation": {
+    "identity": {
+      "kind": "directory",
+      "path": "/home/cua/ui-v2-final/package"
+    }
+  }
+}

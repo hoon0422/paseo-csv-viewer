@@ -1,0 +1,134 @@
+[
+  {
+    "sequence": 1,
+    "timestamp": "2026-10-21T20:32:09.695Z",
+    "stream": "stdout",
+    "message": "[paseo] Loading plugin"
+  },
+  {
+    "sequence": 2,
+    "timestamp": "2026-10-21T20:32:15.855Z",
+    "stream": "stdout",
+    "message": "[paseo] Plugin ready"
+  },
+  {
+    "sequence": 3,
+    "timestamp": "2026-10-21T20:32:32.180Z",
+    "stream": "stderr",
+    "message": "CSV Viewer Node.js child stderr: node:internal/child_process/serialization:72"
+  },
+  {
+    "sequence": 4,
+    "timestamp": "2026-10-21T20:32:32.182Z",
+    "stream": "stderr",
+    "message": "      yield deserialize(serializedMessage);"
+  },
+  {
+    "sequence": 5,
+    "timestamp": "2026-10-21T20:32:32.182Z",
+    "stream": "stderr",
+    "message": "            ^"
+  },
+  {
+    "sequence": 6,
+    "timestamp": "2026-10-21T20:32:32.186Z",
+    "stream": "stderr",
+    "message": ""
+  },
+  {
+    "sequence": 7,
+    "timestamp": "2026-10-21T20:32:32.187Z",
+    "stream": "stderr",
+    "message": "Error: Unable to deserialize cloned data due to invalid or unsupported version."
+  },
+  {
+    "sequence": 8,
+    "timestamp": "2026-10-21T20:32:32.187Z",
+    "stream": "stderr",
+    "message": "    at parseChannelMessages (node:internal/child_process/serialization:72:13)"
+  },
+  {
+    "sequence": 9,
+    "timestamp": "2026-10-21T20:32:32.187Z",
+    "stream": "stderr",
+    "message": "    at parseChannelMessages.next (<anonymous>)"
+  },
+  {
+    "sequence": 10,
+    "timestamp": "2026-10-21T20:32:32.187Z",
+    "stream": "stderr",
+    "message": "    at channel.onread (node:internal/child_process:664:18)"
+  },
+  {
+    "sequence": 11,
+    "timestamp": "2026-10-21T20:32:32.189Z",
+    "stream": "stderr",
+    "message": ""
+  },
+  {
+    "sequence": 12,
+    "timestamp": "2026-10-21T20:32:32.190Z",
+    "stream": "stderr",
+    "message": "Node.js v24.21.0"
+  },
+  {
+    "sequence": 13,
+    "timestamp": "2026-10-21T20:33:12.815Z",
+    "stream": "stderr",
+    "message": "CSV Viewer Node.js child stderr: node:internal/child_process/serialization:72"
+  },
+  {
+    "sequence": 14,
+    "timestamp": "2026-10-21T20:33:12.816Z",
+    "stream": "stderr",
+    "message": "      yield deserialize(serializedMessage);"
+  },
+  {
+    "sequence": 15,
+    "timestamp": "2026-10-21T20:33:12.817Z",
+    "stream": "stderr",
+    "message": "            ^"
+  },
+  {
+    "sequence": 16,
+    "timestamp": "2026-10-21T20:33:12.817Z",
+    "stream": "stderr",
+    "message": ""
+  },
+  {
+    "sequence": 17,
+    "timestamp": "2026-10-21T20:33:12.817Z",
+    "stream": "stderr",
+    "message": "Error: Unable to deserialize cloned data due to invalid or unsupported version."
+  },
+  {
+    "sequence": 18,
+    "timestamp": "2026-10-21T20:33:12.818Z",
+    "stream": "stderr",
+    "message": "    at parseChannelMessages (node:internal/child_process/serialization:72:13)"
+  },
+  {
+    "sequence": 19,
+    "timestamp": "2026-10-21T20:33:12.818Z",
+    "stream": "stderr",
+    "message": "    at parseChannelMessages.next (<anonymous>)"
+  },
+  {
+    "sequence": 20,
+    "timestamp": "2026-10-21T20:33:12.818Z",
+    "stream": "stderr",
+    "message": "    at channel.onread (node:internal/child_process:664:18)"
+  },
+  {
+    "sequence": 21,
+    "timestamp": "2026-10-21T20:33:12.818Z",
+    "stream": "stderr",
+    "message": ""
+  },
+  {
+    "sequence": 22,
+    "timestamp": "2026-10-21T20:33:12.819Z",
+    "stream": "stderr",
+    "message": "Node.js v24.21.0"
+  }
+]

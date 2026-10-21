@@ -1,0 +1,12 @@
+{
+  "/home/cua/ticket-10/fixtures/rows120.csv": {
+    "bytes": 2417,
+    "sha256": "e0d1a3eb794c58c7d918bbe15674a68e30c3017dc64ac901d4f9c4e063d6788d",
+    "dataRows": 120
+  },
+  "/home/cua/ticket-10/fixtures/ui-v2-30050.csv": {
+    "bytes": 646089,
+    "sha256": "91717b66a04119b1893c79d8a1acdff6939a3dc75fb791ea3c936a4c673ba009",
+    "dataRows": 30050
+  }
+}
