@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="cancelling an unfiltered sort restores source order and supersedes its page" time="6.508977" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="filtered sorting and visible-column copy use the displayed order; clear keeps sorting" time="9.045496" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="replacement clears an old page load and header switch applies to the next drop" time="7.273531" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="two pending OS drops keep action order when locality checks resolve out of order" time="0.434051" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="an OS drop resolving after panel unload cannot open a session" time="0.096965" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="cross-host and malformed Paseo Files drops explain rejection without opening a source" time="0.097154" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="panel shows a source change notice and Refresh loads the selected file" time="1.790461" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="a newer selection wins over a pending Refresh" time="1.931770" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="search shows pending, hidden-column matches and no results; stale search cannot replace cleared rows" time="11.592539" classname="test" file="/home/cua/ticket-10/tests/panel.test.tsx"/>
+	<testcase name="opens a real CSV as a bounded read-only viewer session and replaces it" time="1.656190" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="empty CSV has an honest empty preview" time="0.022419" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="workspace selection stays inside its workspace and rejects other file kinds" time="0.340597" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="preview response stays at 50 data rows" time="0.243317" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="prepares a file-backed session and pages beyond the preview in source order" time="0.348444" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="a page query starts promptly and can be polled through completion" time="0.444312" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="searches all prepared columns beyond preview as literal Unicode text and clears to source order" time="0.400783" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="new query, file replacement and cancellation supersede in-flight search" time="0.571823" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="closing a pending open and cancelling preparation cannot revive that panel" time="0.201809" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="a delayed open or close cannot supersede a newer panel request" time="0.217836" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="a source removed after preview ends in an actionable error, never complete" time="0.645092" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="unavailable temporary storage reports how to recover" time="0.019583" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes" time="0.343655" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="keeps duplicate and blank headers by position and handles header-only TSV" time="0.415398" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF" time="0.141786" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="a quoted multiline first record still defines column positions" time="0.150897" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="blank and quoted-empty first records remain headers or data by position" time="0.745970" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="a blank physical record in a two-column file cannot disappear" time="0.608810" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="rejects malformed quoting, width and UTF-8 with locations, including after 50 rows" time="0.666702" classname="test" file="/home/cua/ticket-10/tests/session.test.ts"/>
+	<testcase name="automatic numeric sort covers the whole file and keeps equal values in source order" time="1.893975" classname="test" file="/home/cua/ticket-10/tests/sorting.test.ts"/>
+	<testcase name="numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact" time="0.313984" classname="test" file="/home/cua/ticket-10/tests/sorting.test.ts"/>
+	<testcase name="late nonnumeric text forces auto text order; manual numeric keeps all rows" time="0.704044" classname="test" file="/home/cua/ticket-10/tests/sorting.test.ts"/>
+	<testcase name="numeric grammar and exact comparison preserve wide and high-precision original text" time="0.269375" classname="test" file="/home/cua/ticket-10/tests/sorting.test.ts"/>
+	<testcase name="search and sort share a filtered page count while auto inference still sees late text" time="0.411542" classname="test" file="/home/cua/ticket-10/tests/sorting.test.ts"/>
+	<testcase name="sorted search keeps the completed snapshot stale until Refresh creates a new session" time="0.651938" classname="test" file="/home/cua/ticket-10/tests/sorting.test.ts"/>
+	<testcase name="external edits leave a completed snapshot stale until an explicit new session" time="1.512261" classname="test" file="/home/cua/ticket-10/tests/source-refresh.test.ts"/>
+	<testcase name="append, truncation, atomic replacement, deletion, and loss of access mark only their own snapshot stale" time="1.581341" classname="test" file="/home/cua/ticket-10/tests/source-refresh.test.ts"/>
+	<testcase name="an edit during preparation invalidates the preview instead of completing mixed rows" time="0.199311" classname="test" file="/home/cua/ticket-10/tests/source-refresh.test.ts"/>
+	<testcase name="a source replacement during search returns only the completed snapshot" time="1.331453" classname="test" file="/home/cua/ticket-10/tests/source-refresh.test.ts"/>
+	<testcase name="superseded opens and closes release session storage without reviving an old view" time="0.248663" classname="test" file="/home/cua/ticket-10/tests/source-refresh.test.ts"/>
+	<testcase name="the viewer copies raw cells and selected visible columns in current row order" time="2.224410" classname="test" file="/home/cua/ticket-10/tests/table.test.tsx"/>
+	<testcase name="long column names keep visible controls compact and full accessible labels" time="0.171063" classname="test" file="/home/cua/ticket-10/tests/table.test.tsx"/>
+	<!-- tests 41 -->
+	<!-- suites 0 -->
+	<!-- pass 41 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 72327.810371 -->
+</testsuites>

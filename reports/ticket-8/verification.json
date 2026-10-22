@@ -1,0 +1,51 @@
+{
+  "ticket": 8,
+  "branch": "ticket/8-sorting",
+  "testedSourceSha": "c59aa16556006fd46963c43f04b8afd4a7b1ed42",
+  "baseSha": "ecf4ccd74e5acbe8b078663b6d7048861981146a",
+  "integrationSha": "dd23b5c57287c6add26bc15231e81462129e374d",
+  "desktopEvidenceSourceSha": "6f41335f5b4aaa39171efc32df17ea168e19b97f",
+  "space": "local:paseo-x64-ubuntu-ticket-2",
+  "runtime": {
+    "os": "Ubuntu 24.04.5 x86_64",
+    "node": "24.21.0",
+    "paseoDesktopAndDaemon": "0.12.0 official amd64",
+    "daemonHome": "/home/cua/.paseo-x64-ticket-2",
+    "desktopUserData": "/home/cua/.config/Paseo-x64-ticket-2",
+    "daemonPort": 6779,
+    "duckdbNodeApi": "1.5.6-r.2",
+    "pluginSource": "/home/cua/ticket-8",
+    "pluginId": "csv-viewer",
+    "pluginStatusAtCheck": "running at the pre-merge desktop check; #9 subsequently restored the prior plugin"
+  },
+  "guestSourceHashes": {
+    "server/sort.ts": "c655aa50aac3e7f0a24fcc2036239bf44e5d6f1d3db40f1c6bf8f2bd71ee3263",
+    "server/session.ts": "2db88e662d2e5efb4697937163451a34d1826484902b6d7225ffeff73c9ec898",
+    "shared/session.ts": "7bd0f0eb60ce9c02e1303185a01990c267e8e1a725538c4b3560cc7d0e6d0384",
+    "client/panel.tsx": "b2aeabd90478e0c045ae398599ea21689bb256525ec81ca0d49c7158da05afa2",
+    "client/table.tsx": "bc8f33c4a8a53fa1fd317d4bb8928f40836739a2ab1b4742ae88e890a072b265",
+    "tests/sorting.test.ts": "54181521421230f54ae85f47b7e96ace07b31f334faeaf2ec7d5e7b4910449de",
+    "tests/source-refresh.test.ts": "8a7aa87b5f298cebb1d29194697adc717bfcf650d7d7eb404665269a55648a79"
+  },
+  "checks": {
+    "tddRed": "ticket-8-red.log",
+    "focusedSort": "10 passed, 0 failed after #7/#9 merge; final-focused.log",
+    "fullSerialSuite": "34 passed, 0 failed after #7/#9 merge; final-full-suite.log",
+    "finalTypecheck": "passed after #7/#9 merge; final-typecheck.log",
+    "combinedSessionSmoke": "real CSV sort/search with filtered count, stable paging, stale snapshot and explicit Refresh; final-focused.log",
+    "finalTableTest": "1 passed, 0 failed; ticket-8-table.xml",
+    "pluginInstallAndReload": "pre-merge ticket 8 build running at check; ticket-8-plugin-install.json, ticket-8-plugin-reload.json, ticket-8-plugin-status.json",
+    "desktopAuto": "late N/A detected as text; 10 preceded 2; ticket-8-final-auto.png",
+    "desktopForcedNumeric": "2 preceded 10; ticket-8-final-numeric.png",
+    "desktopDescending": "9007199254740993 preceded 9007199254740992; ticket-8-final-desc.png",
+    "desktopCopy": "clicked 9007199254740993 in descending view; clipboard text was exactly 9007199254740993"
+  },
+  "limits": [
+    "The 5 GB sort cost is not measured here; ticket 10 owns that workload.",
+    "Desktop runtime screenshots are from the pre-#7/#9 ticket 8 build; the post-merge build is checked by node tests and typecheck only.",
+    "macOS and Windows remain unverified.",
+    "An exponent beyond DuckDB BIGNUM range raises an explicit query error rather than rounding."
+  ],
+  "spaceUiLockReleased": true,
+  "trackerUpdate": "https://github.com/hoon0422/csv-viewer/issues/8#issuecomment-6309356608"
+}

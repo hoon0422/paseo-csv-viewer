@@ -1,0 +1,808 @@
+[
+  {
+    "tag": "BUTTON",
+    "label": "New workspace",
+    "role": "button",
+    "text": "New workspace",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 8,
+      "w": 303,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "History",
+    "role": "button",
+    "text": "History",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 38,
+      "w": 303,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Search",
+    "role": "button",
+    "text": "Search",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 68,
+      "w": 303,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Schedules",
+    "role": "button",
+    "text": "Schedules",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 98,
+      "w": 303,
+      "h": 28
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Display preferences",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 279,
+      "y": 139,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "source",
+    "role": "group",
+    "text": "SsourceTicket 2 bootstrap check17h\n    To pick up a draggable item, press the sp",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 171,
+      "w": 303,
+      "h": 94
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": null,
+    "role": "button",
+    "text": "Ssource",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 171,
+      "w": 303,
+      "h": 40
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Create a new workspace for source",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 259,
+      "y": 179,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Project actions",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 285,
+      "y": 179,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Ticket 2 bootstrap check",
+    "role": "button",
+    "text": "Ticket 2 bootstrap check17h",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 215,
+      "w": 303,
+      "h": 36
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "workspace",
+    "role": "group",
+    "text": "WworkspaceTicket 3 CSV smoke17h\n    To pick up a draggable item, press the space",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 265,
+      "w": 303,
+      "h": 94
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": null,
+    "role": "button",
+    "text": "Wworkspace",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 265,
+      "w": 303,
+      "h": 40
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Create a new workspace for workspace",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 259,
+      "y": 273,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Project actions",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 285,
+      "y": 273,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Ticket 3 CSV smoke",
+    "role": "button",
+    "text": "Ticket 3 CSV smoke17h",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 309,
+      "w": 303,
+      "h": 36
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "ticket-5",
+    "role": "group",
+    "text": "Tticket-5Ticket 5 large-file verification15h\n    To pick up a draggable item, pr",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 359,
+      "w": 303,
+      "h": 94
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": null,
+    "role": "button",
+    "text": "Tticket-5",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 359,
+      "w": 303,
+      "h": 40
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Create a new workspace for ticket-5",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 259,
+      "y": 367,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Project actions",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 285,
+      "y": 367,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Ticket 5 large-file verification",
+    "role": "button",
+    "text": "Ticket 5 large-file verification15h",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 403,
+      "w": 303,
+      "h": 36
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "fixtures",
+    "role": "group",
+    "text": "FfixturesTicket 7 search smoke14h\n    To pick up a draggable item, press the spa",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 453,
+      "w": 303,
+      "h": 94
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": null,
+    "role": "button",
+    "text": "Ffixtures",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 453,
+      "w": 303,
+      "h": 40
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Create a new workspace for fixtures",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 259,
+      "y": 461,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Project actions",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 285,
+      "y": 461,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Ticket 7 search smoke",
+    "role": "button",
+    "text": "Ticket 7 search smoke14h",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 497,
+      "w": 303,
+      "h": 36
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "fixtures",
+    "role": "group",
+    "text": "FfixturesTicket 9 refresh smoke14h\n    To pick up a draggable item, press the sp",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 547,
+      "w": 303,
+      "h": 94
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": null,
+    "role": "button",
+    "text": "Ffixtures",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 547,
+      "w": 303,
+      "h": 40
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Create a new workspace for fixtures",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 259,
+      "y": 555,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Project actions",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 285,
+      "y": 555,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Ticket 9 refresh smoke",
+    "role": "button",
+    "text": "Ticket 9 refresh smoke14h",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 591,
+      "w": 303,
+      "h": 36
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "fixtures",
+    "role": "group",
+    "text": "FfixturesTicket 10 acceptance13h\n    To pick up a draggable item, press the spac",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 641,
+      "w": 303,
+      "h": 94
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": null,
+    "role": "button",
+    "text": "Ffixtures",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 641,
+      "w": 303,
+      "h": 40
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Create a new workspace for fixtures",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 259,
+      "y": 649,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Project actions",
+    "role": null,
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 285,
+      "y": 649,
+      "w": 24,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Ticket 10 acceptance",
+    "role": "button",
+    "text": "Ticket 10 acceptance13h",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 685,
+      "w": 303,
+      "h": 36
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Add project",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 8,
+      "y": 687,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Usage",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 36,
+      "y": 687,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Hosts",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 64,
+      "y": 687,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Help and support",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 255,
+      "y": 687,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Settings",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 283,
+      "y": 687,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Close menu",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 324,
+      "y": 4.5,
+      "w": 26,
+      "h": 26
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Workspace actions",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 575.6875,
+      "y": 4.5,
+      "w": 26,
+      "h": 26
+    }
+  },
+  {
+    "tag": "DIV",
+    "label": "Workspace actions",
+    "role": "toolbar",
+    "text": "CSV Viewer",
+    "title": "",
+    "rect": {
+      "x": 850.1875,
+      "y": 4.5,
+      "w": 106.8125,
+      "h": 26
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Open CSV Viewer",
+    "role": "button",
+    "text": "CSV Viewer",
+    "title": "",
+    "rect": {
+      "x": 850.1875,
+      "y": 4.5,
+      "w": 106.8125,
+      "h": 26
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Open workspace in Files",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 966,
+      "y": 5.5,
+      "w": 26,
+      "h": 24
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Close Explorer sidebar",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1001,
+      "y": 4.5,
+      "w": 26,
+      "h": 26
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "CSV Viewer",
+    "role": "button",
+    "text": "CSV Viewer",
+    "title": "",
+    "rect": {
+      "x": 326,
+      "y": 39.5,
+      "w": 118,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Close",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 422,
+      "y": 44.5,
+      "w": 18,
+      "h": 18
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "CSV Viewer",
+    "role": "button",
+    "text": "CSV Viewer",
+    "title": "",
+    "rect": {
+      "x": 448,
+      "y": 39.5,
+      "w": 118,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Close",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 544,
+      "y": 44.5,
+      "w": 18,
+      "h": 18
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "New tab",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 572,
+      "y": 39.5,
+      "w": 28,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "More actions",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1006,
+      "y": 43.5,
+      "w": 20,
+      "h": 20
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Browse workspace files",
+    "role": "button",
+    "text": "Files",
+    "title": "",
+    "rect": {
+      "x": 1038,
+      "y": 3.5,
+      "w": 64,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Working tree diff",
+    "role": "button",
+    "text": "Changes",
+    "title": "",
+    "rect": {
+      "x": 1106,
+      "y": 3.5,
+      "w": 64,
+      "h": 28
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "New tab",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1135,
+      "y": 7.5,
+      "w": 20,
+      "h": 20
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "New file",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1184,
+      "y": 43.5,
+      "w": 20,
+      "h": 20
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "New folder",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1205,
+      "y": 43.5,
+      "w": 20,
+      "h": 20
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Hide hidden files",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1226,
+      "y": 43.5,
+      "w": 20,
+      "h": 20
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Refresh files",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1247,
+      "y": 43.5,
+      "w": 20,
+      "h": 20
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Minimize window",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1164,
+      "y": 0,
+      "w": 36,
+      "h": 35
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Maximize window",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1200,
+      "y": 0,
+      "w": 36,
+      "h": 35
+    }
+  },
+  {
+    "tag": "BUTTON",
+    "label": "Close window",
+    "role": "button",
+    "text": "",
+    "title": "",
+    "rect": {
+      "x": 1236,
+      "y": 0,
+      "w": 36,
+      "h": 35
+    }
+  }
+]

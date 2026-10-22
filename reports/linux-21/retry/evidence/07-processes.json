@@ -1,0 +1,52 @@
+{
+  "utc": "2026-10-21T20:40:28Z",
+  "processes": [
+    {
+      "pid": 40131,
+      "ppid": 40118,
+      "argv": "Paseo Daemon",
+      "exe": "/opt/Paseo/Paseo.bin",
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin",
+        "PASEO_HOME": "/home/cua/.paseo-x64-ticket-2"
+      },
+      "duckdbMappings": []
+    },
+    {
+      "pid": 42352,
+      "ppid": 40131,
+      "argv": "/opt/Paseo/Paseo.bin /opt/Paseo/resources/app.asar/node_modules/@getpaseo/server/dist/server/server/plugins/plugin-process.js",
+      "exe": "/opt/Paseo/Paseo.bin",
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin",
+        "PASEO_HOME": "/home/cua/.paseo-x64-ticket-2"
+      },
+      "duckdbMappings": []
+    },
+    {
+      "pid": 42392,
+      "ppid": 42352,
+      "argv": "/usr/local/bin/node /home/cua/linux-21-retry/package/server/child.cjs /tmp/csv-viewer-child-GCgR9y",
+      "exe": "/usr/local/lib/nodejs/bin/node",
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin",
+        "PASEO_HOME": "/home/cua/.paseo-x64-ticket-2"
+      },
+      "duckdbMappings": [
+        "7ebd64400000-7ebd64c12000 r--p 00000000 fd:03 265264                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
+        "7ebd64c12000-7ebd66fb8000 r-xp 00812000 fd:03 265264                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
+        "7ebd66fb8000-7ebd67c18000 r--p 02bb8000 fd:03 265264                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
+        "7ebd67c18000-7ebd67ca4000 r--p 03818000 fd:03 265264                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
+        "7ebd67ca4000-7ebd67cd5000 rw-p 038a4000 fd:03 265264                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
+        "7ebdbc685000-7ebdbc6a1000 r--p 00000000 fd:03 265244                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/duckdb.node",
+        "7ebdbc6a1000-7ebdbc6d7000 r-xp 0001c000 fd:03 265244                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/duckdb.node",
+        "7ebdbc6d7000-7ebdbc6e5000 r--p 00052000 fd:03 265244                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/duckdb.node",
+        "7ebdbc6e5000-7ebdbc6e7000 r--p 00060000 fd:03 265244                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/duckdb.node",
+        "7ebdbc6e7000-7ebdbc6e9000 rw-p 00062000 fd:03 265244                     /home/cua/linux-21-retry/package/node_modules/@duckdb/node-bindings-linux-x64/duckdb.node"
+      ]
+    }
+  ],
+  "ownedTemporaryRoots": [
+    "/tmp/csv-viewer-child-GCgR9y"
+  ]
+}

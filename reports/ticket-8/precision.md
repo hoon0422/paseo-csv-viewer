@@ -1,0 +1,7 @@
+# Ticket 8 sorting contract
+
+- A numeric value has optional ASCII space, tab, CR or LF around `[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?`. An empty or whitespace-only cell is blank. The engine tests cover signs, decimal and exponent spellings, and rejected `NaN`, `0x10`, `1_0` and incomplete `1e`.
+- Auto mode scans the prepared whole column and chooses numeric only if every nonblank value matches that grammar. The result reports the effective mode. Text mode uses DuckDB's default string ordering. Blanks follow nonblank values in either direction.
+- Forced numeric mode puts numbers first, other nonblank text next in string order, and blanks last in either direction. Numeric equality retains source row order, including differently spelled zero and decimal/exponent values. Original cell strings are returned unchanged.
+- Comparison builds an exact sign, base-10 decimal position and significant-digit string key in DuckDB. It does not cast values to DOUBLE or DECIMAL. Tests compare integers beyond 2^53 and positive/negative decimal differences beyond DECIMAL's 38 digits. DuckDB BIGNUM represents the exponent in the key; an exponent beyond its range causes an explicit query error, not rounding or coercion.
+- Each request reads at most 50 result rows into JavaScript. DuckDB evaluates and may spill the whole-file sort on the host. Full 5 GB query cost is reserved for ticket 10.

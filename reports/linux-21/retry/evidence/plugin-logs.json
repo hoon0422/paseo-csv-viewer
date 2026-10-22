@@ -1,0 +1,14 @@
+[
+  {
+    "sequence": 1,
+    "timestamp": "2026-10-21T20:39:22.589Z",
+    "stream": "stdout",
+    "message": "[paseo] Loading plugin"
+  },
+  {
+    "sequence": 2,
+    "timestamp": "2026-10-21T20:39:29.517Z",
+    "stream": "stdout",
+    "message": "[paseo] Plugin ready"
+  }
+]

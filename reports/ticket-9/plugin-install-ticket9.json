@@ -1,0 +1,14 @@
+{
+  "id": "csv-viewer-ticket-9",
+  "path": "/home/cua/ticket-9/source",
+  "enabled": true,
+  "status": "running",
+  "name": "CSV Viewer",
+  "description": "Read-only CSV and TSV preview in a workspace panel",
+  "installation": {
+    "identity": {
+      "kind": "directory",
+      "path": "/home/cua/ticket-9/source"
+    }
+  }
+}

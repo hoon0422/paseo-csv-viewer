@@ -1,0 +1,2 @@
+Filesystem     1B-blocks     Used Available Use% Mounted on
+/dev/loop0      58675200 52932608   1048576  99% /home/cua/ticket-10/low-space

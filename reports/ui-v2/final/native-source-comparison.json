@@ -1,0 +1,12 @@
+{
+  "nativeMeasuredRevision": "b1b7b7d6aa72b783f66dd4285b64727c136e6284",
+  "packageRevision": "b18637295bc1f490df261ded617c0b1988daae27",
+  "engineFilesIdentical": true,
+  "sha256": {
+    "server/session.ts": "c8d27a1f7d6ee7f67c011ae30ef8d09199499bc3df1dc449e2d85c9903f7941c",
+    "server/sort.ts": "19b5504090c2d5aa7f28e9b154091253a5324eefe1cb9c22f0799f6232d09d27",
+    "server/filter.ts": "00317a76ebd07cbe8190bcba290c576f1f5f4f09e83f7a7043cc4db925089eac",
+    "server/native.ts": "bdeb88cce2e54e2a6842ee09952477f3dd79f41e7617772c02d5a464b5abd5ca"
+  },
+  "nativeReportOriginal": "/tmp/csv-viewer-v2/perf/report-500mb.md"
+}

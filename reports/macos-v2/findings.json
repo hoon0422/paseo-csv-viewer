@@ -1,0 +1,10 @@
+[
+  {
+    "severity": "high",
+    "title": "First CSV open crashes the external Node child during IPC deserialization",
+    "file": "server/proxy.ts",
+    "line": 57,
+    "detail": "Superseded: fa02073 switches Electron/external Node IPC to JSON. Exact package 64ea117c...50a0b now opens, sorts and filters in official Paseo 0.12.0 / Node 24.22.1; child-only native mapping and normal-close cleanup verified. Original stderr/screenshot remain in t04-evidence/.",
+    "status": "fixed"
+  }
+]

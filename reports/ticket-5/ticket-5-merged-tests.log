@@ -1,0 +1,30 @@
+
+> paseo-csv-viewer@0.1.0 test
+> tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts* --reporter=junit --outputFile=reports/ticket-5-merged-tests.xml
+
+✔ opens a real CSV as a bounded read-only viewer session and replaces it (1821.342497ms)
+✔ empty CSV has an honest empty preview (23.271879ms)
+✔ workspace selection stays inside its workspace and rejects other file kinds (197.327974ms)
+✔ preview response stays at 50 data rows (351.659172ms)
+✔ prepares a file-backed session and pages beyond the preview in source order (401.720919ms)
+✔ closing a pending open and cancelling preparation cannot revive that panel (203.232948ms)
+✔ a delayed open or close cannot supersede a newer panel request (210.079912ms)
+✔ a source removed after preview ends in an actionable error, never complete (2253.271395ms)
+✔ unavailable temporary storage reports how to recover (25.30587ms)
+✔ preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes (368.235115ms)
+✔ keeps duplicate and blank headers by position and handles header-only TSV (438.110757ms)
+✔ opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF (149.258238ms)
+✔ a quoted multiline first record still defines column positions (147.01025ms)
+✔ blank and quoted-empty first records remain headers or data by position (758.052134ms)
+✔ a blank physical record in a two-column file cannot disappear (632.610786ms)
+✔ rejects malformed quoting, width and UTF-8 with locations, including after 50 rows (652.325691ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the viewer copies raw cells and selected visible columns in current row order (2223.470011ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18825.771974

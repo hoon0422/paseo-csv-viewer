@@ -1,0 +1,1553 @@
+{
+  "utc": "2026-10-21T19:57:58.265Z",
+  "ms": 1419425.799999997,
+  "title": "CSV Viewer",
+  "url": "paseo://app/h/srv_Ssxondu_-ziz/workspace/wks_a7f3cc280e23e217",
+  "status": "Showing 50 rows0 selected500.0 MBPreparing 17%Cancel",
+  "drop": false,
+  "path": "/home/cua/ui-v2-final/over-500mb.csv",
+  "focus": null,
+  "rows": [
+    {
+      "label": null,
+      "selected": null,
+      "text": "#id⋮payload_________________________________________________________________________________________⋮",
+      "rect": {
+        "x": 320,
+        "y": 147,
+        "w": 711,
+        "h": 34
+      }
+    },
+    {
+      "label": "Select row 1",
+      "selected": "false",
+      "text": "100000000block-0000................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 181,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 2",
+      "selected": "false",
+      "text": "200000001body-0001.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 212,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 3",
+      "selected": "false",
+      "text": "300000002body-0002.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 243,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 4",
+      "selected": "false",
+      "text": "400000003body-0003.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 274,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 5",
+      "selected": "false",
+      "text": "500000004body-0004.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 305,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 6",
+      "selected": "false",
+      "text": "600000005body-0005.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 336,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 7",
+      "selected": "false",
+      "text": "700000006body-0006.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 367,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 8",
+      "selected": "false",
+      "text": "800000007body-0007.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 398,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 9",
+      "selected": "false",
+      "text": "900000008body-0008.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 429,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 10",
+      "selected": "false",
+      "text": "1000000009body-0009.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 460,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 11",
+      "selected": "false",
+      "text": "1100000010body-0010.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 491,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 12",
+      "selected": "false",
+      "text": "1200000011body-0011.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 522,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 13",
+      "selected": "false",
+      "text": "1300000012body-0012.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 553,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 14",
+      "selected": "false",
+      "text": "1400000013body-0013.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 584,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 15",
+      "selected": "false",
+      "text": "1500000014body-0014.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 615,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 16",
+      "selected": "false",
+      "text": "1600000015body-0015.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 646,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 17",
+      "selected": "false",
+      "text": "1700000016body-0016.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 677,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 18",
+      "selected": "false",
+      "text": "1800000017body-0017.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 708,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 19",
+      "selected": "false",
+      "text": "1900000018body-0018.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 739,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 20",
+      "selected": "false",
+      "text": "2000000019body-0019.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 770,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 21",
+      "selected": "false",
+      "text": "2100000020body-0020.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 801,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 22",
+      "selected": "false",
+      "text": "2200000021body-0021.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 832,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 23",
+      "selected": "false",
+      "text": "2300000022body-0022.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 863,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 24",
+      "selected": "false",
+      "text": "2400000023body-0023.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 894,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 25",
+      "selected": "false",
+      "text": "2500000024body-0024.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 925,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 26",
+      "selected": "false",
+      "text": "2600000025body-0025.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 956,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 27",
+      "selected": "false",
+      "text": "2700000026body-0026.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 987,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 28",
+      "selected": "false",
+      "text": "2800000027body-0027.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1018,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 29",
+      "selected": "false",
+      "text": "2900000028body-0028.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1049,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 30",
+      "selected": "false",
+      "text": "3000000029body-0029.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1080,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 31",
+      "selected": "false",
+      "text": "3100000030body-0030.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1111,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 32",
+      "selected": "false",
+      "text": "3200000031body-0031.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1142,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 33",
+      "selected": "false",
+      "text": "3300000032body-0032.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1173,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 34",
+      "selected": "false",
+      "text": "3400000033body-0033.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1204,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 35",
+      "selected": "false",
+      "text": "3500000034body-0034.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1235,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 36",
+      "selected": "false",
+      "text": "3600000035body-0035.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1266,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 37",
+      "selected": "false",
+      "text": "3700000036body-0036.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1297,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 38",
+      "selected": "false",
+      "text": "3800000037body-0037.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1328,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 39",
+      "selected": "false",
+      "text": "3900000038body-0038.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1359,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 40",
+      "selected": "false",
+      "text": "4000000039body-0039.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1390,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 41",
+      "selected": "false",
+      "text": "4100000040body-0040.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1421,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 42",
+      "selected": "false",
+      "text": "4200000041body-0041.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1452,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 43",
+      "selected": "false",
+      "text": "4300000042body-0042.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1483,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 44",
+      "selected": "false",
+      "text": "4400000043body-0043.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1514,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 45",
+      "selected": "false",
+      "text": "4500000044body-0044.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1545,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 46",
+      "selected": "false",
+      "text": "4600000045body-0045.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1576,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 47",
+      "selected": "false",
+      "text": "4700000046body-0046.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1607,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 48",
+      "selected": "false",
+      "text": "4800000047body-0047.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1638,
+        "w": 701,
+        "h": 31
+      }
+    },
+    {
+      "label": "Select row 49",
+      "selected": "false",
+      "text": "4900000048body-0048.................................................................................",
+      "rect": {
+        "x": 320,
+        "y": 1669,
+        "w": 701,
+        "h": 31
+      }
+    }
+  ],
+  "controls": [
+    {
+      "label": "Workspace file path",
+      "role": null,
+      "value": "/home/cua/ui-v2-final/over-500mb.csv",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "checked": false,
+      "rect": {
+        "x": 477.796875,
+        "y": 78,
+        "w": 545.203125,
+        "h": 25
+      }
+    },
+    {
+      "label": "Choose local CSV or TSV",
+      "role": null,
+      "value": "",
+      "title": "Choose local CSV or TSV",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 324,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "First record is header",
+      "role": null,
+      "value": "",
+      "title": "First record is header",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 358,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Refresh source",
+      "role": null,
+      "value": "",
+      "title": "Refresh source",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 392,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Filter",
+      "role": null,
+      "value": "",
+      "title": "Filter (Ctrl+F)",
+      "disabled": true,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 426,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Copy selected rows",
+      "role": null,
+      "value": "",
+      "title": "Copy selected rows (Ctrl+C)",
+      "disabled": true,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 460,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Reveal hidden columns",
+      "role": null,
+      "value": "",
+      "title": "Reveal hidden columns",
+      "disabled": true,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 494,
+        "y": 112,
+        "w": 32,
+        "h": 32
+      }
+    },
+    {
+      "label": "Sort mode",
+      "role": null,
+      "value": "auto",
+      "title": "Sort mode",
+      "disabled": true,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 528,
+        "y": 114.5,
+        "w": 87,
+        "h": 27
+      }
+    },
+    {
+      "label": "Column menu id",
+      "role": null,
+      "value": "",
+      "title": "Column options for id",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 518,
+        "y": 153,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize id",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "160",
+      "rect": {
+        "x": 543,
+        "y": 147,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Column menu payload_________________________________________________________________________________________",
+      "role": null,
+      "value": "",
+      "title": "Column options for payload_________________________________________________________________________________________",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 678,
+        "y": 153,
+        "w": 24,
+        "h": 21
+      }
+    },
+    {
+      "label": "Resize payload_________________________________________________________________________________________",
+      "role": "separator",
+      "title": "Drag to resize; double-click to fit; arrow keys to resize",
+      "expanded": null,
+      "invalid": null,
+      "width": "160",
+      "rect": {
+        "x": 703,
+        "y": 147,
+        "w": 7,
+        "h": 33
+      }
+    },
+    {
+      "label": "Toggle row 1 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 206,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 2 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 237,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 3 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 268,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 4 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 299,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 5 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 330,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 6 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 361,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 7 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 392,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 8 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 423,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 9 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 454,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 10 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 485,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 11 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 516,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 12 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 547,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 13 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 578,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 14 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 609,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 15 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 640,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 16 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 671,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 17 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 702,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 18 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 733,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 19 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 764,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 20 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 795,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 21 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 826,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 22 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 857,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 23 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 888,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 24 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 919,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 25 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 950,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 26 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 981,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 27 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1012,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 28 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1043,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 29 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1074,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 30 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1105,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 31 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1136,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 32 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1167,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 33 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1198,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 34 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1229,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 35 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1260,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 36 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1291,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 37 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1322,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 38 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1353,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 39 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1384,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 40 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1415,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 41 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1446,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 42 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1477,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 43 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1508,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 44 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1539,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 45 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1570,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 46 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1601,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 47 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1632,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 48 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1663,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Toggle row 49 expansion",
+      "role": null,
+      "value": "",
+      "title": "Double-click to expand or collapse row",
+      "disabled": false,
+      "expanded": "false",
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 320,
+        "y": 1694,
+        "w": 701,
+        "h": 5
+      }
+    },
+    {
+      "label": "Cancel preparation",
+      "role": null,
+      "value": "",
+      "title": "",
+      "disabled": false,
+      "expanded": null,
+      "invalid": null,
+      "width": null,
+      "rect": {
+        "x": 684.828125,
+        "y": 691,
+        "w": 55.15625,
+        "h": 25
+      }
+    }
+  ]
+}

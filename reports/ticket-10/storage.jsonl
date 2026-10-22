@@ -1,0 +1,1 @@
+{"result":"storage error reported","error":"Not enough temporary disk or memory to prepare this file. Free space and try again. TransactionContext Error: Failed to commit: Could not write file \"/home/cua/ticket-10/low-space/csv-viewer-session-TWZuas/rows.duckdb.wal\": No space left on device","sourceHash":"6a7025cd528fd0f045ed686d4c57131e5554460c50f61f85133f437c31301246"}

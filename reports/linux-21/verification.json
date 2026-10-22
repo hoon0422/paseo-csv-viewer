@@ -1,0 +1,7 @@
+{
+  "evidenceAssertions": "PASS",
+  "linuxRecheck": "FAIL",
+  "reason": "Both opens crash at advanced IPC deserialization; sort/filter and normal last-close shutdown blocked",
+  "sourceCommit": "9eece4b0d4a8bbdaa20ecf06cf4ef53aee9877a9",
+  "testsPassed": 112
+}

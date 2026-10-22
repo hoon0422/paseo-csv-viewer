@@ -1,0 +1,15 @@
+{
+  "samples": 757,
+  "sampleIntervalSeconds": 1,
+  "uiStartUnixSeconds": 1792557409.998004,
+  "uiFirstPreviewObservedBySeconds": 15.207793951034546,
+  "uiCompleteObservedBySeconds": 630.6072888374329,
+  "peakServerRssBytes": 1321828352,
+  "peakClientRendererRssBytes": 373428224,
+  "peakOwnedDbAllocatedBytes": 951336960,
+  "peakOwnedWalAllocatedBytes": 331776,
+  "peakOwnedSpillAllocatedBytes": 0,
+  "minimumGuestFreeBytes": 6657839104,
+  "afterCloseGuestFreeBytes": 7609102336,
+  "afterCloseOwnedDbBytes": 0
+}

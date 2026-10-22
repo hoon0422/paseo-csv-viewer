@@ -1,0 +1,2 @@
+# Generated bundle; npm run check compares it byte for byte.
+server/child.cjs -text

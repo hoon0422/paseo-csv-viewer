@@ -1,0 +1,10 @@
+{
+  "worktree": {
+    "setup": "./scripts/bootstrap.sh setup"
+  },
+  "scripts": {
+    "check": {
+      "command": "./scripts/bootstrap.sh check"
+    }
+  }
+}

@@ -1,0 +1,1288 @@
+[
+  {
+    "event": "start",
+    "utc": "2026-10-21T19:25:46.311Z",
+    "elapsedMs": 1.3042499999999961,
+    "phase": "opening",
+    "path": "/tmp/csvbench/data/native-session-8_8m.csv",
+    "bytes": 499206474,
+    "expectedRows": 8800000,
+    "node": "v26.5.0",
+    "arch": "arm64",
+    "cpu": "Apple M4 Pro",
+    "parallelism": 14,
+    "totalMemory": 25769803776,
+    "duckdb": "v1.5.6",
+    "freeBytes": 26787840000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:46.317Z",
+    "elapsedMs": 7.968583999999993,
+    "phase": "opening",
+    "sql": "SET enable_progress_bar=true; SET enable_progress_bar_print=false; SET progress_bar_time=0",
+    "durationMs": 0.22462500000000318
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:46.325Z",
+    "elapsedMs": 15.252583999999985,
+    "phase": "opening",
+    "sql": "SELECT * FROM (SELECT * FROM read_csv(?, delim=?, quote='\"', escape='\"', header=false, auto_detect=false, columns={'column0':'VARCHAR','column1':'VARCHAR','column2':'VARCHAR','column3':'VARCHAR','column4':'VARCHAR'}, strict_mode=true, ignore_errors=false, null_padding=false, allow_quoted_nulls=false)) LIMIT 51",
+    "params": [
+      "/private/tmp/csvbench/data/native-session-8_8m.csv",
+      ","
+    ],
+    "durationMs": 7.009749999999997
+  },
+  {
+    "event": "preview",
+    "utc": "2026-10-21T19:25:46.326Z",
+    "elapsedMs": 16.46954199999999,
+    "phase": "opening",
+    "durationMs": 16.463334000000003,
+    "rows": 50
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:46.561Z",
+    "elapsedMs": 251.724875,
+    "phase": "preparation",
+    "rss": 199213056,
+    "peakRss": 199196672,
+    "freeBytes": 26787840000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:46.811Z",
+    "elapsedMs": 501.979209,
+    "phase": "preparation",
+    "rss": 242466816,
+    "peakRss": 242466816,
+    "freeBytes": 26787840000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:47.063Z",
+    "elapsedMs": 753.4110840000001,
+    "phase": "preparation",
+    "rss": 255836160,
+    "peakRss": 255836160,
+    "freeBytes": 26787840000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:47.314Z",
+    "elapsedMs": 1004.9285420000001,
+    "phase": "preparation",
+    "rss": 273727488,
+    "peakRss": 273727488,
+    "freeBytes": 26787840000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:47.565Z",
+    "elapsedMs": 1255.237834,
+    "phase": "preparation",
+    "rss": 286605312,
+    "peakRss": 286605312,
+    "freeBytes": 26746880000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:47.816Z",
+    "elapsedMs": 1506.535084,
+    "phase": "preparation",
+    "rss": 303661056,
+    "peakRss": 303661056,
+    "freeBytes": 26746880000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:48.067Z",
+    "elapsedMs": 1757.19075,
+    "phase": "preparation",
+    "rss": 320356352,
+    "peakRss": 320356352,
+    "freeBytes": 26746880000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:48.318Z",
+    "elapsedMs": 2008.5622090000002,
+    "phase": "preparation",
+    "rss": 332283904,
+    "peakRss": 332283904,
+    "freeBytes": 26746880000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:48.568Z",
+    "elapsedMs": 2258.806875,
+    "phase": "preparation",
+    "rss": 341475328,
+    "peakRss": 341475328,
+    "freeBytes": 26705920000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:48.819Z",
+    "elapsedMs": 2509.385959,
+    "phase": "preparation",
+    "rss": 354598912,
+    "peakRss": 354598912,
+    "freeBytes": 26705920000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:49.070Z",
+    "elapsedMs": 2760.840709,
+    "phase": "preparation",
+    "rss": 369262592,
+    "peakRss": 369262592,
+    "freeBytes": 26705920000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:49.319Z",
+    "elapsedMs": 3009.980292,
+    "phase": "preparation",
+    "rss": 379699200,
+    "peakRss": 379699200,
+    "freeBytes": 26664960000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:49.571Z",
+    "elapsedMs": 3261.345459,
+    "phase": "preparation",
+    "rss": 392265728,
+    "peakRss": 392265728,
+    "freeBytes": 26664960000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:49.821Z",
+    "elapsedMs": 3511.99625,
+    "phase": "preparation",
+    "rss": 406126592,
+    "peakRss": 406126592,
+    "freeBytes": 26664960000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:50.073Z",
+    "elapsedMs": 3763.8394590000003,
+    "phase": "preparation",
+    "rss": 414236672,
+    "peakRss": 414236672,
+    "freeBytes": 26664960000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:50.324Z",
+    "elapsedMs": 4014.797834,
+    "phase": "preparation",
+    "rss": 425279488,
+    "peakRss": 425279488,
+    "freeBytes": 26664960000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:50.574Z",
+    "elapsedMs": 4264.785625,
+    "phase": "preparation",
+    "rss": 439009280,
+    "peakRss": 439009280,
+    "freeBytes": 26664960000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:50.825Z",
+    "elapsedMs": 4515.923875,
+    "phase": "preparation",
+    "rss": 450297856,
+    "peakRss": 450297856,
+    "freeBytes": 26624000000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:51.076Z",
+    "elapsedMs": 4766.272,
+    "phase": "preparation",
+    "rss": 460783616,
+    "peakRss": 460685312,
+    "freeBytes": 26624000000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:51.327Z",
+    "elapsedMs": 5017.323542,
+    "phase": "preparation",
+    "rss": 474480640,
+    "peakRss": 474480640,
+    "freeBytes": 26624000000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:51.577Z",
+    "elapsedMs": 5267.921709,
+    "phase": "preparation",
+    "rss": 485539840,
+    "peakRss": 485539840,
+    "freeBytes": 26624000000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:51.828Z",
+    "elapsedMs": 5518.27675,
+    "phase": "preparation",
+    "rss": 496910336,
+    "peakRss": 496910336,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:51.941Z",
+    "elapsedMs": 5632.034209,
+    "phase": "preparation",
+    "sql": "CREATE TABLE rows AS SELECT * FROM (SELECT * FROM read_csv(?, delim=?, quote='\"', escape='\"', header=false, auto_detect=false, columns={'column0':'VARCHAR','column1':'VARCHAR','column2':'VARCHAR','column3':'VARCHAR','column4':'VARCHAR'}, strict_mode=true, ignore_errors=false, null_padding=false, allow_quoted_nulls=false)) OFFSET 1",
+    "params": [
+      "/private/tmp/csvbench/data/native-session-8_8m.csv",
+      ","
+    ],
+    "durationMs": 5615.848416
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:51.942Z",
+    "elapsedMs": 5632.818542,
+    "phase": "preparation",
+    "sql": "SELECT COUNT(*) FROM rows",
+    "durationMs": 0.5551249999998618
+  },
+  {
+    "event": "preparation-complete",
+    "utc": "2026-10-21T19:25:51.967Z",
+    "elapsedMs": 5657.309834,
+    "phase": "complete",
+    "durationMs": 5657.297167,
+    "message": "All rows ready",
+    "bytesScanned": 0,
+    "sourceBytes": 499206474,
+    "percent": 100,
+    "rowCount": 8800000,
+    "sourceChanged": false
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:51.967Z",
+    "elapsedMs": 5657.870209,
+    "phase": "preparation",
+    "sql": "SELECT current_setting('threads'), current_setting('memory_limit'), current_setting('temp_directory'), current_setting('preserve_insertion_order'), version()",
+    "durationMs": 0.5297499999996944
+  },
+  {
+    "event": "settings",
+    "utc": "2026-10-21T19:25:51.967Z",
+    "elapsedMs": 5658.114209,
+    "phase": "preparation",
+    "threads": 14,
+    "memoryLimit": "3.7 GiB",
+    "tempDirectory": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/spill",
+    "preserveInsertionOrder": true,
+    "version": "v1.5.6"
+  },
+  {
+    "event": "storage",
+    "utc": "2026-10-21T19:25:51.968Z",
+    "elapsedMs": 5658.404334,
+    "phase": "preparation",
+    "files": [
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb",
+        "bytes": 222834688,
+        "allocatedBytes": 234893312
+      },
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb.wal",
+        "bytes": 118142,
+        "allocatedBytes": 118784
+      }
+    ],
+    "bytes": 222952830,
+    "allocatedBytes": 235012096
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:51.968Z",
+    "elapsedMs": 5658.863875,
+    "phase": "auto-first",
+    "sql": "DROP TABLE IF EXISTS sort_order",
+    "durationMs": 0.0754159999996773
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:52.078Z",
+    "elapsedMs": 5769.165625,
+    "phase": "auto-first",
+    "rss": 506429440,
+    "peakRss": 506413056,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:52.330Z",
+    "elapsedMs": 6020.481167,
+    "phase": "auto-first",
+    "rss": 506576896,
+    "peakRss": 506576896,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:52.582Z",
+    "elapsedMs": 6272.719,
+    "phase": "auto-first",
+    "rss": 506658816,
+    "peakRss": 506658816,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:52.833Z",
+    "elapsedMs": 6523.723834,
+    "phase": "auto-first",
+    "rss": 506675200,
+    "peakRss": 506675200,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.035Z",
+    "elapsedMs": 6725.32875,
+    "phase": "auto-first",
+    "sql": "SELECT COALESCE(BOOL_AND(trim(COALESCE(column2, ''), ' \t\r\n') = '' OR\n      regexp_full_match(trim(COALESCE(column2, ''), ' \t\r\n'), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?')), true) FROM rows",
+    "durationMs": 1066.3735829999996
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:53.084Z",
+    "elapsedMs": 6774.704084,
+    "phase": "auto-first",
+    "rss": 769196032,
+    "peakRss": 768851968,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:53.336Z",
+    "elapsedMs": 7026.243042,
+    "phase": "auto-first",
+    "rss": 1407795200,
+    "peakRss": 1407303680,
+    "freeBytes": 26583040000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.575Z",
+    "elapsedMs": 7265.481917,
+    "phase": "auto-first",
+    "sql": "CREATE TABLE sort_order AS\n    SELECT row_number() OVER (ORDER BY TRY_CAST(COALESCE(column2, '') AS DOUBLE) ASC NULLS LAST, rowid) - 1 AS pos, rowid AS src FROM rows",
+    "durationMs": 539.9555
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:53.587Z",
+    "elapsedMs": 7277.618917,
+    "phase": "auto-first",
+    "rss": 1340342272,
+    "peakRss": 1407303680,
+    "freeBytes": 26542080000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.612Z",
+    "elapsedMs": 7302.687834,
+    "phase": "auto-first",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      0,
+      200,
+      200
+    ],
+    "durationMs": 37.06358300000011
+  },
+  {
+    "event": "first-sorted-page",
+    "utc": "2026-10-21T19:25:53.613Z",
+    "elapsedMs": 7303.980917,
+    "phase": "auto-first",
+    "mode": "auto",
+    "sort": {
+      "column": 2,
+      "direction": "asc",
+      "mode": "auto"
+    },
+    "durationMs": 1645.4921250000007,
+    "first": [
+      "4862048",
+      "Vancouver48",
+      "0.02",
+      "note 9elalgfhhe text",
+      "C48"
+    ],
+    "totalRows": 8800000,
+    "targetMs": 2000,
+    "pass": true
+  },
+  {
+    "event": "storage",
+    "utc": "2026-10-21T19:25:53.614Z",
+    "elapsedMs": 7304.225542,
+    "phase": "auto-first",
+    "files": [
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb",
+        "bytes": 251146240,
+        "allocatedBytes": 251670528
+      },
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb.wal",
+        "bytes": 140978,
+        "allocatedBytes": 184320
+      }
+    ],
+    "bytes": 251287218,
+    "allocatedBytes": 251854848
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.647Z",
+    "elapsedMs": 7338.026042,
+    "phase": "auto-append-1",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      200,
+      400,
+      200
+    ],
+    "durationMs": 33.66175000000021
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:53.648Z",
+    "elapsedMs": 7338.832417,
+    "phase": "auto-append-1",
+    "mode": "auto",
+    "page": 1,
+    "durationMs": 34.56829199999993,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.682Z",
+    "elapsedMs": 7372.444125,
+    "phase": "auto-append-2",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      400,
+      600,
+      200
+    ],
+    "durationMs": 33.443750000000364
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:53.682Z",
+    "elapsedMs": 7373.154084,
+    "phase": "auto-append-2",
+    "mode": "auto",
+    "page": 2,
+    "durationMs": 34.268583999999464,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.717Z",
+    "elapsedMs": 7407.6595,
+    "phase": "auto-append-3",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      600,
+      800,
+      200
+    ],
+    "durationMs": 34.37679200000002
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:53.718Z",
+    "elapsedMs": 7408.297542,
+    "phase": "auto-append-3",
+    "mode": "auto",
+    "page": 3,
+    "durationMs": 35.10958400000072,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.752Z",
+    "elapsedMs": 7442.213542,
+    "phase": "auto-append-4",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      800,
+      1000,
+      200
+    ],
+    "durationMs": 33.8090830000001
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:53.752Z",
+    "elapsedMs": 7442.784584,
+    "phase": "auto-append-4",
+    "mode": "auto",
+    "page": 4,
+    "durationMs": 34.45929100000012,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.786Z",
+    "elapsedMs": 7476.702,
+    "phase": "auto-append-5",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      1000,
+      1200,
+      200
+    ],
+    "durationMs": 33.81962499999918
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:53.787Z",
+    "elapsedMs": 7477.252209,
+    "phase": "auto-append-5",
+    "mode": "auto",
+    "page": 5,
+    "durationMs": 34.445291,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:53.787Z",
+    "elapsedMs": 7478.092667,
+    "phase": "text-first",
+    "sql": "DROP TABLE IF EXISTS sort_order",
+    "durationMs": 0.726249999999709
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:53.838Z",
+    "elapsedMs": 7528.380709,
+    "phase": "text-first",
+    "rss": 1415348224,
+    "peakRss": 1415348224,
+    "freeBytes": 26542080000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:54.088Z",
+    "elapsedMs": 7778.810375,
+    "phase": "text-first",
+    "rss": 1544028160,
+    "peakRss": 1544028160,
+    "freeBytes": 26542080000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:54.338Z",
+    "elapsedMs": 8029.06225,
+    "phase": "text-first",
+    "rss": 1541292032,
+    "peakRss": 1544028160,
+    "freeBytes": 26501120000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.374Z",
+    "elapsedMs": 8064.842917000001,
+    "phase": "text-first",
+    "sql": "CREATE TABLE sort_order AS\n    SELECT row_number() OVER (ORDER BY CASE WHEN trim(COALESCE(column1, ''), ' \t\r\n') <> '' THEN COALESCE(column1, '') END ASC NULLS LAST, rowid) - 1 AS pos, rowid AS src FROM rows",
+    "durationMs": 586.6855839999998
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.384Z",
+    "elapsedMs": 8074.386625,
+    "phase": "text-first",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      0,
+      200,
+      200
+    ],
+    "durationMs": 9.455500000000029
+  },
+  {
+    "event": "first-sorted-page",
+    "utc": "2026-10-21T19:25:54.384Z",
+    "elapsedMs": 8074.918375,
+    "phase": "text-first",
+    "mode": "text",
+    "sort": {
+      "column": 1,
+      "direction": "asc",
+      "mode": "text"
+    },
+    "durationMs": 597.640292,
+    "first": [
+      "3000",
+      "Calgary0",
+      "925144.22",
+      "note x6vg3al2jf text",
+      "C0"
+    ],
+    "totalRows": 8800000,
+    "targetMs": 2000,
+    "pass": true
+  },
+  {
+    "event": "storage",
+    "utc": "2026-10-21T19:25:54.384Z",
+    "elapsedMs": 8075.101250000001,
+    "phase": "text-first",
+    "files": [
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb",
+        "bytes": 279457792,
+        "allocatedBytes": 285224960
+      },
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb.wal",
+        "bytes": 163866,
+        "allocatedBytes": 184320
+      }
+    ],
+    "bytes": 279621658,
+    "allocatedBytes": 285409280
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.394Z",
+    "elapsedMs": 8084.457208999999,
+    "phase": "text-append-1",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      200,
+      400,
+      200
+    ],
+    "durationMs": 9.229167000001326
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:54.394Z",
+    "elapsedMs": 8084.9210840000005,
+    "phase": "text-append-1",
+    "mode": "text",
+    "page": 1,
+    "durationMs": 9.79358300000058,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.402Z",
+    "elapsedMs": 8092.655041999999,
+    "phase": "text-append-2",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      400,
+      600,
+      200
+    ],
+    "durationMs": 7.6290420000004815
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:54.402Z",
+    "elapsedMs": 8093.08725,
+    "phase": "text-append-2",
+    "mode": "text",
+    "page": 2,
+    "durationMs": 8.14116599999943,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.411Z",
+    "elapsedMs": 8101.656042,
+    "phase": "text-append-3",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      600,
+      800,
+      200
+    ],
+    "durationMs": 8.455792000000656
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:54.411Z",
+    "elapsedMs": 8101.997167,
+    "phase": "text-append-3",
+    "mode": "text",
+    "page": 3,
+    "durationMs": 8.889957999999751,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.419Z",
+    "elapsedMs": 8109.440750000001,
+    "phase": "text-append-4",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      800,
+      1000,
+      200
+    ],
+    "durationMs": 7.3634579999998095
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:54.419Z",
+    "elapsedMs": 8109.753584000001,
+    "phase": "text-append-4",
+    "mode": "text",
+    "page": 4,
+    "durationMs": 7.739707999999155,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.428Z",
+    "elapsedMs": 8118.775167000001,
+    "phase": "text-append-5",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      1000,
+      1200,
+      200
+    ],
+    "durationMs": 8.950333000000683
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:54.429Z",
+    "elapsedMs": 8119.179917,
+    "phase": "text-append-5",
+    "mode": "text",
+    "page": 5,
+    "durationMs": 9.410291000000143,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.429Z",
+    "elapsedMs": 8119.623791999999,
+    "phase": "numeric-first",
+    "sql": "DROP TABLE IF EXISTS sort_order",
+    "durationMs": 0.34800000000177533
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:54.593Z",
+    "elapsedMs": 8283.893333999999,
+    "phase": "numeric-first",
+    "rss": 1493319680,
+    "peakRss": 1544028160,
+    "freeBytes": 26501120000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:54.694Z",
+    "elapsedMs": 8384.990333999998,
+    "phase": "numeric-first",
+    "sql": "SELECT COALESCE(BOOL_AND(trim(COALESCE(column2, ''), ' \t\r\n') = '' OR\n      regexp_full_match(trim(COALESCE(column2, ''), ' \t\r\n'), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?')), true) FROM rows",
+    "durationMs": 265.3318340000005
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:54.844Z",
+    "elapsedMs": 8534.387583999998,
+    "phase": "numeric-first",
+    "rss": 1555644416,
+    "peakRss": 1555644416,
+    "freeBytes": 26501120000
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:55.095Z",
+    "elapsedMs": 8785.699374999998,
+    "phase": "numeric-first",
+    "rss": 1555939328,
+    "peakRss": 1555939328,
+    "freeBytes": 26460160000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.106Z",
+    "elapsedMs": 8797.107999999998,
+    "phase": "numeric-first",
+    "sql": "CREATE TABLE sort_order AS\n    SELECT row_number() OVER (ORDER BY TRY_CAST(COALESCE(column2, '') AS DOUBLE) ASC NULLS LAST, rowid) - 1 AS pos, rowid AS src FROM rows",
+    "durationMs": 411.904790999999
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.142Z",
+    "elapsedMs": 8832.493666999999,
+    "phase": "numeric-first",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      0,
+      200,
+      200
+    ],
+    "durationMs": 35.27433300000121
+  },
+  {
+    "event": "first-sorted-page",
+    "utc": "2026-10-21T19:25:55.142Z",
+    "elapsedMs": 8833.0425,
+    "phase": "numeric-first",
+    "mode": "numeric",
+    "sort": {
+      "column": 2,
+      "direction": "asc",
+      "mode": "numeric"
+    },
+    "durationMs": 713.8160000000007,
+    "first": [
+      "4862048",
+      "Vancouver48",
+      "0.02",
+      "note 9elalgfhhe text",
+      "C48"
+    ],
+    "totalRows": 8800000,
+    "targetMs": 2000,
+    "pass": true
+  },
+  {
+    "event": "storage",
+    "utc": "2026-10-21T19:25:55.143Z",
+    "elapsedMs": 8833.390916999999,
+    "phase": "numeric-first",
+    "files": [
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb",
+        "bytes": 307507200,
+        "allocatedBytes": 318779392
+      },
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb.wal",
+        "bytes": 189002,
+        "allocatedBytes": 249856
+      }
+    ],
+    "bytes": 307696202,
+    "allocatedBytes": 319029248
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.178Z",
+    "elapsedMs": 8869.032749999998,
+    "phase": "numeric-append-1",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      200,
+      400,
+      200
+    ],
+    "durationMs": 35.51366699999926
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.179Z",
+    "elapsedMs": 8869.515374999999,
+    "phase": "numeric-append-1",
+    "mode": "numeric",
+    "page": 1,
+    "durationMs": 36.096041000000696,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.215Z",
+    "elapsedMs": 8906.16175,
+    "phase": "numeric-append-2",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      400,
+      600,
+      200
+    ],
+    "durationMs": 36.5457920000008
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.216Z",
+    "elapsedMs": 8906.691417,
+    "phase": "numeric-append-2",
+    "mode": "numeric",
+    "page": 2,
+    "durationMs": 37.14954099999886,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.253Z",
+    "elapsedMs": 8943.960916999999,
+    "phase": "numeric-append-3",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      600,
+      800,
+      200
+    ],
+    "durationMs": 37.15308299999924
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.254Z",
+    "elapsedMs": 8944.582959,
+    "phase": "numeric-append-3",
+    "mode": "numeric",
+    "page": 3,
+    "durationMs": 37.86316599999918,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.289Z",
+    "elapsedMs": 8979.605042,
+    "phase": "numeric-append-4",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      800,
+      1000,
+      200
+    ],
+    "durationMs": 34.89258299999892
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.289Z",
+    "elapsedMs": 8980.113709,
+    "phase": "numeric-append-4",
+    "mode": "numeric",
+    "page": 4,
+    "durationMs": 35.50300000000061,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.324Z",
+    "elapsedMs": 9014.712958999999,
+    "phase": "numeric-append-5",
+    "sql": "SELECT rows.*, ord.pos FROM sort_order ord JOIN rows ON rows.rowid = ord.src WHERE ord.pos >= ? AND ord.pos < ?\n          ORDER BY ord.pos LIMIT ?",
+    "params": [
+      1000,
+      1200,
+      200
+    ],
+    "durationMs": 34.4984170000007
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.325Z",
+    "elapsedMs": 9015.242375,
+    "phase": "numeric-append-5",
+    "mode": "numeric",
+    "page": 5,
+    "durationMs": 35.104707999998936,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.327Z",
+    "elapsedMs": 9017.426834,
+    "phase": "filter-first",
+    "sql": "DROP TABLE IF EXISTS sort_order",
+    "durationMs": 0.40154099999926984
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.327Z",
+    "elapsedMs": 9017.551749999999,
+    "phase": "filter-first",
+    "sql": "DROP TABLE IF EXISTS filter_order",
+    "durationMs": 0.089125000000422
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:55.356Z",
+    "elapsedMs": 9046.951416999998,
+    "phase": "filter-first",
+    "rss": 1560182784,
+    "peakRss": 1559953408,
+    "freeBytes": 26460160000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.407Z",
+    "elapsedMs": 9097.943834,
+    "phase": "filter-first",
+    "sql": "CREATE TABLE filter_order AS\n            SELECT rows.rowid AS pos, rows.rowid AS src FROM rows WHERE (contains(lower(COALESCE(column0, '')), lower(?)) OR contains(lower(COALESCE(column1, '')), lower(?)) OR contains(lower(COALESCE(column2, '')), lower(?)) OR contains(lower(COALESCE(column3, '')), lower(?)) OR contains(lower(COALESCE(column4, '')), lower(?))) ORDER BY rows.rowid",
+    "params": [
+      "toronto1",
+      "toronto1",
+      "toronto1",
+      "toronto1",
+      "toronto1"
+    ],
+    "durationMs": 80.33854099999917
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.408Z",
+    "elapsedMs": 9098.280917,
+    "phase": "filter-first",
+    "sql": "SELECT COUNT(*) FROM filter_order",
+    "durationMs": 0.23183400000016263
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.447Z",
+    "elapsedMs": 9137.391083999999,
+    "phase": "filter-first",
+    "sql": "SELECT rows.*, filtered.pos FROM filter_order filtered JOIN rows ON rows.rowid = filtered.src WHERE filtered.pos >= ?\n          ORDER BY filtered.pos LIMIT ? OFFSET ?",
+    "params": [
+      0,
+      200,
+      0
+    ],
+    "durationMs": 39.00029199999881
+  },
+  {
+    "event": "first-filtered-page",
+    "utc": "2026-10-21T19:25:55.447Z",
+    "elapsedMs": 9138.084041999999,
+    "phase": "filter-first",
+    "durationMs": 122.7710420000003,
+    "totalRows": 139542,
+    "filter": {
+      "rules": [
+        {
+          "enabled": true,
+          "column": "any",
+          "operator": "contains",
+          "value": "toronto1"
+        }
+      ],
+      "match": "all",
+      "caseSensitive": false,
+      "visibleColumns": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "event": "storage",
+    "utc": "2026-10-21T19:25:55.448Z",
+    "elapsedMs": 9138.301749999999,
+    "phase": "filter-first",
+    "files": [
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb",
+        "bytes": 308031488,
+        "allocatedBytes": 318779392
+      },
+      {
+        "path": "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/rows.duckdb.wal",
+        "bytes": 189752,
+        "allocatedBytes": 249856
+      }
+    ],
+    "bytes": 308221240,
+    "allocatedBytes": 319029248
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.486Z",
+    "elapsedMs": 9176.499458999999,
+    "phase": "filter-append-1",
+    "sql": "SELECT rows.*, filtered.pos FROM filter_order filtered JOIN rows ON rows.rowid = filtered.src WHERE filtered.pos >= ?\n          ORDER BY filtered.pos LIMIT ? OFFSET ?",
+    "params": [
+      12146,
+      200,
+      0
+    ],
+    "durationMs": 37.94262499999968
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.486Z",
+    "elapsedMs": 9176.954291999999,
+    "phase": "filter-append-1",
+    "mode": "filter",
+    "page": 1,
+    "durationMs": 38.62029199999961,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.527Z",
+    "elapsedMs": 9217.238,
+    "phase": "filter-append-2",
+    "sql": "SELECT rows.*, filtered.pos FROM filter_order filtered JOIN rows ON rows.rowid = filtered.src WHERE filtered.pos >= ?\n          ORDER BY filtered.pos LIMIT ? OFFSET ?",
+    "params": [
+      25103,
+      200,
+      0
+    ],
+    "durationMs": 40.071625000000495
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.527Z",
+    "elapsedMs": 9217.858166999999,
+    "phase": "filter-append-2",
+    "mode": "filter",
+    "page": 2,
+    "durationMs": 40.860083999999915,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.567Z",
+    "elapsedMs": 9257.22525,
+    "phase": "filter-append-3",
+    "sql": "SELECT rows.*, filtered.pos FROM filter_order filtered JOIN rows ON rows.rowid = filtered.src WHERE filtered.pos >= ?\n          ORDER BY filtered.pos LIMIT ? OFFSET ?",
+    "params": [
+      37185,
+      200,
+      0
+    ],
+    "durationMs": 39.13591699999961
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.567Z",
+    "elapsedMs": 9257.699625,
+    "phase": "filter-append-3",
+    "mode": "filter",
+    "page": 3,
+    "durationMs": 39.78299999999945,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:55.602Z",
+    "elapsedMs": 9292.295417,
+    "phase": "filter-append-4",
+    "rss": 1564884992,
+    "peakRss": 1564884992,
+    "freeBytes": 26460160000
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.606Z",
+    "elapsedMs": 9296.525583999999,
+    "phase": "filter-append-4",
+    "sql": "SELECT rows.*, filtered.pos FROM filter_order filtered JOIN rows ON rows.rowid = filtered.src WHERE filtered.pos >= ?\n          ORDER BY filtered.pos LIMIT ? OFFSET ?",
+    "params": [
+      50142,
+      200,
+      0
+    ],
+    "durationMs": 38.630709000000934
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.606Z",
+    "elapsedMs": 9296.956875,
+    "phase": "filter-append-4",
+    "mode": "filter",
+    "page": 4,
+    "durationMs": 39.23520800000006,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "sql",
+    "utc": "2026-10-21T19:25:55.646Z",
+    "elapsedMs": 9336.165416999998,
+    "phase": "filter-append-5",
+    "sql": "SELECT rows.*, filtered.pos FROM filter_order filtered JOIN rows ON rows.rowid = filtered.src WHERE filtered.pos >= ?\n          ORDER BY filtered.pos LIMIT ? OFFSET ?",
+    "params": [
+      63015,
+      200,
+      0
+    ],
+    "durationMs": 39.02104200000031
+  },
+  {
+    "event": "appended-page",
+    "utc": "2026-10-21T19:25:55.646Z",
+    "elapsedMs": 9336.684749999999,
+    "phase": "filter-append-5",
+    "mode": "filter",
+    "page": 5,
+    "durationMs": 39.69987500000025,
+    "targetMs": 200,
+    "pass": true
+  },
+  {
+    "event": "resource",
+    "utc": "2026-10-21T19:25:56.142Z",
+    "elapsedMs": 9832.415834,
+    "phase": "cleanup",
+    "rss": 1572470784,
+    "peakRss": 1572470784,
+    "freeBytes": 26787840000
+  },
+  {
+    "event": "complete",
+    "utc": "2026-10-21T19:25:56.142Z",
+    "elapsedMs": 9832.518499999998,
+    "phase": "cleanup",
+    "peakRssBytes": 1572470784,
+    "kernelPeakRssBytes": 1574420480,
+    "minFreeBytes": 26460160000,
+    "settings": [
+      14,
+      "3.7 GiB",
+      "/var/folders/z8/l533k7g91wz3fvvybt12n9rr0000gp/T/csv-viewer-session-EUNeM7/spill",
+      true,
+      "v1.5.6"
+    ],
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,84 @@
+﻿{
+    "when":  "2026-10-21T10:20:16.6661540Z",
+    "os":  {
+               "Caption":  "Microsoft Windows Server 2022 Standard Evaluation",
+               "Version":  "10.0.20348",
+               "BuildNumber":  "20348",
+               "TotalVisibleMemorySize":  4187880
+           },
+    "artifactHash":  "8db56bbc46c2cc6c7b42b6ff009554bcd7515653645ceb757a05dfe0e3d4d0bc",
+    "sourceHash":  "f240b5ee7091bab0cc77db64e63054b26c11ee3b994243f983a3b73f3e20cf27",
+    "ownedSessions":  [
+                          {
+                              "path":  "C:\\Users\\Docker\\AppData\\Local\\Temp\\csv-viewer-session-HejzkK",
+                              "bytes":  14983,
+                              "files":  [
+                                            {
+                                                "name":  "rows.duckdb",
+                                                "bytes":  12288
+                                            },
+                                            {
+                                                "name":  "rows.duckdb.wal",
+                                                "bytes":  2695
+                                            }
+                                        ]
+                          }
+                      ],
+    "processes":  [
+                      {
+                          "pid":  5344,
+                          "parent":  3784,
+                          "name":  "node.exe",
+                          "commandLine":  "\"node\"   \"C:\\npm-global\\\\node_modules\\supergateway\\dist\\index.js\" --stdio \"cua-driver mcp\" --outputTransport streamableHttp --stateful --sessionTimeout 3600000 --port 3000 --streamableHttpPath /mcp --healthEndpoint /healthz --cors"
+                      },
+                      {
+                          "pid":  280,
+                          "parent":  4536,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "\"C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe\" "
+                      },
+                      {
+                          "pid":  5460,
+                          "parent":  280,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "\"C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --user-data-dir=\"C:\\Users\\Docker\\AppData\\Roaming\\Paseo\" --standard-schemes=paseo --secure-schemes=paseo --fetch-schemes=paseo --field-trial-handle=1668,i,11943182048410753448,13302728364167400940,262144 --enable-features=PdfUseShowSaveFilePicker --disable-features=DropInputEventsWhilePaintHolding,LocalNetworkAccessChecks,NetworkServiceSandbox,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --pseudonymization-salt-handle=1676,i,10013737804085513571,262352970677094054,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=1800 /prefetch:3"
+                      },
+                      {
+                          "pid":  4564,
+                          "parent":  280,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "\"C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe\" --type=gpu-process --user-data-dir=\"C:\\Users\\Docker\\AppData\\Roaming\\Paseo\" --gpu-preferences=WAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAADAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAAEAAAAAIAAAABAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --field-trial-handle=1668,i,11943182048410753448,13302728364167400940,262144 --enable-features=PdfUseShowSaveFilePicker --disable-features=DropInputEventsWhilePaintHolding,LocalNetworkAccessChecks,NetworkServiceSandbox,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --pseudonymization-salt-handle=1676,i,10013737804085513571,262352970677094054,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=1664 /prefetch:2"
+                      },
+                      {
+                          "pid":  3672,
+                          "parent":  280,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "\"C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe\" --type=renderer --user-data-dir=\"C:\\Users\\Docker\\AppData\\Roaming\\Paseo\" --standard-schemes=paseo --secure-schemes=paseo --fetch-schemes=paseo --app-path=\"C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar\" --enable-sandbox --video-capture-use-gpu-memory-buffer --lang=en-US --device-scale-factor=1 --num-raster-threads=1 --renderer-client-id=5 --field-trial-handle=1668,i,11943182048410753448,13302728364167400940,262144 --enable-features=PdfUseShowSaveFilePicker --disable-features=DropInputEventsWhilePaintHolding,LocalNetworkAccessChecks,NetworkServiceSandbox,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --pseudonymization-salt-handle=1676,i,10013737804085513571,262352970677094054,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=3080 --paseo-window-chrome-mode=custom-windows /prefetch:1"
+                      },
+                      {
+                          "pid":  928,
+                          "parent":  280,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe --disable-warning=DEP0040 C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar.unpacked\\dist\\daemon\\node-entrypoint-runner.js node-script C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar\\node_modules\\@getpaseo\\server\\dist\\scripts\\supervisor-entrypoint.js"
+                      },
+                      {
+                          "pid":  3056,
+                          "parent":  928,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar\\dist\\daemon\\node-entrypoint-runner.js node-script C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar\\node_modules\\@getpaseo\\server\\dist\\server\\server\\daemon-worker.js"
+                      },
+                      {
+                          "pid":  4724,
+                          "parent":  3056,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar\\node_modules\\@getpaseo\\server\\dist\\server\\terminal\\terminal-worker-process.js"
+                      },
+                      {
+                          "pid":  5724,
+                          "parent":  3056,
+                          "name":  "Paseo.exe",
+                          "commandLine":  "C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\Paseo.exe C:\\Users\\Docker\\AppData\\Local\\Programs\\Paseo\\resources\\app.asar\\node_modules\\@getpaseo\\server\\dist\\server\\server\\plugins\\plugin-process.js"
+                      }
+                  ],
+    "freeC":  52818567168
+}

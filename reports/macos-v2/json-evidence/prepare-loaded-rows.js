@@ -1,0 +1,2 @@
+// QA setup only: exercise normal DOM scrolling/paging, without mutating application data/state.
+window.qaScroll=setInterval(()=>{let e=[...document.querySelectorAll('[aria-label="CSV rows"] *')].find(e=>getComputedStyle(e).overflowY==='auto');if(e)e.scrollTop=e.scrollHeight},150);setTimeout(()=>{clearInterval(window.qaScroll);let e=[...document.querySelectorAll('[aria-label="CSV rows"] *')].find(e=>getComputedStyle(e).overflowY==='auto');if(e)e.scrollTop=0},60000)

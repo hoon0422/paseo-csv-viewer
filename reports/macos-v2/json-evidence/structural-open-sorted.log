@@ -1,0 +1,33 @@
+Wed Oct 21 21:02:08 UTC 2026
+ 1285     1 Paseo Supervisor
+ 1287  1285 Paseo Daemon
+ 1293  1287 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper
+ 1295  1287 /Applications/Paseo.app/Contents/Resources/app.asar.unpacked/node_modules/@esbuild/darwin-arm64/bin/esbuild
+ 1331     1 /Applications/Paseo.app/Contents/MacOS/Paseo
+ 1342  1331 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper
+ 1343  1331 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper
+ 1348  1331 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper (Renderer).app/Contents/MacOS/Paseo Helper (Renderer)
+ 2271  1287 /Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper
+ 2349  2271 /Users/lume/csv-macos-21/node/bin/node
+
+PID 1285 mappings:
+
+PID 1287 mappings:
+
+PID 1293 mappings:
+
+PID 1331 mappings:
+
+PID 1342 mappings:
+
+PID 1343 mappings:
+
+PID 1348 mappings:
+
+PID 2271 mappings:
+
+PID 2349 mappings:
+node    2349 lume  txt      REG               1,18    535224              380613 /Users/lume/csv-macos-21/json-artifact/package/node_modules/@duckdb/node-bindings-darwin-arm64/duckdb.node
+node    2349 lume  txt      REG               1,18 117008720              380227 /Users/lume/csv-macos-21/json-artifact/package/node_modules/@duckdb/node-bindings-darwin-arm64/libduckdb.dylib
+node    2349 lume   13u     REG               1,18     12288              380848 /private/var/folders/j_/nxxd3_kn7lgfr89gpv0sxl9m0000gn/T/csv-viewer-child-SzZnPy/csv-viewer-session-V7LdoM/rows.duckdb
+node    2349 lume   14w     REG               1,18    324227              380849 /private/var/folders/j_/nxxd3_kn7lgfr89gpv0sxl9m0000gn/T/csv-viewer-child-SzZnPy/csv-viewer-session-V7LdoM/rows.duckdb.wal

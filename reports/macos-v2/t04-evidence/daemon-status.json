@@ -1,0 +1,60 @@
+{
+  "home": "/Users/lume/.paseo-csv-macos-21",
+  "pid": 1285,
+  "startedAt": "2026-10-21T20:37:42.152Z",
+  "listen": "127.0.0.1:6781",
+  "serverId": "srv_BtH4HyyeBawj",
+  "hostname": "Apple Virtual Machine 1",
+  "configuredListen": "127.0.0.1:6781",
+  "localDaemon": "running",
+  "desktopManaged": false,
+  "logPath": "/Users/lume/.paseo-csv-macos-21/daemon.log",
+  "daemonVersion": "0.12.0",
+  "workerPid": 1287,
+  "daemonNode": "/Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper",
+  "providers": [
+    {
+      "provider": "claude",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "codex",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "copilot",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "opencode",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "pi",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "antigravity",
+      "available": false,
+      "error": null
+    },
+    {
+      "provider": "muse",
+      "available": false,
+      "error": null
+    }
+  ],
+  "relay": {
+    "enabled": false,
+    "endpoint": "relay.paseo.sh:443",
+    "publicEndpoint": "relay.paseo.sh:443",
+    "useTls": true,
+    "publicUseTls": true
+  },
+  "connectedDaemon": "reachable"
+}

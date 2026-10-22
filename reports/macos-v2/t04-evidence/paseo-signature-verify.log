@@ -1,0 +1,20 @@
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/.
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/Helpers/chrome_crashpad_handler
+--validated:/Applications/Paseo.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/Helpers/chrome_crashpad_handler
+--validated:/Applications/Paseo.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/.
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Squirrel.framework/Versions/Current/.
+--validated:/Applications/Paseo.app/Contents/Frameworks/Squirrel.framework/Versions/Current/.
+--prepared:/Applications/Paseo.app/Contents/Frameworks/ReactiveObjC.framework/Versions/Current/.
+--validated:/Applications/Paseo.app/Contents/Frameworks/ReactiveObjC.framework/Versions/Current/.
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Mantle.framework/Versions/Current/.
+--validated:/Applications/Paseo.app/Contents/Frameworks/Mantle.framework/Versions/Current/.
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper (GPU).app
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper (Renderer).app
+--validated:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper (GPU).app
+--validated:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper (Renderer).app
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper (Plugin).app
+--prepared:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app
+--validated:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper (Plugin).app
+--validated:/Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app
+/Applications/Paseo.app: valid on disk
+/Applications/Paseo.app: satisfies its Designated Requirement

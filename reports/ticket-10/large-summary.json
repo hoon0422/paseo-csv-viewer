@@ -1,0 +1,22 @@
+{
+  "fixtureSha256": "f61cf371efbc50c9530cbb64705bb01b1e82f683bfbe0d9cc6b0a92382656a43",
+  "fixtureBytes": 5000000000,
+  "dataRows": 49999999,
+  "previewMs": 2055.8636130000004,
+  "scanCompleteMs": 392927.43062,
+  "preparationCompleteMs": 694365.709206,
+  "fullSearchMs": 44091.02164100006,
+  "searchSortMs": 43552.92764999997,
+  "unfilteredGlobalSortMs": 117704.91148700006,
+  "cleanupMs": 728.3149509999203,
+  "sampleCount": 808,
+  "sampleIntervalSeconds": 1,
+  "peakTestProcessRssBytes": 1291345920,
+  "peakOwnedDbBytes": 951861248,
+  "peakOwnedWalBytes": 331776,
+  "peakOwnedSpillBytes": 0,
+  "minimumGuestFreeBytes": 5922922496,
+  "guestFreeAfterBytes": 6875119616,
+  "result": "passed",
+  "exitCode": 0
+}

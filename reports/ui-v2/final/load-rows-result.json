@@ -1,0 +1,7 @@
+{
+  "startedMs": 598008,
+  "endedMs": 988330.1000000015,
+  "ticks": 1470,
+  "status": "30,050 rows1 selected646.1 kBReady",
+  "method": "DOM scroll to loaded extent only; normal onScroll/onEndReached/RPC appends"
+}

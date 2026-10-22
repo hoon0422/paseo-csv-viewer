@@ -1,0 +1,11 @@
+{
+  "deletedOnlyNewVm": "local:paseo-csv-windows-acceptance",
+  "cuaDeleteResult": { "deleted": "local:paseo-csv-windows-acceptance", "missing": false },
+  "newVmDirectoryAbsentAfterDelete": true,
+  "directSpaceRegistrationRemoved": "direct:127.0.0.1:59373",
+  "ubuntuTicket2StillRunningReady": true,
+  "sharedImageCacheNotDeleted": true,
+  "hostAvailableKiBBeforeDelete": 15120000,
+  "hostAvailableKiBAfterDelete": 19440000,
+  "platformResourceLockReleased": true
+}

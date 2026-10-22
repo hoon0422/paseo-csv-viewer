@@ -1,0 +1,18 @@
+✔ automatic numeric sort covers the whole file and keeps equal values in source order (1981.997156ms)
+✔ numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact (359.732114ms)
+✔ late nonnumeric text forces auto text order; manual numeric keeps all rows (567.585912ms)
+✔ numeric grammar and exact comparison preserve wide and high-precision original text (273.965371ms)
+✔ search and sort share a filtered page count while auto inference still sees late text (416.653606ms)
+✔ sorted search keeps the completed snapshot stale until Refresh creates a new session (652.272646ms)
+✔ external edits leave a completed snapshot stale until an explicit new session (1961.90198ms)
+✔ append, truncation, atomic replacement, deletion, and loss of access mark only their own snapshot stale (1563.680533ms)
+✔ an edit during preparation invalidates the preview instead of completing mixed rows (193.559675ms)
+✔ superseded opens and closes release session storage without reviving an old view (268.13132ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11772.119891

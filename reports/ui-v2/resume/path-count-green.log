@@ -1,0 +1,10 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ the path bar opens on Enter, restores edits and keeps the current table after an error (8030.610248ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21542.618748

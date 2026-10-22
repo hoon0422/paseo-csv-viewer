@@ -2,7 +2,7 @@
 
 ### Issue tracker
 
-Before reading, creating, or updating issues and specs, read `docs/agents/issue-tracker.md`. Work is tracked in GitHub Issues at `hoon0422/csv-viewer`.
+Before reading, creating, or updating issues and specs, read `docs/agents/issue-tracker.md`. Work is tracked in GitHub Issues at `hoon0422/paseo-csv-viewer`.
 
 ### Triage labels
 

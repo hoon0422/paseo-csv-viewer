@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="cancelling an unfiltered sort restores source order and supersedes its page" time="7.457353" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="filtered sorting and visible-column copy use the displayed order; clear keeps sorting" time="9.230932" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="replacement clears an old page load and header switch applies to the next drop" time="7.164309" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="two pending OS drops keep action order when locality checks resolve out of order" time="0.445387" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="an OS drop resolving after panel unload cannot open a session" time="0.092544" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="cross-host and malformed Paseo Files drops explain rejection without opening a source" time="0.127562" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="panel shows a source change notice and Refresh loads the selected file" time="1.784151" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="a newer selection wins over a pending Refresh" time="1.931246" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="search shows pending, hidden-column matches and no results; stale search cannot replace cleared rows" time="10.151827" classname="test" file="/home/cua/final-review-source/tests/panel.test.tsx"/>
+	<testcase name="opens a real CSV as a bounded read-only viewer session and replaces it" time="1.375607" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="empty CSV has an honest empty preview" time="0.027084" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="workspace selection stays inside its workspace and rejects other file kinds" time="0.264214" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="preview response stays at 50 data rows" time="0.213309" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="prepares a file-backed session and pages beyond the preview in source order" time="0.365631" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="a page query starts promptly and can be polled through completion" time="0.443727" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="rejected stale and duplicate starts leave the active query pollable" time="0.470060" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="searches all prepared columns beyond preview as literal Unicode text and clears to source order" time="0.398191" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="new query, file replacement and cancellation supersede in-flight search" time="0.544531" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="closing a pending open and cancelling preparation cannot revive that panel" time="0.222938" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="a delayed open or close cannot supersede a newer panel request" time="0.211847" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="a source removed after preview ends in an actionable error, never complete" time="0.644044" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="unavailable temporary storage reports how to recover" time="0.029778" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="preserves BOM, CRLF, Unicode, precise text, and quoted CSV fields in both header modes" time="0.364122" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="keeps duplicate and blank headers by position and handles header-only TSV" time="0.427031" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="opens UTF-8 TSV with BOM, quoted tabs, escaped quotes and multiline CRLF" time="0.157213" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="a quoted multiline first record still defines column positions" time="0.167809" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="blank and quoted-empty first records remain headers or data by position" time="0.757576" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="a blank physical record in a two-column file cannot disappear" time="0.612785" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="rejects malformed quoting, width and UTF-8 with locations, including after 50 rows" time="0.632122" classname="test" file="/home/cua/final-review-source/tests/session.test.ts"/>
+	<testcase name="automatic numeric sort covers the whole file and keeps equal values in source order" time="1.647585" classname="test" file="/home/cua/final-review-source/tests/sorting.test.ts"/>
+	<testcase name="numeric grammar accepts signs, decimals, exponents and surrounding ASCII whitespace but leaves other text intact" time="0.296249" classname="test" file="/home/cua/final-review-source/tests/sorting.test.ts"/>
+	<testcase name="late nonnumeric text forces auto text order; manual numeric keeps all rows" time="0.559238" classname="test" file="/home/cua/final-review-source/tests/sorting.test.ts"/>
+	<testcase name="numeric grammar and exact comparison preserve wide and high-precision original text" time="0.267286" classname="test" file="/home/cua/final-review-source/tests/sorting.test.ts"/>
+	<testcase name="search and sort share a filtered page count while auto inference still sees late text" time="0.392726" classname="test" file="/home/cua/final-review-source/tests/sorting.test.ts"/>
+	<testcase name="sorted search keeps the completed snapshot stale until Refresh creates a new session" time="0.645748" classname="test" file="/home/cua/final-review-source/tests/sorting.test.ts"/>
+	<testcase name="external edits leave a completed snapshot stale until an explicit new session" time="1.494615" classname="test" file="/home/cua/final-review-source/tests/source-refresh.test.ts"/>
+	<testcase name="append, truncation, atomic replacement, deletion, and loss of access mark only their own snapshot stale" time="1.793510" classname="test" file="/home/cua/final-review-source/tests/source-refresh.test.ts"/>
+	<testcase name="an edit during preparation invalidates the preview instead of completing mixed rows" time="0.194938" classname="test" file="/home/cua/final-review-source/tests/source-refresh.test.ts"/>
+	<testcase name="a source replacement during search returns only the completed snapshot" time="1.476088" classname="test" file="/home/cua/final-review-source/tests/source-refresh.test.ts"/>
+	<testcase name="superseded opens and closes release session storage without reviving an old view" time="0.262509" classname="test" file="/home/cua/final-review-source/tests/source-refresh.test.ts"/>
+	<testcase name="the viewer copies raw cells and selected visible columns in current row order" time="2.165101" classname="test" file="/home/cua/final-review-source/tests/table.test.tsx"/>
+	<testcase name="long column names keep visible controls compact and full accessible labels" time="0.186764" classname="test" file="/home/cua/final-review-source/tests/table.test.tsx"/>
+	<!-- tests 42 -->
+	<!-- suites 0 -->
+	<!-- pass 42 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 78276.1543 -->
+</testsuites>

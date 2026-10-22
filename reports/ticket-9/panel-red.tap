@@ -1,0 +1,30 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ replacement clears an old page load and header switch applies to the next drop (9880.469612ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ two pending OS drops keep action order when locality checks resolve out of order (504.392777ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✖ panel shows a source change notice and Refresh loads the selected file (920.383942ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25402.17315
+
+✖ failing tests:
+
+test at tests/panel.test.tsx:3:3225
+✖ panel shows a source change notice and Refresh loads the selected file (920.383942ms)
+  Error: No instances found with props: {"accessibilityLabel":"Refresh source"}
+      at expectOne (/home/cua/ticket-5/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:12559:13)
+      at process.env.NODE_ENV._proto.findByProps (/home/cua/ticket-5/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14481:18)
+      at <anonymous> (/home/cua/ticket-9/source/tests/panel.test.tsx:79:67)
+      at process.env.NODE_ENV.exports.act (/home/cua/ticket-5/node_modules/react/cjs/react.development.js:789:22)
+      at press (/home/cua/ticket-9/source/tests/panel.test.tsx:79:39)
+      at <anonymous> (/home/cua/ticket-9/source/tests/panel.test.tsx:141:11)
+      at async panelTest (/home/cua/ticket-9/source/tests/panel.test.tsx:70:5)
+      at async TestContext.<anonymous> (/home/cua/ticket-9/source/tests/panel.test.tsx:134:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

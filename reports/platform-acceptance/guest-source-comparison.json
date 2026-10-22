@@ -1,0 +1,20 @@
+{
+  "currentSourceCommit": "13390f27c44a9deb7e0944239f0518f8e29d68cf",
+  "guestCheckout": "/home/cua/ticket-10",
+  "method": "Read-only sha256sum in the Ubuntu Space compared with shasum -a 256 in this worktree; git diff from currentSourceCommit through HEAD showed no changes in these files.",
+  "files": {
+    "tests/session.test.ts": {
+      "guestSha256": "4d2f7924461b08770c1a88a990115f91a85cc4d136f7d31140602a13ac7e6fc9",
+      "currentSha256": "4fa9bdda6fc4355d1a84bdad7c976f6ae3e07d2432d5075be65b04632cee4670"
+    },
+    "server/session.ts": {
+      "guestSha256": "7041a874ad4968fd06b62a003b8424c2cfb66cef4393dfbd9e4999ff13a1e5f2",
+      "currentSha256": "ec90d045574736b2a5b80cbaa707a2895c8bfd345906120bc5e6b8cdddd51647"
+    },
+    "tests/table.test.tsx": {
+      "guestSha256": "34fcddb003a708611032c7ffa062aa0125c0afae2e195e34d58a8f66b92162a7",
+      "currentSha256": "bfedfdcd309e8848309953ae85ef46de28a8c4d2df5d121d0ad7eeb1492a098b"
+    }
+  },
+  "missingGuestTest": "rejected stale and duplicate starts leave the active query pollable"
+}

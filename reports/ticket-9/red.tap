@@ -1,0 +1,30 @@
+✖ external edits leave a completed snapshot stale until an explicit new session (4230.531433ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8242.490573
+
+✖ failing tests:
+
+test at tests/source-refresh.test.ts:2:713
+✖ external edits leave a completed snapshot stale until an explicit new session (4230.531433ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at TestContext.<anonymous> (/home/cua/ticket-9/source/tests/source-refresh.test.ts:28:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

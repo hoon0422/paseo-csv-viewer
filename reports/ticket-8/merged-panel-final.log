@@ -1,0 +1,14 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ replacement clears an old page load and header switch applies to the next drop (9800.298167ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ two pending OS drops keep action order when locality checks resolve out of order (583.867073ms)
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+✔ search shows pending, hidden-column matches and no results; stale search cannot replace cleared rows (9759.142779ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27408.861174

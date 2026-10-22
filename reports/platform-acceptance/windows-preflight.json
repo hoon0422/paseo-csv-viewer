@@ -1,0 +1,29 @@
+{
+  "platform": "Windows Server 2022 amd64",
+  "space": "local:paseo-csv-windows-acceptance",
+  "placement": "local qemu, 2 vCPU, 4 GB RAM",
+  "image": "ghcr.io/trycua/windows:2022@sha256:2cfe661e221f5f746d7658e4fb7386a1ac5f803af727d91c8abb07333bf893f9",
+  "imageDownloadBytes": 6138205223,
+  "imageUnpackedBytes": 6203375616,
+  "imageVirtualDiskBytes": 68719476736,
+  "hostRamBytes": 25769803776,
+  "hostAvailableKiBAtStart": 26672076,
+  "macReserveInitiallyBytes": 3000000000,
+  "macReserveReleasedAfterSeparateBlockedPreflight": true,
+  "existingLinuxBaseUsesQcowBackingFile": true,
+  "hostGuard": "Monitor free disk during create; do not bypass Cua guard or remove existing files/caches/VMs.",
+  "firstCreate": {
+    "result": "failed before ready; Cua removed only the new failed VM",
+    "readyTimeoutSeconds": 120,
+    "error": "cua-spacesd did not answer within 120s (nothing answered at http://127.0.0.1:58938/; gRPC and gRPC-Web did not answer within 3s)"
+  },
+  "retry": {
+    "name": "local:paseo-csv-windows-acceptance",
+    "on": "local",
+    "readyTimeoutSeconds": 1200,
+    "result": "ready; Windows Server 2022 guest and cua-spacesd 0.6.0 answered"
+  },
+  "hostAvailableKiBBeforeDelete": 15120000,
+  "newVmDirectoryAllocatedKiB": 4305992,
+  "macReserveFinalBytes": 0
+}

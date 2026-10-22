@@ -1,0 +1,215 @@
+{
+  "installedPackageSha256": "eedc60d8047ff041ff16b12fa9bd02e14f59b86e6917d04af6bdc843e715a80c",
+  "layer": "packaged server/session, not app rendering",
+  "medium": {
+    "loadMs": 26982.644959999998,
+    "firstPages": [
+      {
+        "event": "first-sorted-page",
+        "utc": "2026-10-21T17:13:13.383Z",
+        "elapsedMs": 48750.825365000004,
+        "sort": {
+          "column": 0,
+          "direction": "asc",
+          "mode": "auto"
+        },
+        "durationMs": 21767.497406,
+        "totalRows": 2999999,
+        "sortMode": "numeric",
+        "first": [
+          "00000000",
+          "block-0000................................................................................"
+        ]
+      },
+      {
+        "event": "first-sorted-page",
+        "utc": "2026-10-21T17:13:46.912Z",
+        "elapsedMs": 82280.245996,
+        "sort": {
+          "column": 1,
+          "direction": "desc",
+          "mode": "text"
+        },
+        "durationMs": 30365.971271000002,
+        "totalRows": 2999999,
+        "sortMode": "text",
+        "first": [
+          "00009999",
+          "body-9999................................................................................."
+        ]
+      },
+      {
+        "event": "first-sorted-page",
+        "utc": "2026-10-21T17:14:10.387Z",
+        "elapsedMs": 105754.352927,
+        "sort": {
+          "column": 0,
+          "direction": "asc",
+          "mode": "numeric"
+        },
+        "durationMs": 20598.377795000008,
+        "totalRows": 2999999,
+        "sortMode": "numeric",
+        "first": [
+          "00000000",
+          "block-0000................................................................................"
+        ]
+      }
+    ],
+    "retainedPages": [
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:13.913Z",
+        "elapsedMs": 49281.168417,
+        "mode": "auto",
+        "page": 1,
+        "durationMs": 529.4080529999992
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:14.504Z",
+        "elapsedMs": 49871.472364,
+        "mode": "auto",
+        "page": 2,
+        "durationMs": 589.5389480000013
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:15.152Z",
+        "elapsedMs": 50519.833207,
+        "mode": "auto",
+        "page": 3,
+        "durationMs": 643.6798509999935
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:16.113Z",
+        "elapsedMs": 51480.247496,
+        "mode": "auto",
+        "page": 4,
+        "durationMs": 959.7092910000065
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:16.546Z",
+        "elapsedMs": 51913.377726000006,
+        "mode": "auto",
+        "page": 5,
+        "durationMs": 432.4732309999963
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:47.650Z",
+        "elapsedMs": 83017.248747,
+        "mode": "text",
+        "page": 1,
+        "durationMs": 736.3217519999889
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:48.278Z",
+        "elapsedMs": 83645.40468400001,
+        "mode": "text",
+        "page": 2,
+        "durationMs": 627.360937999998
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:48.714Z",
+        "elapsedMs": 84081.793946,
+        "mode": "text",
+        "page": 3,
+        "durationMs": 435.5732629999984
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:49.270Z",
+        "elapsedMs": 84637.823007,
+        "mode": "text",
+        "page": 4,
+        "durationMs": 555.3280620000005
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:13:49.788Z",
+        "elapsedMs": 85155.32213300001,
+        "mode": "text",
+        "page": 5,
+        "durationMs": 516.9311269999889
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:14:10.943Z",
+        "elapsedMs": 106311.199017,
+        "mode": "numeric",
+        "page": 1,
+        "durationMs": 556.0860910000047
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:14:11.312Z",
+        "elapsedMs": 106680.005415,
+        "mode": "numeric",
+        "page": 2,
+        "durationMs": 368.06440000000293
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:14:11.656Z",
+        "elapsedMs": 107023.30085500001,
+        "mode": "numeric",
+        "page": 3,
+        "durationMs": 342.44044200000644
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:14:12.163Z",
+        "elapsedMs": 107530.586028,
+        "mode": "numeric",
+        "page": 4,
+        "durationMs": 506.62317500000063
+      },
+      {
+        "event": "retained-order-page",
+        "utc": "2026-10-21T17:14:12.531Z",
+        "elapsedMs": 107898.760429,
+        "mode": "numeric",
+        "page": 5,
+        "durationMs": 367.50740199998836
+      }
+    ],
+    "cleanupRecorded": true
+  },
+  "large": {
+    "loadMs": 309979.46906800003,
+    "firstSortedPageRecorded": false,
+    "logSpanAfterLoadMs": 656027.3366009998,
+    "partialLog": true,
+    "lastEvent": {
+      "event": "resource",
+      "utc": "2026-10-21T17:31:37.885Z",
+      "elapsedMs": 966006.8056689999,
+      "freeBytes": 4801900544,
+      "rss": 2645086208
+    },
+    "completionAndTerminationConfirmed": false
+  },
+  "snapshots": {
+    "medium.jsonl": {
+      "sha256": "6c008d6583397da14f4c5b1b7d2b71f598f7e5d28c27b8ca078357bf898dbdb6",
+      "bytes": 17239
+    },
+    "large.jsonl": {
+      "sha256": "89a371f956bab1b3de04b6d96f0bf5f88c02a93bcb1cd41f3fd0c3a67ce0ad7a",
+      "bytes": 60912
+    },
+    "path-count-red.log": {
+      "sha256": "0cbd03f6b1595a1db9d2ec1c3125a264ab20975b9e67b468b5f611b0fc43ea0a",
+      "bytes": 1157
+    },
+    "path-count-green.log": {
+      "sha256": "a2266c006a4f1a22281857545973031a10862040caf4e6ca3aad74b0c0b94e2b",
+      "bytes": 310
+    }
+  }
+}

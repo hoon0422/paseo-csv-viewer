@@ -1,0 +1,7 @@
+{
+  "path": "/Users/lume/csv-macos-21/fixtures/over500.csv",
+  "bytes": 501000014,
+  "rows": 1002000,
+  "sha256": "7e19fb2b3ca3380c90cbb62642aedf410ad84c569906f73cff243a8e5ad75217",
+  "shape": "id,value,note header; 1002000 identical 500-byte records: id 1, value 7, 495 ASCII x note"
+}

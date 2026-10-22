@@ -1,0 +1,121 @@
+{
+  "paseo-csv-viewer": {
+    "id": "paseo-csv-viewer@0.1.0",
+    "name": "paseo-csv-viewer",
+    "version": "0.1.0",
+    "size": 243210,
+    "unpackedSize": 704791,
+    "shasum": "0e971a2b6c571af743290f2a96486b7f6db07c1b",
+    "integrity": "sha512-T7rX+wkf9nNo+Svl/pE44iv2F8hZttrQiF86UVDyQUEsqXfdEjmu+2eZ7YEFTcoxsawNOpMXltdEB6GDuasJLg==",
+    "filename": "paseo-csv-viewer-0.1.0.tgz",
+    "files": [
+      {
+        "path": "OVERVIEW.md",
+        "size": 1733,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 3669,
+        "mode": 420
+      },
+      {
+        "path": "assets/screenshot.png",
+        "size": 113703,
+        "mode": 420
+      },
+      {
+        "path": "client/columns.tsx",
+        "size": 9825,
+        "mode": 420
+      },
+      {
+        "path": "client/drop.ts",
+        "size": 4401,
+        "mode": 420
+      },
+      {
+        "path": "client/filter.tsx",
+        "size": 5687,
+        "mode": 420
+      },
+      {
+        "path": "client/panel.tsx",
+        "size": 29419,
+        "mode": 420
+      },
+      {
+        "path": "client/table.tsx",
+        "size": 6525,
+        "mode": 420
+      },
+      {
+        "path": "index.client.tsx",
+        "size": 2114,
+        "mode": 420
+      },
+      {
+        "path": "index.server.ts",
+        "size": 1080,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 1104,
+        "mode": 420
+      },
+      {
+        "path": "paseo-plugin.json",
+        "size": 265,
+        "mode": 420
+      },
+      {
+        "path": "server/child.cjs",
+        "size": 475371,
+        "mode": 420
+      },
+      {
+        "path": "server/child.ts",
+        "size": 2733,
+        "mode": 420
+      },
+      {
+        "path": "server/filter.ts",
+        "size": 2793,
+        "mode": 420
+      },
+      {
+        "path": "server/ipc.ts",
+        "size": 422,
+        "mode": 420
+      },
+      {
+        "path": "server/native.ts",
+        "size": 731,
+        "mode": 420
+      },
+      {
+        "path": "server/proxy.ts",
+        "size": 12341,
+        "mode": 420
+      },
+      {
+        "path": "server/session.ts",
+        "size": 23949,
+        "mode": 420
+      },
+      {
+        "path": "server/sort.ts",
+        "size": 2393,
+        "mode": 420
+      },
+      {
+        "path": "shared/session.ts",
+        "size": 4533,
+        "mode": 420
+      }
+    ],
+    "entryCount": 21,
+    "bundled": []
+  }
+}

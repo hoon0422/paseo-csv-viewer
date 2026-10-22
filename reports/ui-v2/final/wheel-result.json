@@ -1,0 +1,51 @@
+{
+  "utc": "2026-10-21T19:51:59.406Z",
+  "durationMs": 12000,
+  "status": "30,050 rows1 selected646.1 kBReady",
+  "mountedRows": 104,
+  "wheels": [
+    {
+      "ms": 1052277.299999997,
+      "deltaY": -120,
+      "top": 924835,
+      "trusted": true,
+      "scrollMs": 1052400.3999999985,
+      "afterTop": 924540,
+      "frameMs": 1052486.8999999985
+    },
+    {
+      "ms": 1052297.200000003,
+      "deltaY": -240,
+      "top": 924835,
+      "trusted": true,
+      "scrollMs": 1052332.299999997,
+      "afterTop": 924812,
+      "frameMs": 1052401.200000003
+    },
+    {
+      "ms": 1056972.200000003,
+      "deltaY": 120,
+      "top": 924475,
+      "trusted": true,
+      "scrollMs": 1057048,
+      "afterTop": 924830,
+      "frameMs": 1057104.3999999985
+    },
+    {
+      "ms": 1056979.799999997,
+      "deltaY": 240,
+      "top": 924475,
+      "trusted": true,
+      "scrollMs": 1057005,
+      "afterTop": 924545,
+      "frameMs": 1057048.200000003
+    }
+  ],
+  "frames": {
+    "count": 656,
+    "p50Ms": 16.699999999953434,
+    "p95Ms": 16.800000000046566,
+    "maxMs": 116.70000000018626
+  },
+  "note": "Native wheel to scroll and double-rAF proxy; emulated VM reference, not native performance acceptance or a physical display paint measurement"
+}

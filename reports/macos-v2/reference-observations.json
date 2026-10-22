@@ -1,0 +1,17 @@
+{
+  "source": "170add003b49484364501be3c4eaeb27025733e4",
+  "productSource": "fa02073",
+  "largeSourceBytes": 501000014,
+  "largeSourceRows": 1002000,
+  "largeOpenObservedUpperBoundSeconds": 7.663,
+  "timingMeaning": "Host automation wall time from before native OK action to a Ready snapshot; includes tool and screenshot overhead. VM reference only, not native ADR 0003 performance acceptance.",
+  "memoryMeaning": "large-process-sample.log is one RSS sample after Ready, not peak memory.",
+  "originalRejectionReproduced": false,
+  "sip": "disabled",
+  "selectionPreparation": "prepare-loaded-rows.js scrolls the real DOM viewport through ordinary paging. Selection/copy/limit gestures are native.",
+  "limitations": [
+    "No native performance target verdict from this VM",
+    "No real-Mac library-validation rejection reproduced"
+  ],
+  "additionalObservation": "Opening docked DevTools narrowed the host layout and the viewer remounted with no source. QA setup then used undocked DevTools and reopened a fixture. Persistence across host compact-layout remounts is not established."
+}

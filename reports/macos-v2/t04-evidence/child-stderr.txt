@@ -1,0 +1,10 @@
+CSV Viewer Node.js child stderr: node:internal/child_process/serialization:72
+      yield deserialize(serializedMessage);
+            ^
+
+Error: Unable to deserialize cloned data due to invalid or unsupported version.
+    at parseChannelMessages (node:internal/child_process/serialization:72:13)
+    at parseChannelMessages.next (<anonymous>)
+    at channel.onread (node:internal/child_process:693:18)
+
+Node.js v24.22.1
