@@ -49,7 +49,7 @@ CSV Viewer requires Paseo **0.12.0** exactly, on both the app and the daemon. No
 - Ubuntu 24.04 x86_64 ([UI acceptance](reports/ui-v2/README.md), [child process recheck](reports/linux-21/README.md)).
 - macOS 26 arm64 ([acceptance](reports/macos-v2/README.md)).
 
-An earlier version also passed on Windows Server 2022 x64 ([report](reports/platform-acceptance/README.md)). The current version has not been retested on Windows.
+An earlier version also passed on Windows Server 2022 x64 ([report](reports/platform-acceptance/README.md)). The current version has not been retested on Windows and has a known path bug there ([#23](https://github.com/hoon0422/csv-viewer/issues/23)).
 
 All DuckDB work runs in a child `node` process on the daemon machine, on every OS. The official macOS Paseo app's Hardened Runtime refuses to load DuckDB's native library into the daemon itself ([ADR 0004](docs/adr/0004-duckdb-node-child.md)). Panels share one child, and closing the last panel stops it. If the child crashes, its sessions fail, their temporary files are removed, and the next open starts a fresh child.
 
@@ -77,4 +77,4 @@ npm test        # rebuilds server/child.cjs, then runs the suite
 
 `server/child.cjs` is a committed bundle of the child process, built with esbuild, a development-only dependency. Run `npm run build` after changing the child's source. Outside Paseo, unset an inherited `PASEO_HOME` so DuckDB is loaded from the checkout instead of an installed plugin.
 
-CI runs the same checks on Ubuntu, macOS and Windows for every pull request and every push to `main`.
+CI runs the same checks on Ubuntu and macOS for every pull request and every push to `main`. Windows is tracked in [#23](https://github.com/hoon0422/csv-viewer/issues/23).
