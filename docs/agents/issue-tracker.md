@@ -1,13 +1,13 @@
 # Issue tracker: GitHub
 
-Issues and specs live in GitHub Issues at `hoon0422/csv-viewer`:
-https://github.com/hoon0422/csv-viewer/issues
+Issues and specs live in GitHub Issues at `hoon0422/paseo-csv-viewer`:
+https://github.com/hoon0422/paseo-csv-viewer/issues
 
 Use the `gh` CLI for tracker operations. Run every `gh` command with escalated permissions so it can access keyring-backed authentication.
 
 ## Conventions
 
-- Pass `--repo hoon0422/csv-viewer` when the local checkout has no remote or the target is ambiguous.
+- Pass `--repo hoon0422/paseo-csv-viewer` when the local checkout has no remote or the target is ambiguous.
 - Create issues with `gh issue create --title "..." --body-file <path>`.
 - Write multiline issue bodies and comments to a file, then use `--body-file` to preserve their exact content.
 - Read issues with `gh issue view <number> --json number,title,body,labels,comments`.
