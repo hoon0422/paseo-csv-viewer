@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Weekly, so a new Paseo release that breaks the plugin fails here first.
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
 
 jobs:
   check:
@@ -25,3 +29,19 @@ jobs:
       - run: npm test
       # Lists what the published package would contain.
       - run: npm pack --dry-run --ignore-scripts
+
+  latest-paseo:
+    name: Check against the latest Paseo SDK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save @getpaseo/plugin@latest
+      - run: npm ls @getpaseo/plugin
+      # Skips the bundle byte check: a newer SDK legitimately changes the child bundle.
+      - run: npm run typecheck
+      - run: npm test

@@ -44,7 +44,7 @@ How it stays fast:
 
 ## Compatibility and data access
 
-CSV Viewer requires Paseo **0.12.0** exactly, on both the app and the daemon. Node.js and npm must be on the daemon's `PATH`. The current version was tested with the official 0.12.0 desktop app and daemon on:
+CSV Viewer requires Paseo **0.12.0 or later**, on both the app and the daemon. Node.js and npm must be on the daemon's `PATH`. It loads and runs on the Paseo 0.14.0 macOS app and daemon. The full acceptance runs used the official 0.12.0 desktop app and daemon on:
 
 - Ubuntu 24.04 x86_64 ([UI acceptance](reports/ui-v2/README.md), [child process recheck](reports/linux-21/README.md)).
 - macOS 26 arm64 ([acceptance](reports/macos-v2/README.md)).
@@ -55,7 +55,7 @@ All DuckDB work runs in a child `node` process on the daemon machine, on every O
 
 External file drops and the local file picker work only when the panel's host is the desktop app's own daemon. Make sure the daemon's temporary disk has room for the prepared rows, which can take more than half the size of the source file. Like every Paseo plugin, CSV Viewer is trusted code with the daemon user's file, process and network access.
 
-Paseo 0.12.0 does not bundle DuckDB's native binary into its plugin server bundle. CSV Viewer finds the installed DuckDB package through the `csv-viewer` entry in `PASEO_HOME/config.json`, so keep the default plugin ID. Paseo Files drag data and desktop file paths also use internal Paseo 0.12.0 interfaces. Later Paseo releases need a separate compatibility check before the manifest range is widened.
+Paseo does not bundle DuckDB's native binary into its plugin server bundle. CSV Viewer finds the installed DuckDB package through the `csv-viewer` entry in `PASEO_HOME/config.json`, so keep the default plugin ID. Paseo Files drag data (`application/x-paseo-workspace-file+json`, payload version 1) and desktop file paths (`paseoDesktop.webUtils.getPathForFile`, `desktop_daemon_status`) use internal Paseo interfaces, checked unchanged in 0.14.0. CI runs weekly against the latest Paseo SDK so a breaking release shows up as a failed run; the internal interfaces above still need a manual check against each new app release.
 
 ## Install
 

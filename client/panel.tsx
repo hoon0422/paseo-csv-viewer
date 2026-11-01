@@ -2,7 +2,7 @@ import { useWorkspace, useRpc, type PluginWorkspacePanelProps } from "@getpaseo/
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Text } from "react-native";
-import { Icon } from "@getpaseo/plugin/client/react-native";
+import { Icon } from "@getpaseo/plugin/client/ui";
 import type { z } from "zod";
 import { activeRule, closePreview, inspectSource, LARGE_SOURCE_BYTES, openPreview, PAGE_SIZE, pageQuery, pageRows, sessionStatus, type Filter, type Sort, type source } from "../shared/session";
 import { chooseLocalFile, listenForDrops } from "./drop";
