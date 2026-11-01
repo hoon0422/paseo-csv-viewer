@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      # npm reads npm-shrinkwrap.json first; it must stay a copy of package-lock.json.
+      - run: cmp package-lock.json npm-shrinkwrap.json
       - run: npm ci
       - run: npm run check
       - run: npm test
